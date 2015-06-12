@@ -130,7 +130,7 @@ mycpugraphs = uzful.widget.cpugraphs({
         text = ' <span size="x-small"><span color="#666666">$1</span>' ..
                '  <span color="#9A9A9A">$2</span>' ..
                '  <span color="#DDDDDD">$3</span></span>' },
-    big = { width = 161, height = 42, interval = 1 },
+    big = { width = 400, height = 100, interval = 1 },
     small = { width = 42, height = beautiful.menu_height, interval = 1 } })
 
 myinfobox.cpu = uzful.widget.infobox({
@@ -285,6 +285,8 @@ for s = 1, screen.count() do
 
     local right_layout = wibox.layout.fixed.horizontal()
 
+    right_layout:add(mypromptbox[s])
+
     right_layout:add(mycpugraphs.small.widget)
 
     right_layout:add(spr)
@@ -306,7 +308,6 @@ for s = 1, screen.count() do
 
     if s == 1 then
         right_layout:add(spr5px)
-        right_layout:add(mypromptbox[s])
         right_layout:add(wibox.widget.systray())
         right_layout:add(spr5px)
     end
@@ -426,7 +427,7 @@ awful.rules.rules = {
       properties = { border_width = beautiful.border_width,
                      border_color = beautiful.border_normal,
                      focus = awful.client.focus.filter,
-                     -- size_hints_honor = false,
+                     size_hints_honor = false,
                      raise = true,
                      keys = clientkeys,
                      buttons = clientbuttons } },
