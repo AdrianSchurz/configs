@@ -9,16 +9,16 @@ local naughty    = require('naughty')
 local lain       = require('lain')
 local uzful      = require('uzful')
 
-uzful.util.patch.vicious() -- enable auto caching
+-- enable graph auto caching
+uzful.util.patch.vicious() 
 
--- | Theme | --
+-- set up theme
+local themePath = "/usr/share/awesome/themes/pro/themes/"
+local themeName = "pro-dark"
+local themeMainFileName = "/theme.lua"
+beautiful.init(themePath .. themeName .. themeMainFileName)
 
-local theme_name = "pro-dark"
-
-beautiful.init("/usr/share/awesome/themes/pro/themes/" .. theme_name .. "/theme.lua")
-
--- | Error handling | --
-
+-- handle errors
 if awesome.startup_errors then
     naughty.notify({ preset = naughty.config.presets.critical,
                      title = "Oops, there were errors during startup!",
@@ -38,20 +38,16 @@ do
     end)
 end
 
--- | Fix's | --
-
--- Disable cursor animation:
-
+-- disable cursor animation
 local oldspawn = awful.util.spawn
 awful.util.spawn = function (s)
     oldspawn(s, false)
 end
 
--- Java GUI's fix:
-
+-- java GUI's fix
 awful.util.spawn_with_shell("wmname LG3D")
 
--- | Variable definitions | --
+-- variables
 
 local home   = os.getenv("HOME")
 local exec   = function (s) oldspawn(s, false) end
@@ -64,17 +60,16 @@ termax        = "termite --geometry 1680x1034+0+22"
 rootterm      = "sudo -i termite"
 browser       = "chromium"
 filemanager   = "thunar"
-configuration = termax .. ' -e "vim -O $HOME/.config/awesome/rc.lua /usr/share/awesome/themes/pro/themes/' ..theme_name.. '/theme.lua"'
+configuration = termax .. ' -e "vim -O $HOME/.config/awesome/rc.lua /usr/share/awesome/themes/pro/themes/' ..themeName.. '/theme.lua"'
 
--- | Table of layouts | --
-
+-- table of layouts
 local layouts =
 {
     awful.layout.suit.tile,
     awful.layout.suit.tile.top
 }
 
--- | Wallpaper | --
+-- wallpapers
 local wallpaperFolder = "/home/ulmeyda/media/wallpapers/"
 local wallpaperOne = wallpaperFolder .. "catbug_wallpaper.png"
 local wallpaperTwo = wallpaperFolder .. "blame_wallpaper.png"
@@ -89,15 +84,13 @@ if beautiful.wallpaper then
     end
 end
 
--- | Tags | --
-
+-- tags
 tags = {}
 for s = 1, screen.count() do
     tags[s] = awful.tag({ "  ", "  ", "  ", "  " }, s, layouts[1])
 end
 
--- | Menu | --
-
+-- menu
 menu_main = {
   { "restart",   awesome.restart     },
   { "reboot",    "sudo reboot"       },
@@ -108,22 +101,18 @@ mainmenu = awful.menu({ items = {
   { " file manager",  filemanager },
   { " terminal", terminal    }}})
 
--- | Markup | --
-
+-- markup
 markup = lain.util.markup
-
 space3 = markup.font("Terminus 3", " ")
 space2 = markup.font("Terminus 2", " ")
 vspace1 = '<span font="Terminus 3"> </span>'
 vspace2 = '<span font="Terminus 3">  </span>'
 clockgf = beautiful.clockgf
 
--- | Widgets | --
-
+-- widgets
 myinfobox = { cpu = {} }
 
--- | CPU | --
-
+-- cpu
 mycpugraphs = uzful.widget.cpugraphs({
     fgcolor = "#D0752A", bgcolor = beautiful.bg_systray,
     load = { interval = 20,
@@ -166,16 +155,15 @@ widget_display_l:set_image(beautiful.widget_display_l)
 widget_display_c = wibox.widget.imagebox()
 widget_display_c:set_image(beautiful.widget_display_c)
 
--- | Memory | --
-
-function round(num, idp)
+-- memory
+function roundToDecimal(num, idp)
   local mult = 10^(idp or 0)
   return math.floor(num * mult + 0.5) / mult
 end
 
 mem_widget = lain.widgets.mem({
     settings = function()
-        widget:set_markup(space3 .. round(mem_now.used/1000, 1) .. "G" .. markup.font("Tamsyn 4", " "))
+        widget:set_markup(space3 .. roundToDecimal(mem_now.used/1000, 1) .. "G" .. markup.font("Tamsyn 4", " "))
     end
 })
 
@@ -185,8 +173,7 @@ memwidget = wibox.widget.background()
 memwidget:set_widget(mem_widget)
 memwidget:set_bgimage(beautiful.widget_display)
 
--- | Clock / Calendar | --
-
+-- clock/calendar
 mytextclock    = awful.widget.textclock(markup(clockgf, space3 .. "%H:%M" .. markup.font("Tamsyn 3", " ")))
 mytextcalendar = awful.widget.textclock(markup(clockgf, space3 .. "%a %d %b"))
 
@@ -208,8 +195,7 @@ clockwidget:buttons(awful.util.table.join(awful.button({}, 1,
         widget_clock:set_image(loop_widgets_icons[index])
     end)))
 
--- | Taglist | --
-
+-- taglist
 mytaglist         = {}
 mytaglist.buttons = awful.util.table.join(
                     awful.button({ }, 1, awful.tag.viewonly),
@@ -220,8 +206,7 @@ mytaglist.buttons = awful.util.table.join(
                     awful.button({ }, 5, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end)
                     )
 
--- | Tasklist | --
-
+-- tasklist
 mytasklist         = {}
 mytasklist.buttons = awful.util.table.join(
                      awful.button({ }, 1, function (c)
@@ -255,8 +240,7 @@ mytasklist.buttons = awful.util.table.join(
                                               if client.focus then client.focus:raise() end
                                           end))
 
--- | PANEL | --
-
+-- panel
 mywibox           = {}
 mypromptbox       = {}
 mylayoutbox       = {}
@@ -324,8 +308,7 @@ for s = 1, screen.count() do
     mywibox[s]:set_widget(layout)
 end
 
--- | Mouse bindings | --
-
+-- mouse bindings
 root.buttons(awful.util.table.join(
     awful.button({ }, 3, function () mainmenu:toggle() end),
     awful.button({ }, 4, awful.tag.viewnext),
@@ -333,9 +316,7 @@ root.buttons(awful.util.table.join(
     )
 )
 
--- | Key bindings | --
-
-
+-- key bindings
 globalkeys = awful.util.table.join(
 
     awful.key({ modkey,           }, "e", function () exec(filemanager) end),
@@ -350,20 +331,19 @@ globalkeys = awful.util.table.join(
             if client.focus then client.focus:raise() end
         end),
     awful.key({ modkey,           }, "Return", function () exec(terminal) end),
-    awful.key({ modkey,           }, "space",  function () mypromptbox[mouse.screen]: run() end))
+    awful.key({ modkey,           }, "space",  function () mypromptbox[mouse.screen]: run() end)
+)
 
 local wa = screen[mouse.screen].workarea
 ww = wa.width
 wh = wa.height
-ph = 22 -- (panel height)
+-- (panel height)
+ph = 22
 
 clientkeys = awful.util.table.join(
     awful.key({ modkey,           }, "f",        function (c) c.fullscreen = not c.fullscreen  end),
     awful.key({ modkey,           }, "c",        function (c) c:kill() end),
-    awful.key({ modkey,           }, "n",
-        function (c)
-            c.minimized = true
-        end)
+    awful.key({ modkey,           }, "n",        function (c) c.minimized = true end)
 )
 
 for i = 1, 9 do
@@ -420,8 +400,7 @@ awful.menu.menu_keys = {
 
 root.keys(globalkeys)
 
--- | Rules | --
-
+-- rules
 awful.rules.rules = {
     { rule = { },
       properties = { border_width = beautiful.border_width,
@@ -439,8 +418,7 @@ awful.rules.rules = {
       properties = { floating = true } },
 }
 
--- | Signals | --
-
+-- signals
 client.connect_signal("manage", function (c, startup)
     c:connect_signal("mouse::enter", function(c)
         if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
@@ -500,8 +478,7 @@ end)
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 
--- | run_once | --
-
+-- run_once
 function run_once(cmd)
   findme = cmd
   firstspace = cmd:find(" ")
