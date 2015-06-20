@@ -78,3 +78,7 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+
+alias ta="todo.sh add"
+alias tls="todo.sh list"
+alias td="todo.sh do"
