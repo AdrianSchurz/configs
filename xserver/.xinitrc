@@ -33,4 +33,5 @@ fi
 
 setxkbmap de
 export MAKEFLAGS="-j 8"
+export SUDO_EDITOR=rvim
 exec awesome
