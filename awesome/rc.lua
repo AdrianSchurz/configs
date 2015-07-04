@@ -60,6 +60,7 @@ termax        = "termite --geometry 1680x1034+0+22"
 rootterm      = "sudo -i termite"
 browser       = "chromium"
 filemanager   = "thunar"
+sublime       = "subl"
 configuration = termax .. ' -e "vim -O $HOME/.config/awesome/rc.lua /usr/share/awesome/themes/pro/themes/' ..themeName.. '/theme.lua"'
 
 -- table of layouts
@@ -343,6 +344,8 @@ end
 globalkeys = awful.util.table.join(
 
     awful.key({ modkey,           }, "e", function () exec(filemanager) end),
+    awful.key({ modkey,           }, "w", function () exec(browser) end),
+    awful.key({ modkey,           }, "q", function () exec(sublime) end),
     awful.key({ modkey,           }, "j",
         function ()
             awful.client.focus.byidx( 1)
