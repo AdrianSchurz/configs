@@ -356,11 +356,10 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "Return", function () exec(terminal) end),
     awful.key({ modkey,           }, "space", 
               function () awful.prompt.run({prompt="Run:"},
-                                           mypromptbox[mouse.screen].widget,
+                                           mypromptbox[screen.count()].widget,
                                            check_for_terminal,
                                            clean_for_completion,
                                            awful.util.getdir("cache") .. "/history") end)
-    --awful.key({ modkey,           }, "space",  function () mypromptbox[mouse.screen]: run() end)
 )
 
 local wa = screen[mouse.screen].workarea
