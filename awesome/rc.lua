@@ -316,6 +316,29 @@ root.buttons(awful.util.table.join(
     )
 )
 
+-- key binding helper functions to run commands in a terminal using the ':' keyword
+function check_for_terminal (command)
+   if command:sub(1,1) == ":" then
+      command = terminal .. ' -e "' .. command:sub(2) .. '"'
+   end
+   awful.util.spawn(command)
+end
+   
+function clean_for_completion (command, cur_pos, ncomp, shell)
+   local term = false
+   if command:sub(1,1) == ":" then
+      term = true
+      command = command:sub(2)
+      cur_pos = cur_pos - 1
+   end
+   command, cur_pos =  awful.completion.shell(command, cur_pos,ncomp,shell)
+   if term == true then
+      command = ':' .. command
+      cur_pos = cur_pos + 1
+   end
+   return command, cur_pos
+end
+
 -- key bindings
 globalkeys = awful.util.table.join(
 
@@ -331,7 +354,13 @@ globalkeys = awful.util.table.join(
             if client.focus then client.focus:raise() end
         end),
     awful.key({ modkey,           }, "Return", function () exec(terminal) end),
-    awful.key({ modkey,           }, "space",  function () mypromptbox[mouse.screen]: run() end)
+    awful.key({ modkey,           }, "space", 
+              function () awful.prompt.run({prompt="Run:"},
+                                           mypromptbox[mouse.screen].widget,
+                                           check_for_terminal,
+                                           clean_for_completion,
+                                           awful.util.getdir("cache") .. "/history") end)
+    --awful.key({ modkey,           }, "space",  function () mypromptbox[mouse.screen]: run() end)
 )
 
 local wa = screen[mouse.screen].workarea
