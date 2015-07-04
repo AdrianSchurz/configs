@@ -509,6 +509,14 @@ end)
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 
+-- -- disable sloppy focus by focusing client under mouse on signal 'arrange'
+-- function reset_focus()
+--    client.focus = mouse.client_under_pointer()
+--  end
+-- for s=1, screen.count() do
+--  screen[s]:connect_signal("arrange", reset_focus)
+-- end
+
 -- run_once
 function run_once(cmd)
   findme = cmd

@@ -1,0 +1,16 @@
+[Default Applications]
+x-scheme-handler/mailto=userapp-Thunderbird-XNN1ZX.desktop
+message/rfc822=userapp-Thunderbird-XNN1ZX.desktop
+
+[Added Associations]
+x-scheme-handler/mailto=userapp-Thunderbird-XNN1ZX.desktop;
+message/rfc822=userapp-Thunderbird-XNN1ZX.desktop;
+video/webm=vlc.desktop;
+text/x-nfo=sublime-text.desktop;
+text/plain=sublime-text.desktop;
+image/gif=xnviewmp.desktop;gimp.desktop;
+image/jpeg=gimp.desktop;
+video/x-msvideo=vlc.desktop;
+video/x-flv=vlc.desktop;
+video/mp4=vlc.desktop;
+video/x-ms-wmv=vlc.desktop;
