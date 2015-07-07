@@ -9,12 +9,26 @@ local naughty    = require('naughty')
 local lain       = require('lain')
 local uzful      = require('uzful')
 
--- enable graph auto caching
-uzful.util.patch.vicious() 
+-- hotkey documentation
+---------------------------------------------------
+-- mod+e                        filemanager(thunar)
+-- mod+w                        browser(chromium)
+-- mod+q                        editor(sublime)
+-- mod+left drag client         move client
+-- mod+right drag client border resize client
+---------------------------------------------------
 
--- set up theme
-local theme = "/usr/share/awesome/themes/pro/themes/pro-dark/theme.lua"
-beautiful.init(theme)
+local enableGraphAutoCaching = function()
+  uzful.util.patch.vicious()
+end
+
+local setUpTheme = function()
+  local theme = "/usr/share/awesome/themes/pro/themes/pro-dark/theme.lua"
+  beautiful.init(theme)
+end
+
+enableGraphAutoCaching()
+setUpTheme()
 
 -- handle errors
 if awesome.startup_errors then
@@ -86,15 +100,7 @@ for s = 1, screen.count() do
 end
 
 -- menu
-menu_main = {
-  { "restart",   awesome.restart     },
-  { "reboot",    "sudo reboot"       },
-  { "quit",      awesome.quit        }}
-
-mainmenu = awful.menu({ items = {
-  { " awesome",       menu_main   },
-  { " file manager",  filemanager },
-  { " terminal", terminal    }}})
+mainmenu = awful.menu({items = {{ " restart", awesome.restart }}})
 
 -- markup
 markup = lain.util.markup
