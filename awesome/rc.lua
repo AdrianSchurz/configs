@@ -13,10 +13,8 @@ local uzful      = require('uzful')
 uzful.util.patch.vicious() 
 
 -- set up theme
-local themePath = "/usr/share/awesome/themes/pro/themes/"
-local themeName = "pro-dark"
-local themeMainFileName = "/theme.lua"
-beautiful.init(themePath .. themeName .. themeMainFileName)
+local theme = "/usr/share/awesome/themes/pro/themes/pro-dark/theme.lua"
+beautiful.init(theme)
 
 -- handle errors
 if awesome.startup_errors then
@@ -55,13 +53,9 @@ local shexec = awful.util.spawn_with_shell
 
 modkey        = "Mod4"
 terminal      = "urxvt"
-tmux          = "termite -e tmux"
-termax        = "termite --geometry 1680x1034+0+22"
-rootterm      = "sudo -i termite"
 browser       = "chromium"
 filemanager   = "thunar"
 sublime       = "subl"
-configuration = termax .. ' -e "vim -O $HOME/.config/awesome/rc.lua /usr/share/awesome/themes/pro/themes/' ..themeName.. '/theme.lua"'
 
 -- table of layouts
 local layouts =
