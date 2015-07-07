@@ -8,6 +8,7 @@ local vicious    = require('vicious')
 local naughty    = require('naughty')
 local lain       = require('lain')
 local uzful      = require('uzful')
+require('logging.file')
 
 -- hotkey documentation
 ---------------------------------------------------
@@ -16,7 +17,16 @@ local uzful      = require('uzful')
 -- mod+q                        editor(sublime)
 -- mod+left drag client         move client
 -- mod+right drag client border resize client
+-- mod+#                        switch to tag #
+-- mod+shift+#                  send client to tag #
+-- mod+f                        make client full screen
+-- mod+n                        minimize client
+-- mod+c                        kill client
+-- mod+space                    command prompt; keyword ":" executes command in a terminal
+-- mod+shift+r                  restart awesome
 ---------------------------------------------------
+local logger = logging.file("/home/ulmeyda/tests.log")
+logger:info("rc.lua start")
 
 local enableGraphAutoCaching = function()
   uzful.util.patch.vicious()
@@ -30,11 +40,9 @@ end
 enableGraphAutoCaching()
 setUpTheme()
 
--- handle errors
+-- log errors that occured during previous startup
 if awesome.startup_errors then
-    naughty.notify({ preset = naughty.config.presets.critical,
-                     title = "Oops, there were errors during startup!",
-                     text = awesome.startup_errors })
+    logger:error(awesome.startup_errors)
 end
 
 do
@@ -60,7 +68,6 @@ end
 awful.util.spawn_with_shell("wmname LG3D")
 
 -- variables
-
 local home   = os.getenv("HOME")
 local exec   = function (s) oldspawn(s, false) end
 local shexec = awful.util.spawn_with_shell
@@ -72,11 +79,9 @@ filemanager   = "thunar"
 sublime       = "subl"
 
 -- table of layouts
-local layouts =
-{
-    awful.layout.suit.tile,
-    awful.layout.suit.tile.top
-}
+local tileLayout = awful.layout.suit.tile
+local tileTopLayout = awful.layout.suit.tile.top
+local layouts = { tileLayout, tileTopLayout }
 
 -- wallpapers
 local wallpaperFolder = "/home/ulmeyda/media/wallpapers/"
@@ -100,7 +105,10 @@ for s = 1, screen.count() do
 end
 
 -- menu
-mainmenu = awful.menu({items = {{ " restart", awesome.restart }}})
+local menuItemRestart = {"restart", awesome.restart}
+local menuItems = {menuItemRestart}
+menu = {menuItems}
+mainmenu = awful.menu(menu)
 
 -- markup
 markup = lain.util.markup
@@ -343,6 +351,7 @@ end
 -- key bindings
 globalkeys = awful.util.table.join(
 
+    awful.key({ modkey, "Shift"   }, "r", awesome.restart),
     awful.key({ modkey,           }, "e", function () exec(filemanager) end),
     awful.key({ modkey,           }, "w", function () exec(browser) end),
     awful.key({ modkey,           }, "q", function () exec(sublime) end),
