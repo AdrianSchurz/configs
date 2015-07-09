@@ -25,8 +25,11 @@ require('logging.file')
 -- mod+space                    command prompt; keyword ":" executes command in a terminal
 -- mod+shift+r                  restart awesome
 ---------------------------------------------------
-local logger = logging.file("/home/ulmeyda/tests.log")
-logger:info("rc.lua start")
+
+-- set up logging
+local logPath = "/home/ulmeyda/.config/awesome/"
+local logFileName = "rc.lua.log"
+local logger = logging.file(logPath .. logFileName)
 
 local enableGraphAutoCaching = function()
   uzful.util.patch.vicious()
@@ -37,26 +40,31 @@ local setUpTheme = function()
   beautiful.init(theme)
 end
 
+local logPreviousStartupErrors = function()
+  if awesome.startup_errors then
+      logger:error(awesome.startup_errors)
+  end
+end
+
+local logRuntimeErrors = function()
+  local doneWithPreviousError = true
+  awesome.connect_signal("debug:error", function(error)
+    if not doneWithPreviousError then
+      return
+    else
+      doneWithPreviousError = false
+      logger:error(error)
+      doneWithPreviousError = true
+    end
+  end)
+end
+
+logger:info("rc.lua start")
+
+logPreviousStartupErrors()
+logRuntimeErrors()
 enableGraphAutoCaching()
 setUpTheme()
-
--- log errors that occured during previous startup
-if awesome.startup_errors then
-    logger:error(awesome.startup_errors)
-end
-
-do
-    local in_error = false
-    awesome.connect_signal("debug::error", function (err)
-        if in_error then return end
-        in_error = true
-
-        naughty.notify({ preset = naughty.config.presets.critical,
-                         title = "Oops, an error happened!",
-                         text = err })
-        in_error = false
-    end)
-end
 
 -- disable cursor animation
 local oldspawn = awful.util.spawn
@@ -350,7 +358,6 @@ end
 
 -- key bindings
 globalkeys = awful.util.table.join(
-
     awful.key({ modkey, "Shift"   }, "r", awesome.restart),
     awful.key({ modkey,           }, "e", function () exec(filemanager) end),
     awful.key({ modkey,           }, "w", function () exec(browser) end),
@@ -429,15 +436,6 @@ clientbuttons = awful.util.table.join(
     awful.button({ modkey }, 1, awful.mouse.client.move),
     awful.button({ modkey }, 3, awful.mouse.client.resize))
 
-awful.menu.menu_keys = {
-    up    = { "k", "Up" },
-    down  = { "j", "Down" },
-    exec  = { "l", "Return", "Space" },
-    enter = { "l", "Right" },
-    back  = { "h", "Left" },
-    close = { "q", "Escape" }
-}
-
 root.keys(globalkeys)
 
 -- rules
@@ -450,10 +448,6 @@ awful.rules.rules = {
                      raise = true,
                      keys = clientkeys,
                      buttons = clientbuttons } },
-    { rule = { class = "gcolor2" },
-      properties = { floating = true } },
-    { rule = { class = "xmag" },
-      properties = { floating = true } },
     { rule = { class = "gimp" },
       properties = { floating = true } },
 }
@@ -525,13 +519,3 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 -- for s=1, screen.count() do
 --  screen[s]:connect_signal("arrange", reset_focus)
 -- end
-
--- run_once
-function run_once(cmd)
-  findme = cmd
-  firstspace = cmd:find(" ")
-  if firstspace then
-     findme = cmd:sub(0, firstspace-1)
-  end
-  awful.util.spawn_with_shell("pgrep -u $USER -x " .. findme .. " > /dev/null || (" .. cmd .. ")")
-end
