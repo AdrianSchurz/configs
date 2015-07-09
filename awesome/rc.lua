@@ -97,8 +97,9 @@ local wallpaperOne = wallpaperFolder .. "catbug_wallpaper.png"
 local wallpaperTwo = wallpaperFolder .. "blame_wallpaper.png"
 
 if beautiful.wallpaper then
-    for s = 1, screen.count() do
-        if s<2 then
+    local numScreens = screen.count()
+    for screenIndex = 1, numScreens do
+        if screenIndex < 2 then
           gears.wallpaper.maximized(wallpaperOne, s, true)
         else
           gears.wallpaper.maximized(wallpaperTwo, s, true)
@@ -511,3 +512,5 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 -- for s=1, screen.count() do
 --  screen[s]:connect_signal("arrange", reset_focus)
 -- end
+
+-- command to read gpu temp: nvidia-settings -q gpucoretemp
