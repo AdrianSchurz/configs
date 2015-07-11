@@ -6,18 +6,18 @@ URxvt*depth: 32
 URxvt*borderless: 1
 URxvt*scrollBar: false
 URxvt*loginShell: true
-Urxvt*secondaryScroll:  true    # Enable Shift-PageUp/Down in screen
+URxvt*secondaryScroll:  true    # Enable Shift-PageUp/Down in screen
 URxvt*saveLines: 5000
 URxvt*termName: rxvt-unicode
-URxvt.perl-ext-common: default,matcher
-URxvt.urlLauncher: chromium
-URxvt.matcher.button: 1
+URxvt*perl-ext-common: default,matcher
+URxvt*urlLauncher: chromium
+URxvt*matcher.button: 1
 
-URxvt*font:                 xft:Meslo for Powerline:regular:size=9
-URxvt*imFont:               xft:Meslo for Powerline:regular:size=9
-URxvt*boldFont:             xft:Meslo for Powerline:bold:size=9
-URxvt*italicFont:           xft:Meslo for Powerline:italic:size=9
-URxvt*boldItalicFont:       xft:Meslo for Powerline:bold:italic:size=9
+URxvt*font:                 xft:Source Code Pro for Powerline:regular:size=9
+URxvt*imFont:               xft:Source Code Pro for Powerline:regular:size=9
+URxvt*boldFont:             xft:Source Code Pro for Powerline:bold:size=9
+URxvt*italicFont:           xft:Source Code Pro for Powerline:italic:size=9
+URxvt*boldItalicFont:       xft:Source Code Pro for Powerline:bold:italic:size=9
 
 !! drop in Solarized colorscheme for Xresources/Xdefaults
  

@@ -35,6 +35,7 @@ export MAKEFLAGS="-j 8"
 export SUDO_EDITOR=rvim
 export VISUAL=vim
 export EDITOR="$VISUAL"
+export LANG=en_US.UTF-8
 
 setxkbmap de
 

@@ -1,13 +1,13 @@
 local gears      = require('gears')
-local awful      = require('awful')
-awful.rules      = require('awful.rules')
-                   require('awful.autofocus')
+local awful      = require('awful')                   
 local wibox      = require('wibox')
 local beautiful  = require('beautiful')
 local vicious    = require('vicious')
 local naughty    = require('naughty')
 local lain       = require('lain')
 local uzful      = require('uzful')
+awful.rules      = require('awful.rules')
+require('awful.autofocus')
 require('logging.file')
 
 -- hotkey documentation
@@ -26,19 +26,11 @@ require('logging.file')
 -- mod+shift+r                  restart awesome
 ---------------------------------------------------
 
--- set up logging
 local logPath = "/home/ulmeyda/.config/awesome/"
 local logFileName = "rc.lua.log"
 local logger = logging.file(logPath .. logFileName)
 
-local enableGraphAutoCaching = function()
-  uzful.util.patch.vicious()
-end
-
-local setUpTheme = function()
-  local theme = "/usr/share/awesome/themes/pro/themes/pro-dark/theme.lua"
-  beautiful.init(theme)
-end
+logger:info("rc.lua start")
 
 local logPreviousStartupErrors = function()
   if awesome.startup_errors then
@@ -59,12 +51,47 @@ local logRuntimeErrors = function()
   end)
 end
 
-logger:info("rc.lua start")
+local enableGraphAutoCaching = function()
+  uzful.util.patch.vicious()
+end
+
+local setUpTheme = function()
+  local theme = "/usr/share/awesome/themes/pro/themes/pro-dark/theme.lua"
+  beautiful.init(theme)
+end
+
+local populateLayouts = function()
+  local tileLayout = awful.layout.suit.tile
+  local tileTopLayout = awful.layout.suit.tile.top
+  local layouts = { tileLayout, tileTopLayout }
+  return layouts
+end
+
+local populateTags = function(layouts)
+  local tags = {}
+  local numberOfTagsPerScreen = 4
+  local defaultTag = "  "
+  local createTagList = function()
+    local tagList = {}
+    for tagIndex = 1, numberOfTagsPerScreen do
+      tagList[tagIndex] = defaultTag
+    end
+    return tagList
+  end
+  for screen = 1, screen.count() do
+    local tagList = createTagList()
+    local defaultLayout = layouts[1]
+    tags[screen] = awful.tag(tagList, screen, defaultLayout)
+  end
+  return tags
+end
 
 logPreviousStartupErrors()
 logRuntimeErrors()
 enableGraphAutoCaching()
 setUpTheme()
+local layouts = populateLayouts()
+local tags = populateTags(layouts)
 
 -- disable cursor animation
 local oldspawn = awful.util.spawn
@@ -86,11 +113,6 @@ local browser       = "chromium"
 local filemanager   = "thunar"
 local sublime       = "subl"
 
--- table of layouts
-local tileLayout = awful.layout.suit.tile
-local tileTopLayout = awful.layout.suit.tile.top
-local layouts = { tileLayout, tileTopLayout }
-
 -- wallpapers
 local wallpaperFolder = "/home/ulmeyda/media/wallpapers/"
 local wallpaperOne = wallpaperFolder .. "catbug_wallpaper.png"
@@ -107,25 +129,6 @@ if beautiful.wallpaper then
     end
 end
 
--- tags
-tags = {}
-alternativeTags = {}
-local numberOfTags = 4
-local createTagList = function(screen)
-  local tagList = {}
-  local tag = " "
-  for tagIndex = 1, numberOfTags do
-    awful.util.table.join(tagList, tag)
-  end
-end
-
-for s = 1, screen.count() do
-    tags[s] = awful.tag({ "  ", "  ", "  ", "  " }, s, layouts[1])
-end
-logger:info("alternative tags")
-logger:info(alternativeTags)
-logger:info("tags")
-logger:info(tags)
 -- menu
 local menuItemRestart = {"restart", awesome.restart}
 local menuItems = {menuItemRestart}
@@ -517,6 +520,8 @@ end)
 
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
+
+logger:info("rc.lua end")
 
 -- -- disable sloppy focus by focusing client under mouse on signal 'arrange'
 -- function reset_focus()
