@@ -334,8 +334,8 @@ end
 
 -- mouse bindings
 root.buttons(awful.util.table.join(
-    awful.button({ }, 4, awful.tag.viewnext),
-    awful.button({ }, 5, awful.tag.viewprev)
+    awful.button({ modkey }, 4, awful.tag.viewnext),
+    awful.button({ modkey }, 5, awful.tag.viewprev)
     )
 )
 
@@ -443,7 +443,9 @@ end
 clientbuttons = awful.util.table.join(
     awful.button({ }, 1, function (c) client.focus = c; c:raise() end),
     awful.button({ modkey }, 1, awful.mouse.client.move),
-    awful.button({ modkey }, 3, awful.mouse.client.resize))
+    awful.button({ modkey }, 3, awful.mouse.client.resize),
+    awful.button({ modkey }, 4, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end),
+    awful.button({ modkey }, 5, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end))
 
 root.keys(globalkeys)
 
@@ -528,7 +530,7 @@ mycpugraphs.small.widget:connect_signal("mouse::enter", function ()
     end
 end)
 client.connect_signal("focus", function(c)
-  c.border_color = "#ffa700"
+  c.border_color = "#D0752A"
   c.border_width = 1
   end)--beautiful.border_focus end)
 client.connect_signal("unfocus", function(c)
@@ -537,13 +539,3 @@ client.connect_signal("unfocus", function(c)
   end)--beautiful.border_normal end)
 
 logger:info("rc.lua end")
-
--- -- disable sloppy focus by focusing client under mouse on signal 'arrange'
--- function reset_focus()
---    client.focus = mouse.client_under_pointer()
---  end
--- for s=1, screen.count() do
---  screen[s]:connect_signal("arrange", reset_focus)
--- end
-
--- command to read gpu temp: nvidia-settings -q gpucoretemp -t
