@@ -28,6 +28,7 @@ require('logging.file')
 ---------------------------------------------------
 
 local home   = os.getenv("HOME")
+local wallpaperFolder = home .. "/media/wallpapers/"
 local logPath = home .. "/.config/awesome/"
 local logFileName = "rc.lua.log"
 local logger = logging.file(logPath .. logFileName)
@@ -127,32 +128,23 @@ local setupWallpapers = function(folder)
 end
 
 -- entry point
-logPreviousStartupErrors()
-logRuntimeErrors()
-enableGraphAutoCaching()
-setupTheme()
-local wallpaperFolder = home .. "/media/wallpapers/"
-setupWallpapers(wallpaperFolder)
-local layouts = populateLayouts()
-local tags = populateTags(layouts)
-
 local modkey        = "Mod4"
 local terminal      = "urxvt"
 local browser       = "chromium"
 local filemanager   = "thunar"
 local sublime       = "subl"
-
 local exec   = awful.util.spawn
 local shexec = awful.util.spawn_with_shell
 
--- menu
-local menuItemRestart = {"restart", awesome.restart}
-local menuItems = {menuItemRestart}
-menu = {menuItems}
-mainmenu = awful.menu(menu)
+logPreviousStartupErrors()
+logRuntimeErrors()
+enableGraphAutoCaching()
+setupTheme()
+setupWallpapers(wallpaperFolder)
+local layouts = populateLayouts()
+local tags = populateTags(layouts)
 
 -- markup
-font = "Source Code Pro"
 markup = lain.util.markup
 space3 = markup.font("Terminus 3", " ")
 space2 = markup.font("Terminus 2", " ")
@@ -181,15 +173,6 @@ myinfobox.cpu = uzful.widget.infobox({
 
 detailed_graphs = uzful.menu.toggle_widgets()
 
-mycpugraphs.small.widget:connect_signal("mouse::enter", function ()
-    if detailed_graphs.visible() then
-        myinfobox.cpu:update()
-        myinfobox.cpu:show()
-    end
-end)
-
-mycpugraphs.small.widget:connect_signal("mouse::leave", myinfobox.cpu.hide)
-
 spr = wibox.widget.imagebox()
 spr:set_image(beautiful.spr)
 spr4px = wibox.widget.imagebox()
@@ -212,9 +195,10 @@ function roundToDecimal(num, idp)
   return math.floor(num * mult + 0.5) / mult
 end
 
+myFont = "Source Code Pro"
 mem_widget = lain.widgets.mem({
     settings = function()
-        widget:set_markup(space3 .. roundToDecimal(mem_now.used/1000, 1) .. "G" .. markup.font("Tamsyn 4", " "))
+        widget:set_markup(space3 .. roundToDecimal(mem_now.used/1000, 1) .. "G" .. markup.font(myFont, " "))
     end
 })
 
@@ -225,7 +209,7 @@ memwidget:set_widget(mem_widget)
 memwidget:set_bgimage(beautiful.widget_display)
 
 -- clock/calendar
-mytextclock    = awful.widget.textclock(markup(clockgf, space3 .. "%H:%M" .. markup.font("Tamsyn 3", " ")))
+mytextclock    = awful.widget.textclock(markup(clockgf, space3 .. "%H:%M" .. markup.font(myFont, " ")))
 mytextcalendar = awful.widget.textclock(markup(clockgf, space3 .. "%a %d %b"))
 
 widget_clock = wibox.widget.imagebox()
@@ -234,9 +218,6 @@ widget_clock:set_image(beautiful.widget_clock)
 clockwidget = wibox.widget.background()
 clockwidget:set_widget(mytextclock)
 clockwidget:set_bgimage(beautiful.widget_display)
-
-clockwidget:connect_signal("mouse::enter", function() clockwidget:set_widget(mytextcalendar) end)
-clockwidget:connect_signal("mouse::leave", function() clockwidget:set_widget(mytextclock) end)
 
 -- taglist
 mytaglist         = {}
@@ -353,7 +334,6 @@ end
 
 -- mouse bindings
 root.buttons(awful.util.table.join(
-    awful.button({ }, 3, function () mainmenu:toggle() end),
     awful.button({ }, 4, awful.tag.viewnext),
     awful.button({ }, 5, awful.tag.viewprev)
     )
@@ -415,7 +395,10 @@ ph = 22
 
 clientkeys = awful.util.table.join(
     awful.key({ modkey,           }, "f",        function (c) c.fullscreen = not c.fullscreen  end),
-    awful.key({ modkey,           }, "c",        function (c) c:kill() end),
+    awful.key({ modkey,           }, "c",        function (c)
+      c:kill()
+      awful.mouse.client.focus()
+      end),
     awful.key({ modkey,           }, "n",        function (c) c.minimized = true end)
 )
 
@@ -535,8 +518,23 @@ client.connect_signal("manage", function (c, startup)
     end
 end)
 
-client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
-client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
+clockwidget:connect_signal("mouse::enter", function() clockwidget:set_widget(mytextcalendar) end)
+clockwidget:connect_signal("mouse::leave", function() clockwidget:set_widget(mytextclock) end)
+mycpugraphs.small.widget:connect_signal("mouse::leave", myinfobox.cpu.hide)
+mycpugraphs.small.widget:connect_signal("mouse::enter", function ()
+      if detailed_graphs.visible() then
+        myinfobox.cpu:update()
+        myinfobox.cpu:show()
+    end
+end)
+client.connect_signal("focus", function(c)
+  c.border_color = "#ffa700"
+  c.border_width = 1
+  end)--beautiful.border_focus end)
+client.connect_signal("unfocus", function(c)
+  c.border_color = "#343434"
+  c.border_width = 1
+  end)--beautiful.border_normal end)
 
 logger:info("rc.lua end")
 
