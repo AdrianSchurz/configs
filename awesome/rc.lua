@@ -93,18 +93,11 @@ setUpTheme()
 local layouts = populateLayouts()
 local tags = populateTags(layouts)
 
--- disable cursor animation
-local oldspawn = awful.util.spawn
-awful.util.spawn = function (s)
-    oldspawn(s, false)
-end
-
 -- java GUI's fix
 awful.util.spawn_with_shell("wmname LG3D")
 
--- variables
 local home   = os.getenv("HOME")
-local exec   = function (s) oldspawn(s, false) end
+local exec   = awful.util.spawn
 local shexec = awful.util.spawn_with_shell
 
 local modkey        = "Mod4"
