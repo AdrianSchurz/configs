@@ -80,11 +80,11 @@ local home   = os.getenv("HOME")
 local exec   = function (s) oldspawn(s, false) end
 local shexec = awful.util.spawn_with_shell
 
-modkey        = "Mod4"
-terminal      = "urxvt"
-browser       = "chromium"
-filemanager   = "thunar"
-sublime       = "subl"
+local modkey        = "Mod4"
+local terminal      = "urxvt"
+local browser       = "chromium"
+local filemanager   = "thunar"
+local sublime       = "subl"
 
 -- table of layouts
 local tileLayout = awful.layout.suit.tile
@@ -109,10 +109,23 @@ end
 
 -- tags
 tags = {}
+alternativeTags = {}
+local numberOfTags = 4
+local createTagList = function(screen)
+  local tagList = {}
+  local tag = " "
+  for tagIndex = 1, numberOfTags do
+    awful.util.table.join(tagList, tag)
+  end
+end
+
 for s = 1, screen.count() do
     tags[s] = awful.tag({ "  ", "  ", "  ", "  " }, s, layouts[1])
 end
-
+logger:info("alternative tags")
+logger:info(alternativeTags)
+logger:info("tags")
+logger:info(tags)
 -- menu
 local menuItemRestart = {"restart", awesome.restart}
 local menuItems = {menuItemRestart}
@@ -513,4 +526,4 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 --  screen[s]:connect_signal("arrange", reset_focus)
 -- end
 
--- command to read gpu temp: nvidia-settings -q gpucoretemp
+-- command to read gpu temp: nvidia-settings -q gpucoretemp -t
