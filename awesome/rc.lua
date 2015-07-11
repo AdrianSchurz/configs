@@ -6,6 +6,7 @@ local vicious    = require('vicious')
 local naughty    = require('naughty')
 local lain       = require('lain')
 local uzful      = require('uzful')
+local filesystem = require('lfs')
 awful.rules      = require('awful.rules')
 require('awful.autofocus')
 require('logging.file')
@@ -26,12 +27,14 @@ require('logging.file')
 -- mod+shift+r                  restart awesome
 ---------------------------------------------------
 
-local logPath = "/home/ulmeyda/.config/awesome/"
+local home   = os.getenv("HOME")
+local logPath = home .. "/.config/awesome/"
 local logFileName = "rc.lua.log"
 local logger = logging.file(logPath .. logFileName)
 
 logger:info("rc.lua start")
 
+-- ALL the functions
 local logPreviousStartupErrors = function()
   if awesome.startup_errors then
       logger:error(awesome.startup_errors)
@@ -55,7 +58,7 @@ local enableGraphAutoCaching = function()
   uzful.util.patch.vicious()
 end
 
-local setUpTheme = function()
+local setupTheme = function()
   local theme = "/usr/share/awesome/themes/pro/themes/pro-dark/theme.lua"
   beautiful.init(theme)
 end
@@ -86,19 +89,52 @@ local populateTags = function(layouts)
   return tags
 end
 
+local notJustAFolder = function(fileName)
+  local aFolder = false
+  if fileName == "." or fileName == ".." then
+    aFolder = true
+  end
+  return not aFolder
+end
+
+local compileListOfWallpapers = function(folder)
+  local listOfWallpapers = {}
+  local index = 1
+  for file in filesystem.dir(folder) do --TODO error handling
+    if notJustAFolder(file) then
+      listOfWallpapers[index] = file
+      index = index + 1
+    end
+  end
+  return listOfWallpapers
+end
+
+local selectWallpapers = function(wallpapers, quantity)
+  return {wallpapers[2], wallpapers[4]}
+end
+
+local setWallpapers = function(wallpapers, folder)
+  for screen = 1, screen.count() do
+      local wallpaper = folder .. wallpapers[screen]
+      gears.wallpaper.maximized(wallpaper, screen, true)
+  end
+end
+
+local setupWallpapers = function(folder)
+  local allWallpapers = compileListOfWallpapers(folder)
+  local chosenOnes = selectWallpapers(allWallpapers, screen.count())
+  setWallpapers(chosenOnes, folder)
+end
+
+-- entry point
 logPreviousStartupErrors()
 logRuntimeErrors()
 enableGraphAutoCaching()
-setUpTheme()
+setupTheme()
+local wallpaperFolder = home .. "/media/wallpapers/"
+setupWallpapers(wallpaperFolder)
 local layouts = populateLayouts()
 local tags = populateTags(layouts)
-
--- java GUI's fix
-awful.util.spawn_with_shell("wmname LG3D")
-
-local home   = os.getenv("HOME")
-local exec   = awful.util.spawn
-local shexec = awful.util.spawn_with_shell
 
 local modkey        = "Mod4"
 local terminal      = "urxvt"
@@ -106,21 +142,8 @@ local browser       = "chromium"
 local filemanager   = "thunar"
 local sublime       = "subl"
 
--- wallpapers
-local wallpaperFolder = "/home/ulmeyda/media/wallpapers/"
-local wallpaperOne = wallpaperFolder .. "catbug_wallpaper.png"
-local wallpaperTwo = wallpaperFolder .. "blame_wallpaper.png"
-
-if beautiful.wallpaper then
-    local numScreens = screen.count()
-    for screenIndex = 1, numScreens do
-        if screenIndex < 2 then
-          gears.wallpaper.maximized(wallpaperOne, s, true)
-        else
-          gears.wallpaper.maximized(wallpaperTwo, s, true)
-        end
-    end
-end
+local exec   = awful.util.spawn
+local shexec = awful.util.spawn_with_shell
 
 -- menu
 local menuItemRestart = {"restart", awesome.restart}
@@ -129,6 +152,7 @@ menu = {menuItems}
 mainmenu = awful.menu(menu)
 
 -- markup
+font = "Source Code Pro"
 markup = lain.util.markup
 space3 = markup.font("Terminus 3", " ")
 space2 = markup.font("Terminus 2", " ")
