@@ -8,6 +8,8 @@ local lain       = require('lain')
 local uzful      = require('uzful')
 local filesystem = require('lfs')
 awful.rules      = require('awful.rules')
+local awmodoro   = require('awmodoro')
+local alttab     = require("awesome_alttab")
 require('awful.autofocus')
 require('logging.file')
 
@@ -25,6 +27,8 @@ require('logging.file')
 -- mod+c                        kill client
 -- mod+space                    command prompt; keyword ":" executes command in a terminal
 -- mod+shift+r                  restart awesome
+-- mod+p                        start/pause/resume pomodoro session of 25 minutes
+-- mod+shift+p                  end pomodoro session
 ---------------------------------------------------
 
 local home   = os.getenv("HOME")
@@ -35,14 +39,13 @@ local logger = logging.file(logPath .. logFileName)
 
 logger:info("rc.lua start")
 
--- ALL the functions
-local logPreviousStartupErrors = function()
+function logPreviousStartupErrors()
   if awesome.startup_errors then
       logger:error(awesome.startup_errors)
   end
 end
 
-local logRuntimeErrors = function()
+function logRuntimeErrors()
   local doneWithPreviousError = true
   awesome.connect_signal("debug:error", function(error)
     if not doneWithPreviousError then
@@ -55,23 +58,23 @@ local logRuntimeErrors = function()
   end)
 end
 
-local enableGraphAutoCaching = function()
+function enableGraphAutoCaching()
   uzful.util.patch.vicious()
 end
 
-local setupTheme = function()
+function setupTheme()
   local theme = "/usr/share/awesome/themes/pro/themes/pro-dark/theme.lua"
   beautiful.init(theme)
 end
 
-local populateLayouts = function()
+function populateLayouts()
   local tileLayout = awful.layout.suit.tile
   local tileTopLayout = awful.layout.suit.tile.top
   local layouts = { tileLayout, tileTopLayout }
   return layouts
 end
 
-local populateTags = function(layouts)
+function populateTags(layouts)
   local tags = {}
   local numberOfTagsPerScreen = 4
   local defaultTag = "  "
@@ -90,7 +93,7 @@ local populateTags = function(layouts)
   return tags
 end
 
-local notJustAFolder = function(fileName)
+function notJustAFolder(fileName)
   local aFolder = false
   if fileName == "." or fileName == ".." then
     aFolder = true
@@ -98,7 +101,7 @@ local notJustAFolder = function(fileName)
   return not aFolder
 end
 
-local compileListOfWallpapers = function(folder)
+function compileListOfWallpapers(folder)
   local listOfWallpapers = {}
   local index = 1
   for file in filesystem.dir(folder) do --TODO error handling
@@ -110,31 +113,68 @@ local compileListOfWallpapers = function(folder)
   return listOfWallpapers
 end
 
-local selectWallpapers = function(wallpapers, quantity)
-  return {wallpapers[2], wallpapers[4]}
+function selectWallpapers(wallpapers, quantity)
+  return {wallpapers[1], wallpapers[2]}
 end
 
-local setWallpapers = function(wallpapers, folder)
+function setWallpapers(wallpapers, folder)
   for screen = 1, screen.count() do
       local wallpaper = folder .. wallpapers[screen]
       gears.wallpaper.maximized(wallpaper, screen, true)
   end
 end
 
-local setupWallpapers = function(folder)
+function setupWallpapers(folder)
   local allWallpapers = compileListOfWallpapers(folder)
   local chosenOnes = selectWallpapers(allWallpapers, screen.count())
   setWallpapers(chosenOnes, folder)
 end
 
+function runInTerminalOnKeyword (command)
+  local keyword = ":"
+  if command:sub(1,1) == keyword then
+    command = terminal .. ' -e "' .. command:sub(2) .. '"'
+  end
+  awful.util.spawn(command)
+end
+   
+function cleanForCompletion (command, cur_pos, ncomp, shell)
+   local term = false
+   if command:sub(1,1) == ":" then
+      term = true
+      command = command:sub(2)
+      cur_pos = cur_pos - 1
+   end
+   command, cur_pos =  awful.completion.shell(command, cur_pos,ncomp,shell)
+   if term == true then
+      command = ':' .. command
+      cur_pos = cur_pos + 1
+   end
+   return command, cur_pos
+end
+
+function roundToDecimal(num, idp)
+  local mult = 10^(idp or 0)
+  return math.floor(num * mult + 0.5) / mult
+end
+
+function defineSomeMarkupShit()
+  markup = lain.util.markup
+  space3 = markup.font("Terminus 3", " ")
+  space2 = markup.font("Terminus 2", " ")
+  vspace1 = '<span font="Terminus 3"> </span>'
+  vspace2 = '<span font="Terminus 3">  </span>'
+end
+
 -- entry point
-local modkey        = "Mod4"
-local terminal      = "urxvt"
-local browser       = "chromium"
-local filemanager   = "thunar"
-local sublime       = "subl"
-local exec   = awful.util.spawn
-local shexec = awful.util.spawn_with_shell
+local modkey      = "Mod4"
+local terminal    = "urxvt"
+local browser     = "chromium"
+local filemanager = "thunar"
+local sublime     = "subl"
+local noise       = "/home/ulmeyda/projects/2397120/noise.sh 25"
+local exec        = awful.util.spawn
+local shexec      = awful.util.spawn_with_shell
 
 logPreviousStartupErrors()
 logRuntimeErrors()
@@ -144,19 +184,41 @@ setupWallpapers(wallpaperFolder)
 local layouts = populateLayouts()
 local tags = populateTags(layouts)
 
--- markup
-markup = lain.util.markup
-space3 = markup.font("Terminus 3", " ")
-space2 = markup.font("Terminus 2", " ")
-vspace1 = '<span font="Terminus 3"> </span>'
-vspace2 = '<span font="Terminus 3">  </span>'
+defineSomeMarkupShit()
+
 clockgf = beautiful.clockgf
 
 -- widgets
-myinfobox = { cpu = {} }
+infoBox = { cpu = {} }
+
+pomowibox = awful.wibox({ position = "bottom", screen = 1, height=4})
+pomowibox.visible = false
+local pomodoro = awmodoro.new({
+    minutes             = 25,
+    do_notify           = true,
+    active_bg_color     = '#313131',
+    paused_bg_color     = '#7746D7',
+    fg_color            = {type = "linear", from = {0,0}, to = {pomowibox.width, 0}, stops = {{0, "#AECF96"},{0.5, "#88A175"},{1, "#FF5656"}}},
+    width               = pomowibox.width,
+    height              = pomowibox.height,
+
+    begin_callback = function()
+        for s = 1, screen.count() do
+            -- TODO set unneccessary things invisible
+        end
+        pomowibox.visible = true
+    end,
+
+    finish_callback = function()
+        for s = 1, screen.count() do
+            mywibox[s].visible = true
+        end
+        pomowibox.visible = false
+    end})
+pomowibox:set_widget(pomodoro)
 
 -- cpu
-mycpugraphs = uzful.widget.cpugraphs({
+cpuGraph = uzful.widget.cpugraphs({
     fgcolor = "#D0752A", bgcolor = beautiful.bg_systray,
     load = { interval = 20,
         text = ' <span size="x-small"><span color="#666666">$1</span>' ..
@@ -165,11 +227,11 @@ mycpugraphs = uzful.widget.cpugraphs({
     big = { width = 400, height = 100, interval = 1 },
     small = { width = 42, height = beautiful.menu_height, interval = 1 } })
 
-myinfobox.cpu = uzful.widget.infobox({
+infoBox.cpu = uzful.widget.infobox({
         position = "top", align = "right",
-        widget = mycpugraphs.big.layout,
-        height = mycpugraphs.big.height,
-        width = mycpugraphs.big.width })
+        widget = cpuGraph.big.layout,
+        height = cpuGraph.big.height,
+        width = cpuGraph.big.width })
 
 detailed_graphs = uzful.menu.toggle_widgets()
 
@@ -189,14 +251,8 @@ widget_display_l:set_image(beautiful.widget_display_l)
 widget_display_c = wibox.widget.imagebox()
 widget_display_c:set_image(beautiful.widget_display_c)
 
--- memory
-function roundToDecimal(num, idp)
-  local mult = 10^(idp or 0)
-  return math.floor(num * mult + 0.5) / mult
-end
-
 myFont = "Source Code Pro"
-mem_widget = lain.widgets.mem({
+memoryInUsage = lain.widgets.mem({
     settings = function()
         widget:set_markup(space3 .. roundToDecimal(mem_now.used/1000, 1) .. "G" .. markup.font(myFont, " "))
     end
@@ -205,7 +261,7 @@ mem_widget = lain.widgets.mem({
 widget_mem = wibox.widget.imagebox()
 widget_mem:set_image(beautiful.widget_mem)
 memwidget = wibox.widget.background()
-memwidget:set_widget(mem_widget)
+memwidget:set_widget(memoryInUsage)
 memwidget:set_bgimage(beautiful.widget_display)
 
 -- clock/calendar
@@ -225,10 +281,7 @@ mytaglist.buttons = awful.util.table.join(
                     awful.button({ }, 1, awful.tag.viewonly),
                     awful.button({ modkey }, 1, awful.client.movetotag),
                     awful.button({ }, 3, awful.tag.viewtoggle),
-                    awful.button({ modkey }, 3, awful.client.toggletag),
-                    awful.button({ }, 4, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end),
-                    awful.button({ }, 5, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end)
-                    )
+                    awful.button({ modkey }, 3, awful.client.toggletag))
 
 -- tasklist
 mytasklist         = {}
@@ -276,9 +329,7 @@ for s = 1, screen.count() do
     mylayoutbox[s] = awful.widget.layoutbox(s)
     mylayoutbox[s]:buttons(awful.util.table.join(
                            awful.button({ }, 1, function () awful.layout.inc(layouts, 1) end),
-                           awful.button({ }, 3, function () awful.layout.inc(layouts, -1) end),
-                           awful.button({ }, 4, function () awful.layout.inc(layouts, 1) end),
-                           awful.button({ }, 5, function () awful.layout.inc(layouts, -1) end)))
+                           awful.button({ }, 3, function () awful.layout.inc(layouts, -1) end)))
     
     mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, mytaglist.buttons)
 
@@ -295,7 +346,7 @@ for s = 1, screen.count() do
 
     right_layout:add(mypromptbox[s])
 
-    right_layout:add(mycpugraphs.small.widget)
+    right_layout:add(cpuGraph.small.widget)
 
     right_layout:add(spr)
 
@@ -339,31 +390,13 @@ root.buttons(awful.util.table.join(
     )
 )
 
--- key binding helper functions to run commands in a terminal using the ':' keyword
-function check_for_terminal (command)
-   if command:sub(1,1) == ":" then
-      command = terminal .. ' -e "' .. command:sub(2) .. '"'
-   end
-   awful.util.spawn(command)
-end
-   
-function clean_for_completion (command, cur_pos, ncomp, shell)
-   local term = false
-   if command:sub(1,1) == ":" then
-      term = true
-      command = command:sub(2)
-      cur_pos = cur_pos - 1
-   end
-   command, cur_pos =  awful.completion.shell(command, cur_pos,ncomp,shell)
-   if term == true then
-      command = ':' .. command
-      cur_pos = cur_pos + 1
-   end
-   return command, cur_pos
-end
-
 -- key bindings
 globalkeys = awful.util.table.join(
+    awful.key({ modkey,          }, "p", function ()
+          pomodoro:toggle()
+          awful.util.spawn(noiseGenerator)
+        end),
+    awful.key({ modkey, "Shift" }, "p", function () pomodoro:finish() end),
     awful.key({ modkey, "Shift"   }, "r", awesome.restart),
     awful.key({ modkey,           }, "e", function () exec(filemanager) end),
     awful.key({ modkey,           }, "w", function () exec(browser) end),
@@ -381,9 +414,9 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "Return", function () exec(terminal) end),
     awful.key({ modkey,           }, "space", 
               function () awful.prompt.run({prompt="Run:"},
-                                           mypromptbox[screen.count()].widget,
-                                           check_for_terminal,
-                                           clean_for_completion,
+                                           mypromptbox[mouse.screen].widget,
+                                           runInTerminalOnKeyword,
+                                           cleanForCompletion,
                                            awful.util.getdir("cache") .. "/history") end)
 )
 
@@ -522,20 +555,20 @@ end)
 
 clockwidget:connect_signal("mouse::enter", function() clockwidget:set_widget(mytextcalendar) end)
 clockwidget:connect_signal("mouse::leave", function() clockwidget:set_widget(mytextclock) end)
-mycpugraphs.small.widget:connect_signal("mouse::leave", myinfobox.cpu.hide)
-mycpugraphs.small.widget:connect_signal("mouse::enter", function ()
+cpuGraph.small.widget:connect_signal("mouse::leave", infoBox.cpu.hide)
+cpuGraph.small.widget:connect_signal("mouse::enter", function ()
       if detailed_graphs.visible() then
-        myinfobox.cpu:update()
-        myinfobox.cpu:show()
+        infoBox.cpu:update()
+        infoBox.cpu:show()
     end
 end)
 client.connect_signal("focus", function(c)
   c.border_color = "#D0752A"
   c.border_width = 1
-  end)--beautiful.border_focus end)
+  end)
 client.connect_signal("unfocus", function(c)
   c.border_color = "#343434"
   c.border_width = 1
-  end)--beautiful.border_normal end)
+  end)
 
 logger:info("rc.lua end")

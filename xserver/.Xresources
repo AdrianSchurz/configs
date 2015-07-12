@@ -13,11 +13,14 @@ URxvt*perl-ext-common: default,matcher
 URxvt*urlLauncher: chromium
 URxvt*matcher.button: 1
 
-URxvt*font:                 xft:Source Code Pro for Powerline:regular:size=9
-URxvt*imFont:               xft:Source Code Pro for Powerline:regular:size=9
-URxvt*boldFont:             xft:Source Code Pro for Powerline:bold:size=9
-URxvt*italicFont:           xft:Source Code Pro for Powerline:italic:size=9
-URxvt*boldItalicFont:       xft:Source Code Pro for Powerline:bold:italic:size=9
+URxvt*font:                 xft:Source Code Pro for Powerline:regular:size=12
+URxvt*imFont:               xft:Source Code Pro for Powerline:regular:size=12
+URxvt*boldFont:             xft:Source Code Pro for Powerline:bold:size=12
+URxvt*italicFont:           xft:Source Code Pro for Powerline:italic:size=12
+URxvt*boldItalicFont:       xft:Source Code Pro for Powerline:bold:italic:size=12
+
+Xft.antialias:  true
+Xft.dpi: 91
 
 !! drop in Solarized colorscheme for Xresources/Xdefaults
  
