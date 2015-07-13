@@ -11,6 +11,7 @@ awful.rules      = require('awful.rules')
 local awmodoro   = require('awmodoro')
 local alttab     = require('awesome_alttab')
 local _          = require('underscore')
+local inspect    = require('inspect')
 require('awful.autofocus')
 require('logging.file')
 
@@ -115,22 +116,49 @@ function compileListOfWallpapers(folder)
 end
 
 function tableLength(aTable)
-  local count = 0
-  for _ in pairs(aTable) do count = count + 1 end
-  return count
+  if aTable[1] == nil then
+    return 0
+  else
+    function mapToOne (entry)
+      return 1
+    end
+    function sum (first, second)
+      return first + second
+    end
+    local oneForEach = _.map(aTable, mapToOne)
+    local sumTotal = _.reduce(oneForEach, sum)
+    return sumTotal
+  end
 end
 
 function tableEmpty(aTable)
-  local next = next
-  return next(aTable) == nil
+  return tableLength(aTable) == 0
+end
+
+function tableCopy(aTable)
+  function mapToItself (entry)
+    return entry
+  end
+  return _.map(aTable, mapToItself)
+end
+
+function chooseRandomly(aTable, quantity)
+  if aTable[1] == nil or quantity < 1 then
+    return nil
+  else
+    local chosenOnes = {}
+    for itemsChosen = 1, quantity do
+      local inputLength = tableLength(aTable)
+      local randomIndex = math.random(inputLength)
+      local choice = table.remove(aTable, randomIndex)
+      table.insert(chosenOnes, choice)
+    end
+    return chosenOnes
+  end
 end
 
 function selectWallpapers(wallpapers, quantity)
-  local copy = tab
-  for index = 1, quantity do
-    if tableEmpty(wallpapers)
-
-  return {wallpapers[1], wallpapers[2]}
+  return chooseRandomly(wallpapers, quantity)
 end
 
 function setWallpapers(wallpapers, folder)
