@@ -166,6 +166,11 @@ function defineSomeMarkupShit()
   vspace2 = '<span font="Terminus 3">  </span>'
 end
 
+local oldspawn = awful.util.spawn
+awful.util.spawn = function (s)
+    oldspawn(s, false)
+end
+
 -- entry point
 local modkey      = "Mod4"
 local terminal    = "urxvt"
@@ -173,7 +178,7 @@ local browser     = "chromium"
 local filemanager = "thunar"
 local sublime     = "subl"
 local noise       = "/home/ulmeyda/projects/2397120/noise.sh 25"
-local exec        = awful.util.spawn
+local exec        = function (s) oldspawn(s, false) end
 local shexec      = awful.util.spawn_with_shell
 
 logPreviousStartupErrors()
