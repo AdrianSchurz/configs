@@ -63,7 +63,7 @@ function enableGraphAutoCaching()
 end
 
 function setupTheme()
-  local theme = "/usr/share/awesome/themes/pro/themes/pro-dark/theme.lua"
+  local theme = "/usr/share/awesome/themes/pro-dark/theme.lua"
   beautiful.init(theme)
 end
 
