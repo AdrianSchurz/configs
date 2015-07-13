@@ -9,7 +9,8 @@ local uzful      = require('uzful')
 local filesystem = require('lfs')
 awful.rules      = require('awful.rules')
 local awmodoro   = require('awmodoro')
-local alttab     = require("awesome_alttab")
+local alttab     = require('awesome_alttab')
+local _          = require('underscore')
 require('awful.autofocus')
 require('logging.file')
 
@@ -113,7 +114,22 @@ function compileListOfWallpapers(folder)
   return listOfWallpapers
 end
 
+function tableLength(aTable)
+  local count = 0
+  for _ in pairs(aTable) do count = count + 1 end
+  return count
+end
+
+function tableEmpty(aTable)
+  local next = next
+  return next(aTable) == nil
+end
+
 function selectWallpapers(wallpapers, quantity)
+  local copy = tab
+  for index = 1, quantity do
+    if tableEmpty(wallpapers)
+
   return {wallpapers[1], wallpapers[2]}
 end
 
@@ -173,6 +189,7 @@ local browser     = "chromium"
 local filemanager = "thunar"
 local sublime     = "subl"
 local noise       = "/home/ulmeyda/projects/2397120/noise.sh 25"
+local cmdLock     = "xscreensaver-command --lock"
 local exec        = awful.util.spawn
 local shexec      = awful.util.spawn_with_shell
 
@@ -392,6 +409,7 @@ root.buttons(awful.util.table.join(
 
 -- key bindings
 globalkeys = awful.util.table.join(
+    awful.key({ modkey,          }, "F12", function () awful.util.spawn(cmdLock) end),
     awful.key({ modkey,          }, "p", function ()
           pomodoro:toggle()
           awful.util.spawn(noiseGenerator)
