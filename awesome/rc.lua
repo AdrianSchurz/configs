@@ -9,7 +9,7 @@ local uzful      = require('uzful')
 local filesystem = require('lfs')
 awful.rules      = require('awful.rules')
 local awmodoro   = require('awmodoro')
-local alttab     = require("awesome_alttab")
+local alttab     = require('awesome_alttab')
 require('awful.autofocus')
 require('logging.file')
 
