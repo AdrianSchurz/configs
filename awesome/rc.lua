@@ -210,6 +210,10 @@ function defineSomeMarkupShit()
   vspace2 = '<span font="Terminus 3">  </span>'
 end
 
+function fixJavaGUI()
+  awful.util.spawn_with_shell("wmname LG3D")
+end
+
 -- entry point
 local modkey      = "Mod4"
 local terminal    = "urxvt"
@@ -224,6 +228,7 @@ local shexec      = awful.util.spawn_with_shell
 logPreviousStartupErrors()
 logRuntimeErrors()
 enableGraphAutoCaching()
+fixJavaGUI()
 setupTheme()
 setupWallpapers(wallpaperFolder)
 local layouts = populateLayouts()
@@ -437,7 +442,7 @@ root.buttons(awful.util.table.join(
 
 -- key bindings
 globalkeys = awful.util.table.join(
-    awful.key({ modkey,          }, "F12", function () awful.util.spawn(cmdLock) end),
+    awful.key({ modkey,          }, "F12", function () exec(cmdLock) end),
     awful.key({ modkey,          }, "p", function ()
           pomodoro:toggle()
           awful.util.spawn(noiseGenerator)
