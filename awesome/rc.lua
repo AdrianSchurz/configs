@@ -43,6 +43,7 @@ logger:info("rc.lua start")
 
 function logPreviousStartupErrors()
   if awesome.startup_errors then
+      logger:error('error during previous startup:')
       logger:error(awesome.startup_errors)
   end
 end
