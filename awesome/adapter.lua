@@ -1,5 +1,5 @@
 local inspect = require('inspect')
-local logging = require('logging')
+require('logging.file')
 local logPath = '/home/ulmeyda/.config/awesome/rc.lua.log'
 local logger =  logging.file(logPath)
 
