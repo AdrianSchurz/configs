@@ -16,15 +16,28 @@ gears = require 'gears'
 -- _ = require 'underscore'
 -- require 'awful.autofocus'
 
-logPath = '/home/ulmeyda/.config/awesome/rc.lua.log'
---logger = logging.file logPath
-
 logPreviousStartupErrors = ->
   if awesome.startup_errors
       logger\error 'error during previous startup:'
       logger\error awesome.startup_errors
 
---logPreviousStartupErrors!
+logRuntimeErrors = ->
+  doneWithPreviousError = true
+  awesome.connect_signal "debug:error", (error) ->
+    if not doneWithPreviousError
+      return
+    else
+      doneWithPreviousError = false
+      logger\error error
+      doneWithPreviousError = true
+
+home = os.getenv "HOME"
+logPath = home .. "/.config/awesome/"
+logFileName = "rc.lua.log"
+logger = logging.file logPath .. logFileName
+
+logPreviousStartupErrors!
+logRuntimeErrors!
 
 wallpaper = '/home/ulmeyda/media/wallpapers/catbug_wallpaper.png'
 gears.wallpaper.maximized wallpaper, 1, true

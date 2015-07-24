@@ -1,28 +1,50 @@
-_ = require 'underscore'
+underscore = require 'underscore'
 inspect = require 'inspect'
 
-describe 'awesome config', ->
-    modulesToMock = {
+oldPrint = print
+print = (output) ->
+    oldPrint inspect output
+
+modulesToMock = {
         'awesome','awful', 'client', 'completion',
         'layout', 'placement', 'prompt', 'screen',
         'tag', 'util', 'widget', 'keygrabber',
         'menu', 'mouse', 'remote', 'key', 'button',
         'wibox', 'startup_notification', 'tooltip',
-        'ewmh', 'titlebar', 'beautiful', 'logging'
+        'ewmh', 'titlebar', 'beautiful'
     }
-    emptyObject = {}
 
-    addToGlobalContext = (moduleName) ->
+mockExceptions = {
+    'inspect',
+    'underscore'
+}
+
+modulesToMock = underscore.select modulesToMock, (moduleName) ->
+    return not underscore.contains mockExceptions, moduleName
+
+emptyObject = {}
+
+addToGlobalContext = (moduleName) ->
         rawset _G, moduleName, emptyObject
 
-    setLoaded = (moduleName) ->
+setLoaded = (moduleName) ->
         package.loaded[moduleName] = emptyObject
+        
+setupOrResetGlobalContext = ->
+    underscore.each modulesToMock, addToGlobalContext
 
-    _.each modulesToMock, (moduleName) ->
-        addToGlobalContext moduleName
-        setLoaded moduleName
+markMocksLoaded = ->
+    underscore.each modulesToMock, setLoaded
+
+describe 'awesome config', ->
+    randomize!
+
+    before_each ->
+       setupOrResetGlobalContext!
+       markMocksLoaded!
 
 	it 'should set wallpaper using gears', ->
+        set
 		saneArguments = false
 		callCount = 0
 		mockMaximized = (surface, screen, ignoreAspect, offset) ->
@@ -34,10 +56,12 @@ describe 'awesome config', ->
 		mockGears =
 			wallpaper:
 				maximized: mockMaximized
+        mockAwesome =
+            connect_signal: ->
 
 		package.loaded.gears = mockGears
-
+        rawset _G, 'awesome', mockAwesome
 		require 'config'
 
 		assert.equals callCount, 1
-		assert.is_true saneArguments
+		assert.is_true saneArguments     
