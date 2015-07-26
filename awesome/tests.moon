@@ -11,7 +11,7 @@ modulesToMock = {
         'tag', 'util', 'widget', 'keygrabber',
         'menu', 'mouse', 'remote', 'key', 'button',
         'wibox', 'startup_notification', 'tooltip',
-        'ewmh', 'titlebar', 'beautiful'
+        'ewmh', 'titlebar', 'beautiful', 'uzful'
     }
 
 mockExceptions = {
@@ -39,12 +39,44 @@ markMocksLoaded = ->
 describe 'awesome config', ->
     randomize!
 
+    setup ->
+        setupOrResetGlobalContext!
+        markMocksLoaded!
+
     before_each ->
+        mockAwesome =
+            connect_signal: ->
+        mockUzful =
+            util:
+                patch:
+                    vicious: ->
+        mockAwful =
+            util:
+                spawn_with_shell: ->
+            layout:
+                suit:
+                    tile:
+                        top: emptyObject
+        mockBeautiful =
+            init: ->
+        mockFileSystem =
+            dir: -> return {}
+        mockScreen =
+            count: -> return 0
+
+        package.loaded.uzful = mockUzful
+        package.loaded.awful = mockAwful
+        package.loaded.beautiful = mockBeautiful
+        package.loaded.lfs = mockFileSystem
+        rawset _G, 'screen', mockScreen
+        rawset _G, 'awesome', mockAwesome
+
+    after_each ->
        setupOrResetGlobalContext!
        markMocksLoaded!
 
+
 	it 'should set wallpaper using gears', ->
-        set
 		saneArguments = false
 		callCount = 0
 		mockMaximized = (surface, screen, ignoreAspect, offset) ->
@@ -56,11 +88,8 @@ describe 'awesome config', ->
 		mockGears =
 			wallpaper:
 				maximized: mockMaximized
-        mockAwesome =
-            connect_signal: ->
+        package.loaded.gears = mockGears
 
-		package.loaded.gears = mockGears
-        rawset _G, 'awesome', mockAwesome
 		require 'config'
 
 		assert.equals callCount, 1
