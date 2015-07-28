@@ -6,14 +6,14 @@ gears = require 'gears'
 uzful = require 'uzful'                
 beautiful = require 'beautiful'
 filesystem = require 'lfs'
--- wibox = require 'wibox'
+_ = require 'underscore'
+wibox = require 'wibox'
 -- vicious = require 'vicious'
 -- naughty = require 'naughty'
 -- lain = require 'lain'
 -- awful.rules = require 'awful.rules'
 -- awmodoro = require 'awmodoro'
 -- alttab = require 'awesome_alttab'
--- _ = require 'underscore'
 -- require 'awful.autofocus'
 
 home = os.getenv "HOME"
@@ -35,6 +35,11 @@ logRuntimeErrors = ->
       doneWithPreviousError = false
       logger\error error
       doneWithPreviousError = true
+
+handleStartupAndRuntimeErrors = ->
+  logPreviousStartupErrors!
+  logRuntimeErrors!
+  return
 
 enableGraphAutoCaching = ->
   uzful.util.patch.vicious!
@@ -62,7 +67,7 @@ compileListOfWallpapers = (folder) ->
   return listOfWallpapers
 
 chooseRandomly = (aTable, quantity) ->
-  if aTable[1] == nil or quantity < 1
+  if #aTable == 0 or quantity < 1
     return nil
   else
     chosenOnes = {}
@@ -92,16 +97,70 @@ populateLayouts = ->
   layouts = { tileLayout, tileTopLayout }
   return layouts
 
+populateTags = (layouts) ->
+  tags = {}
+  numberOfTagsPerScreen = 4
+  defaultTag = "  "
+  createTagList = ->
+    tagList = {}
+    for index = 1, numberOfTagsPerScreen
+      table.insert tagList, defaultTag
+    return tagList
+  for screen = 1, screen.count!
+    tagList = createTagList!
+    defaultLayout = layouts[1]
+    tags[screen] = awful.tag(tagList, screen, defaultLayout)
+  return tags
+
+defaultTags = ->
+  tags = {}
+  tagsPerScreen = 4
+  defaultTag = '  '
+  for index = 1, tagsPerScreen
+    table.insert tags, defaultTag
+  return tags
+
+defineTags = (screen, screenIndex) ->
+  tags = defaultTags!
+  awful.tag tags, screenIndex, layout
+
+_.each screen, defineTags
+-- for every screen, I call awful.tag with a new defaultTagList,
+-- the screens index and the default layout
+-- setupTagLists = ->
+--   tagList =
+--     buttons: {}
+
+--   attachDefaultTagList = (screen, screenIndex) ->
+--     tagList[screenIndex] = awful.widget.taglist screenIndex, awful.widget.taglist.filter.all, tagList.buttons)
+--   defaultTags = ->
+--     tags = {}
+--     numberOfTagsPerScreen = 4
+--     defaultTag = '  '
+--     table.
+--   _.each screen, attachDefaultTagList
+
 --entry point
-logPreviousStartupErrors!
-logRuntimeErrors!
+handleStartupAndRuntimeErrors!
 enableGraphAutoCaching!
 fixJavaGUI!
 disableCursorAnimations!
 setupTheme!
 setupWallpapers!
 layouts = populateLayouts!
-tags = populateTags layouts
+defaultLayout = layouts[1]
+--tags = setupTagLists defaultLayout
 
 wallpaper = '/home/ulmeyda/media/wallpapers/catbug_wallpaper.png'
 gears.wallpaper.maximized wallpaper, 1, true
+
+tags =
+  buttons: {}
+screenIndex = 1
+tagListConstructor = awful.widget.taglist
+filterAll = awful.widget.taglist.filter.all
+buttons = tags.buttons
+taglist = tagListConstructor screenIndex, filterAll, buttons
+table.insert tags, taglist
+print inspect wibox
+left_layout = wibox.layout.fixed.horizontal!

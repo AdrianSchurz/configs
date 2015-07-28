@@ -438,6 +438,7 @@ for s = 1, screen.count() do
 
     mywibox[s]:set_widget(layout)
 end
+logger:info(inspect(mytaglist))
 
 -- mouse bindings
 root.buttons(awful.util.table.join(
@@ -538,7 +539,6 @@ clientbuttons = awful.util.table.join(
     awful.button({ modkey }, 5, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end))
 
 root.keys(globalkeys)
-
 -- rules
 awful.rules.rules = {
     { rule = { },

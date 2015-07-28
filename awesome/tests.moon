@@ -57,6 +57,22 @@ describe 'awesome config', ->
                 suit:
                     tile:
                         top: emptyObject
+            tag: ->
+            widget:
+                taglist: {}
+
+        taglist =
+            filter:
+                all: {}
+        taglistMeta =
+            __call: ->
+        setmetatable taglist, taglistMeta
+        mockAwful.widget.taglist = taglist
+
+        mockWibox =
+            layout:
+                fixed:
+                    horizontal: ->
         mockBeautiful =
             init: ->
         mockFileSystem =
@@ -68,6 +84,7 @@ describe 'awesome config', ->
         package.loaded.awful = mockAwful
         package.loaded.beautiful = mockBeautiful
         package.loaded.lfs = mockFileSystem
+        package.loaded.wibox = mockWibox
         rawset _G, 'screen', mockScreen
         rawset _G, 'awesome', mockAwesome
 
@@ -93,4 +110,4 @@ describe 'awesome config', ->
 		require 'config'
 
 		assert.equals callCount, 1
-		assert.is_true saneArguments     
+		assert.is_true saneArguments
