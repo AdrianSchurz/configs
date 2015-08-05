@@ -438,7 +438,6 @@ for s = 1, screen.count() do
 
     mywibox[s]:set_widget(layout)
 end
-logger:info(inspect(mytaglist))
 
 -- mouse bindings
 root.buttons(awful.util.table.join(

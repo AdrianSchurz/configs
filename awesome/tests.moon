@@ -29,7 +29,7 @@ addToGlobalContext = (moduleName) ->
 
 setLoaded = (moduleName) ->
         package.loaded[moduleName] = emptyObject
-        
+
 setupOrResetGlobalContext = ->
     underscore.each modulesToMock, addToGlobalContext
 
@@ -60,6 +60,10 @@ describe 'awesome config', ->
             tag: ->
             widget:
                 taglist: {}
+            wibox: ->
+                widgetBox =
+                    set_bg: ->
+                return widgetBox
 
         taglist =
             filter:
@@ -75,10 +79,13 @@ describe 'awesome config', ->
                     horizontal: ->
         mockBeautiful =
             init: ->
+
+        fileNames = {'.', '..', 'dick', 'butt'}
+        iterator = => return table.remove fileNames
         mockFileSystem =
-            dir: -> return {}
+            dir: => return iterator, nil
         mockScreen =
-            count: -> return 0
+            count: -> return 2
 
         package.loaded.uzful = mockUzful
         package.loaded.awful = mockAwful
@@ -91,7 +98,6 @@ describe 'awesome config', ->
     after_each ->
        setupOrResetGlobalContext!
        markMocksLoaded!
-
 
 	it 'should set wallpaper using gears', ->
 		saneArguments = false
@@ -109,5 +115,7 @@ describe 'awesome config', ->
 
 		require 'config'
 
-		assert.equals callCount, 1
+		assert.equals 2, callCount
 		assert.is_true saneArguments
+
+
