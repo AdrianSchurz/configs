@@ -11,7 +11,8 @@ modulesToMock = {
         'tag', 'util', 'widget', 'keygrabber',
         'menu', 'mouse', 'remote', 'key', 'button',
         'wibox', 'startup_notification', 'tooltip',
-        'ewmh', 'titlebar', 'beautiful', 'uzful'
+        'ewmh', 'titlebar', 'beautiful', 'uzful',
+        'gears'
     }
 
 mockExceptions = {
@@ -38,12 +39,14 @@ markMocksLoaded = ->
 
 describe 'awesome config', ->
     randomize!
+    numberOfScreens = {}
 
     setup ->
         setupOrResetGlobalContext!
         markMocksLoaded!
 
     before_each ->
+        numberOfScreens = 2
         mockAwesome =
             connect_signal: ->
         mockUzful =
@@ -85,19 +88,24 @@ describe 'awesome config', ->
         mockFileSystem =
             dir: => return iterator, nil
         mockScreen =
-            count: -> return 2
+            count: -> return numberOfScreens
+        mockGears =
+            wallpaper:
+                maximized: ->
 
         package.loaded.uzful = mockUzful
         package.loaded.awful = mockAwful
         package.loaded.beautiful = mockBeautiful
         package.loaded.lfs = mockFileSystem
         package.loaded.wibox = mockWibox
+        package.loaded.gears = mockGears
         rawset _G, 'screen', mockScreen
         rawset _G, 'awesome', mockAwesome
 
     after_each ->
-       setupOrResetGlobalContext!
-       markMocksLoaded!
+        setupOrResetGlobalContext!
+        markMocksLoaded!
+        package.loaded.config = nil
 
 	it 'should set wallpaper using gears', ->
 		saneArguments = false
@@ -108,14 +116,26 @@ describe 'awesome config', ->
 			thirdArgBoolean = type(ignoreAspect) == 'boolean'
 			callCount += 1
 			saneArguments = firstArgString and secondArgNumber and thirdArgBoolean
-		mockGears =
-			wallpaper:
-				maximized: mockMaximized
-        package.loaded.gears = mockGears
+        package.loaded.gears.wallpaper.maximized = mockMaximized
 
 		require 'config'
 
-		assert.equals 2, callCount
+		assert.equals numberOfScreens, callCount
 		assert.is_true saneArguments
+
+    it 'should create a widget box', ->
+        widgetboxesCreated = 0
+        widgetboxBackgroundsSet = 0
+        widgetbox =
+            set_bg: -> widgetboxBackgroundsSet += 1
+        createWidgetbox = ->
+            widgetboxesCreated += 1
+            return widgetbox
+        package.loaded.awful.wibox = createWidgetbox
+
+        require 'config'
+
+        assert.equals numberOfScreens, widgetboxesCreated
+        assert.equals numberOfScreens, widgetboxBackgroundsSet
 
 
