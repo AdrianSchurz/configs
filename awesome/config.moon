@@ -94,17 +94,19 @@ setupWallpapers = ->
   chosenOnes = selectWallpapers allWallpapers, screen.count!
   setWallpapers chosenOnes, wallpaperFolder
 
-setupPanel = ->
+setupPanel = (widgetBox) ->
+  widgetBox = {}
+  widgetBoxOptions =
+    position: 'top'
+    screen: screenIndex
+    height: '22'
+  widgetBox = awful.wibox widgetBoxOptions
+  widgetBox\set_bg beautiful.panel
+
+setupPanels = ->
   widgetBoxes = {}
   for screenIndex = 1, screen.count!
-    widgetBoxes[screenIndex] = {}
-    widgetBoxOptions =
-      position: 'top'
-      screen: screenIndex
-      height: '22'
-    widgetBox = widgetBoxes[screenIndex]
-    widgetBox = awful.wibox widgetBoxOptions
-    widgetBox\set_bg beautiful.panel
+    setupPanel widgetBoxes[screenIndex]
 
 --entry point
 handleStartupAndRuntimeErrors!
@@ -114,4 +116,4 @@ disableCursorAnimations!
 
 setupWallpapers!
 setupTheme!
-setupPanel!
+setupPanels!
