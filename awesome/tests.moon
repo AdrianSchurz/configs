@@ -107,11 +107,11 @@ describe 'awesome config', ->
         markMocksLoaded!
         package.loaded.config = nil
 
-	it 'should set wallpaper using gears', ->
+	it 'should set wallpapers using gears', ->
 		saneArguments = false
 		callCount = 0
 		mockMaximized = (surface, screen, ignoreAspect, offset) ->
-			firstArgString = type(surface) == "string"
+			firstArgString = type(surface) == 'string'
 			secondArgNumber = type(screen) == 'number'
 			thirdArgBoolean = type(ignoreAspect) == 'boolean'
 			callCount += 1
@@ -123,7 +123,7 @@ describe 'awesome config', ->
 		assert.equals numberOfScreens, callCount
 		assert.is_true saneArguments
 
-    it 'should create a widget box', ->
+    it 'should create a widget box for each screen', ->
         widgetboxesCreated = 0
         widgetboxBackgroundsSet = 0
         widgetbox =
@@ -137,5 +137,17 @@ describe 'awesome config', ->
 
         assert.equals numberOfScreens, widgetboxesCreated
         assert.equals numberOfScreens, widgetboxBackgroundsSet
+
+    it 'should initialise theme once', ->
+        callsToInit = 0
+        initSpy = (path) ->
+            callsToInit += 1
+            assert.is_true type(path) == 'string'
+        package.loaded.beautiful.init = initSpy
+
+        require 'config'
+
+        assert.equals 1, callsToInit
+
 
 
