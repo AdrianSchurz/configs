@@ -1,5 +1,5 @@
 local gears      = require('gears')
-local awful      = require('awful')                   
+local awful      = require('awful')
 local wibox      = require('wibox')
 local beautiful  = require('beautiful')
 local vicious    = require('vicious')
@@ -182,7 +182,7 @@ function runInTerminalOnKeyword (command)
   end
   awful.util.spawn(command)
 end
-   
+
 function cleanForCompletion (command, cur_pos, ncomp, shell)
    local term = false
    if command:sub(1,1) == ":" then
@@ -379,14 +379,14 @@ mypromptbox       = {}
 mylayoutbox       = {}
 
 for s = 1, screen.count() do
-   
+
     mypromptbox[s] = awful.widget.prompt()
-    
+
     mylayoutbox[s] = awful.widget.layoutbox(s)
     mylayoutbox[s]:buttons(awful.util.table.join(
                            awful.button({ }, 1, function () awful.layout.inc(layouts, 1) end),
                            awful.button({ }, 3, function () awful.layout.inc(layouts, -1) end)))
-    
+
     mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, mytaglist.buttons)
 
     mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons)
@@ -469,7 +469,7 @@ globalkeys = awful.util.table.join(
             if client.focus then client.focus:raise() end
         end),
     awful.key({ modkey,           }, "Return", function () exec(terminal) end),
-    awful.key({ modkey,           }, "space", 
+    awful.key({ modkey,           }, "space",
               function () awful.prompt.run({prompt="Run:"},
                                            mypromptbox[mouse.screen].widget,
                                            runInTerminalOnKeyword,

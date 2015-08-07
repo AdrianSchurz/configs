@@ -149,5 +149,25 @@ describe 'awesome config', ->
 
         assert.equals 1, callsToInit
 
+    it 'should call spawn with parameter false (disables cursor animation)', ->
+        spawnSpy = (command, parameter) ->
+            assert.is_false parameter
+        package.loaded.awful.util.spawn = spawnSpy
+
+        require 'config'
+
+        package.loaded.awful.util.spawn 'dickbutt'
+
+    it 'should issue command "wmname LG3D" once to fix java gui', ->
+        commandsIssued = 0
+        spawn_with_shellSpy = (command) ->
+            if command == 'wmname LG3D'
+                commandsIssued += 1
+        package.loaded.awful.util.spawn_with_shell = spawn_with_shellSpy
+
+        require 'config'
+
+        assert.equals 1, commandsIssued
+
 
 
