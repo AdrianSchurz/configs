@@ -39,20 +39,34 @@ markMocksLoaded = ->
 
 describe 'awesome config', ->
     randomize!
-    numberOfScreens = {}
+    numberOfScreens = emptyObject
+    mockCpuGraph = emptyObject
+
+    run = ->
+        require 'config'
 
     setup ->
         setupOrResetGlobalContext!
         markMocksLoaded!
 
+
     before_each ->
         numberOfScreens = 2
         mockAwesome =
             connect_signal: ->
+        mockCpuGraph =
+            big:
+                layout: emptyObject
+                width: emptyObject
+                height: emptyObject
         mockUzful =
             util:
                 patch:
                     vicious: ->
+            widget:
+                cpugraphs: (parameter) ->
+                    return mockCpuGraph
+                infobox: ->
         mockAwful =
             util:
                 spawn_with_shell: ->
@@ -62,7 +76,7 @@ describe 'awesome config', ->
                         top: emptyObject
             tag: ->
             widget:
-                taglist: {}
+                taglist: emptyObject
             wibox: ->
                 widgetBox =
                     set_bg: ->
@@ -70,7 +84,7 @@ describe 'awesome config', ->
 
         taglist =
             filter:
-                all: {}
+                all: emptyObject
         taglistMeta =
             __call: ->
         setmetatable taglist, taglistMeta
@@ -118,7 +132,7 @@ describe 'awesome config', ->
 			saneArguments = firstArgString and secondArgNumber and thirdArgBoolean
         package.loaded.gears.wallpaper.maximized = mockMaximized
 
-		require 'config'
+		run!
 
 		assert.equals numberOfScreens, callCount
 		assert.is_true saneArguments
@@ -133,7 +147,7 @@ describe 'awesome config', ->
             return widgetbox
         package.loaded.awful.wibox = createWidgetbox
 
-        require 'config'
+        run!
 
         assert.equals numberOfScreens, widgetboxesCreated
         assert.equals numberOfScreens, widgetboxBackgroundsSet
@@ -145,7 +159,7 @@ describe 'awesome config', ->
             assert.is_true type(path) == 'string'
         package.loaded.beautiful.init = initSpy
 
-        require 'config'
+        run!
 
         assert.equals 1, callsToInit
 
@@ -154,7 +168,7 @@ describe 'awesome config', ->
             assert.is_false parameter
         package.loaded.awful.util.spawn = spawnSpy
 
-        require 'config'
+        run!
 
         package.loaded.awful.util.spawn 'dickbutt'
 
@@ -165,9 +179,38 @@ describe 'awesome config', ->
                 commandsIssued += 1
         package.loaded.awful.util.spawn_with_shell = spawn_with_shellSpy
 
-        require 'config'
+        run!
 
         assert.equals 1, commandsIssued
 
+    describe 'cpu graph widget', ->
+        it 'should enable graph auto caching', ->
+            viciousPatched = false
+            patchSpy = ->
+                viciousPatched = true
+            package.loaded.uzful.util.patch.vicious = patchSpy
 
+            run!
 
+            assert.is_true viciousPatched
+
+        it 'should create a cpu graph widget', ->
+            graphCreated = false
+            cpugraphsSpy = ->
+                graphCreated = true
+                return mockCpuGraph
+            package.loaded.uzful.widget.cpugraphs = cpugraphsSpy
+
+            run!
+
+            assert.is_true graphCreated
+
+        it 'should create a box to show the cpu graph in', ->
+            boxCreated = false
+            createInfoBoxSpy = ->
+                boxCreated = true
+            package.loaded.uzful.widget.infobox = createInfoBoxSpy
+
+            run!
+
+            assert.is_true boxCreated

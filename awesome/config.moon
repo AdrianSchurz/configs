@@ -103,10 +103,39 @@ setupPanel = (widgetBox) ->
   widgetBox = awful.wibox widgetBoxOptions
   widgetBox\set_bg beautiful.panel
 
-setupPanels = ->
+createWidgetboxes = ->
   widgetBoxes = {}
   for screenIndex = 1, screen.count!
     setupPanel widgetBoxes[screenIndex]
+
+createCpuGraphs = ->
+  cpuGraphOptions =
+    fgcolor: '#D0752A'
+    bgcolor: beautiful.bg_systray
+    load:
+      interval: 20
+      text: ' <span size="x-small"><span color="#666666">$1</span>' .. '  <span color="#9A9A9A">$2</span>' .. '  <span color="#DDDDDD">$3</span></span>'
+    big:
+      width: 400
+      height: 100
+      interval: 1
+    small:
+      width: 42
+      height: beautiful.menu_height
+      interval: 1
+  cpuGraph = uzful.widget.cpugraphs cpuGraphOptions
+  cpuWidgetOptions =
+    widget: cpuGraph.big.layout
+    position: 'top'
+    align: 'right'
+    width: cpuGraph.big.width
+    height: cpuGraph.big.height
+  cpuWidget = uzful.widget.infobox cpuWidgetOptions
+
+
+setupPanels = ->
+  createWidgetboxes!
+  createCpuGraphs!
 
 --entry point
 handleStartupAndRuntimeErrors!
