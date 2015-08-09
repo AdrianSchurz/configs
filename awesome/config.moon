@@ -110,7 +110,7 @@ createWidgetboxes = ->
   for screenIndex = 1, screen.count!
     table.insert widgetBoxes, setupPanel!
 
-createCpuGraphs = ->
+createCpuGraph = ->
   cpuGraphOptions =
     fgcolor: '#D0752A'
     bgcolor: beautiful.bg_systray
@@ -126,26 +126,38 @@ createCpuGraphs = ->
       height: beautiful.menu_height
       interval: 1
   cpuGraph = uzful.widget.cpugraphs cpuGraphOptions
+  return cpuGraph
+
+createCpuWidget = (graph) ->
   cpuWidgetOptions =
-    widget: cpuGraph.big.layout
+    widget: graph.big.layout
     position: 'top'
     align: 'right'
-    width: cpuGraph.big.width
-    height: cpuGraph.big.height
+    width: graph.big.width
+    height: graph.big.height
   cpuWidget = uzful.widget.infobox cpuWidgetOptions
+  return nil
+
+addToLayouts = (graph) ->
   rightLayout = wibox.layout.fixed.horizontal!
-  rightLayout\add cpuGraph.small.widget
+  rightLayout\add graph.small.widget
   layout = wibox.layout.align.horizontal!
   layout\set_right rightLayout
   widgetBoxes[1]\set_widget layout
+  return nil
+
+setupCpuGraph = ->
+  enableGraphAutoCaching!
+  graph = createCpuGraph!
+  createCpuWidget graph
+  addToLayouts graph
 
 setupPanels = ->
   createWidgetboxes!
-  createCpuGraphs!
+  setupCpuGraph!
 
 --entry point
 handleStartupAndRuntimeErrors!
-enableGraphAutoCaching!
 fixJavaGUI!
 disableCursorAnimations!
 
