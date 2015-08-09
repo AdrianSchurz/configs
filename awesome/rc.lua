@@ -1,5 +1,5 @@
 local gears      = require('gears')
-local awful      = require('awful')                   
+local awful      = require('awful')
 local wibox      = require('wibox')
 local beautiful  = require('beautiful')
 local vicious    = require('vicious')
@@ -50,7 +50,7 @@ end
 
 function logRuntimeErrors()
   local doneWithPreviousError = true
-  awesome.connect_signal("debug:error", function(error)
+  awesome.connect_signal("debug::error", function(error)
     if not doneWithPreviousError then
       return
     else
@@ -182,7 +182,7 @@ function runInTerminalOnKeyword (command)
   end
   awful.util.spawn(command)
 end
-   
+
 function cleanForCompletion (command, cur_pos, ncomp, shell)
    local term = false
    if command:sub(1,1) == ":" then
@@ -215,6 +215,11 @@ function fixJavaGUI()
   awful.util.spawn_with_shell("wmname LG3D")
 end
 
+local oldspawn = awful.util.spawn
+  awful.util.spawn = function (s)
+    oldspawn(s, false)
+end
+
 -- entry point
 local modkey      = "Mod4"
 local terminal    = "urxvt"
@@ -223,7 +228,7 @@ local filemanager = "thunar"
 local sublime     = "subl"
 local noise       = "/home/ulmeyda/projects/2397120/noise.sh 25"
 local cmdLock     = "xscreensaver-command --lock"
-local exec        = awful.util.spawn
+local exec        = function (s) oldspawn(s, false) end
 local shexec      = awful.util.spawn_with_shell
 
 logPreviousStartupErrors()
@@ -374,14 +379,14 @@ mypromptbox       = {}
 mylayoutbox       = {}
 
 for s = 1, screen.count() do
-   
+
     mypromptbox[s] = awful.widget.prompt()
-    
+
     mylayoutbox[s] = awful.widget.layoutbox(s)
     mylayoutbox[s]:buttons(awful.util.table.join(
                            awful.button({ }, 1, function () awful.layout.inc(layouts, 1) end),
                            awful.button({ }, 3, function () awful.layout.inc(layouts, -1) end)))
-    
+
     mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, mytaglist.buttons)
 
     mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons)
@@ -464,7 +469,7 @@ globalkeys = awful.util.table.join(
             if client.focus then client.focus:raise() end
         end),
     awful.key({ modkey,           }, "Return", function () exec(terminal) end),
-    awful.key({ modkey,           }, "space", 
+    awful.key({ modkey,           }, "space",
               function () awful.prompt.run({prompt="Run:"},
                                            mypromptbox[mouse.screen].widget,
                                            runInTerminalOnKeyword,
@@ -533,7 +538,6 @@ clientbuttons = awful.util.table.join(
     awful.button({ modkey }, 5, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end))
 
 root.keys(globalkeys)
-
 -- rules
 awful.rules.rules = {
     { rule = { },
