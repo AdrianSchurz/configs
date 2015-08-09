@@ -50,7 +50,7 @@ end
 
 function logRuntimeErrors()
   local doneWithPreviousError = true
-  awesome.connect_signal("debug:error", function(error)
+  awesome.connect_signal("debug::error", function(error)
     if not doneWithPreviousError then
       return
     else

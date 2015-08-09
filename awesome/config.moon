@@ -21,6 +21,8 @@ logPath = home .. "/.config/awesome/"
 logFileName = "rc.lua.log"
 logger = logging.file logPath .. logFileName
 
+widgetBoxes = {}
+
 logPreviousStartupErrors = ->
   if awesome.startup_errors
       logger\error 'error during previous startup:'
@@ -94,7 +96,7 @@ setupWallpapers = ->
   chosenOnes = selectWallpapers allWallpapers, screen.count!
   setWallpapers chosenOnes, wallpaperFolder
 
-setupPanel = (widgetBox) ->
+setupPanel = ->
   widgetBox = {}
   widgetBoxOptions =
     position: 'top'
@@ -102,11 +104,11 @@ setupPanel = (widgetBox) ->
     height: '22'
   widgetBox = awful.wibox widgetBoxOptions
   widgetBox\set_bg beautiful.panel
+  return widgetBox
 
 createWidgetboxes = ->
-  widgetBoxes = {}
   for screenIndex = 1, screen.count!
-    setupPanel widgetBoxes[screenIndex]
+    table.insert widgetBoxes, setupPanel!
 
 createCpuGraphs = ->
   cpuGraphOptions =
@@ -131,7 +133,11 @@ createCpuGraphs = ->
     width: cpuGraph.big.width
     height: cpuGraph.big.height
   cpuWidget = uzful.widget.infobox cpuWidgetOptions
-
+  rightLayout = wibox.layout.fixed.horizontal!
+  rightLayout\add cpuGraph.small.widget
+  layout = wibox.layout.align.horizontal!
+  layout\set_right rightLayout
+  widgetBoxes[1]\set_widget layout
 
 setupPanels = ->
   createWidgetboxes!

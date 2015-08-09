@@ -52,13 +52,17 @@ describe 'awesome config', ->
 
     before_each ->
         numberOfScreens = 2
+
         mockAwesome =
             connect_signal: ->
+
         mockCpuGraph =
             big:
                 layout: emptyObject
                 width: emptyObject
                 height: emptyObject
+            small: emptyObject
+
         mockUzful =
             util:
                 patch:
@@ -67,6 +71,7 @@ describe 'awesome config', ->
                 cpugraphs: (parameter) ->
                     return mockCpuGraph
                 infobox: ->
+
         mockAwful =
             util:
                 spawn_with_shell: ->
@@ -80,6 +85,7 @@ describe 'awesome config', ->
             wibox: ->
                 widgetBox =
                     set_bg: ->
+                    set_widget: ->
                 return widgetBox
 
         taglist =
@@ -90,10 +96,16 @@ describe 'awesome config', ->
         setmetatable taglist, taglistMeta
         mockAwful.widget.taglist = taglist
 
+        mockLayoutHorizontal =
+            add: ->
+            set_right: ->
         mockWibox =
             layout:
                 fixed:
-                    horizontal: ->
+                    horizontal: -> return mockLayoutHorizontal
+                align:
+                    horizontal: -> return mockLayoutHorizontal
+
         mockBeautiful =
             init: ->
 
@@ -142,6 +154,7 @@ describe 'awesome config', ->
         widgetboxBackgroundsSet = 0
         widgetbox =
             set_bg: -> widgetboxBackgroundsSet += 1
+            set_widget: ->
         createWidgetbox = ->
             widgetboxesCreated += 1
             return widgetbox
