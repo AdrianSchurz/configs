@@ -218,7 +218,7 @@ describe 'awesome config', ->
 
             assert.is_true graphCreated
 
-        it 'should create a box to show the cpu graph in', ->
+        it 'should create a box to show the cpu graph in', -> -- TODO test description probably not accurate
             boxCreated = false
             createInfoBoxSpy = ->
                 boxCreated = true
