@@ -9,6 +9,7 @@ local uzful      = require('uzful')
 local filesystem = require('lfs')
 awful.rules      = require('awful.rules')
 local awmodoro   = require('awmodoro')
+local alttab     = require('awesome_alttab')
 local _          = require('underscore')
 local inspect    = require('inspect')
 require('awful.autofocus')
@@ -65,7 +66,7 @@ function enableGraphAutoCaching()
 end
 
 function setupTheme()
-  local theme = "/home/ulmeyda/.config/awesome/themes/pro-dark/theme.lua"
+  local theme = "/usr/share/awesome/themes/pro/themes/pro-dark/theme.lua"
   beautiful.init(theme)
 end
 
@@ -306,6 +307,7 @@ widget_display_l:set_image(beautiful.widget_display_l)
 widget_display_c = wibox.widget.imagebox()
 widget_display_c:set_image(beautiful.widget_display_c)
 
+myFont = "Source Code Pro"
 memoryInUsage = lain.widgets.mem({
     settings = function()
       local decimalPlaces = 1
@@ -412,11 +414,16 @@ for s = 1, screen.count() do
     right_layout:add(widget_display_r)
     right_layout:add(spr5px)
 
+    right_layout:add(spr)
+
+
     if s == 1 then
         right_layout:add(spr5px)
         right_layout:add(wibox.widget.systray())
         right_layout:add(spr5px)
     end
+
+    right_layout:add(mylayoutbox[s])
 
     local layout = wibox.layout.align.horizontal()
     layout:set_left(left_layout)
