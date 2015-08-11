@@ -311,6 +311,7 @@ myFont = "Source Code Pro"
 memoryInUsage = lain.widgets.mem({
     settings = function()
         widget:set_markup(space3 .. roundToDecimal(mem_now.used/1000, 1) .. "G" .. markup.font(myFont, " "))
+        --print(space3 .. roundToDecimal(mem_now.used/1000, 1) .. "G" .. markup.font(myFont, " "))
     end
 })
 
@@ -450,12 +451,12 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "e", function () exec(filemanager) end),
     awful.key({ modkey,           }, "w", function () exec(browser) end),
     awful.key({ modkey,           }, "q", function () exec(sublime) end),
-    awful.key({ modkey,           }, "j",
+    awful.key({ modkey,           }, "Left",
         function ()
             awful.client.focus.byidx( 1)
             if client.focus then client.focus:raise() end
         end),
-    awful.key({ modkey,           }, "k",
+    awful.key({ modkey,           }, "Right",
         function ()
             awful.client.focus.byidx(-1)
             if client.focus then client.focus:raise() end
