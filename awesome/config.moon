@@ -8,9 +8,9 @@ beautiful = require 'beautiful'
 filesystem = require 'lfs'
 _ = require 'underscore'
 wibox = require 'wibox'
+lain = require 'lain'
 -- vicious = require 'vicious'
 -- naughty = require 'naughty'
--- lain = require 'lain'
 -- awful.rules = require 'awful.rules'
 -- awmodoro = require 'awmodoro'
 -- alttab = require 'awesome_alttab'
@@ -138,6 +138,7 @@ createCpuWidget = (graph) ->
   cpuWidget = uzful.widget.infobox cpuWidgetOptions
   return nil
 
+rightLayout = {}
 addToLayouts = (graph) ->
   rightLayout = wibox.layout.fixed.horizontal!
   rightLayout\add graph.small.widget
@@ -152,9 +153,28 @@ setupCpuGraph = ->
   createCpuWidget graph
   addToLayouts graph
 
+setupMemoyUsage = ->
+  markup = lain.util.markup
+  options =
+    settings: ->
+    --widget\set_markup space3 .. roundToDecimal(mem_now.used/1000, 1) .. "G" .. markup.font(myFont, " ")
+      widget\set_markup mem_now.used
+  memoryUsage = lain.widgets.mem options
+  widgetBox = wibox.widget.imagebox!
+  widgetBox\set_image beautiful.widget_mem
+  memoryWidget = wibox.widget.background!
+  memoryWidget\set_widget memoryInUsage
+  memoryWidget\set_bgimage beautiful.widget_display
+  widget_display_l = wibox.widget.imagebox!
+  widget_display_l\set_image beautiful.widget_display_l
+  rightLayout\add widget_display_l
+  -- rightLayout\add memoryWidget
+  -- rightLayout\add widget_display_r
+
 setupPanels = ->
   createWidgetboxes!
   setupCpuGraph!
+  setupMemoyUsage!
 
 --entry point
 handleStartupAndRuntimeErrors!
