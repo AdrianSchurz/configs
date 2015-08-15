@@ -12,7 +12,7 @@ modulesToMock = {
         'menu', 'mouse', 'remote', 'key', 'button',
         'wibox', 'startup_notification', 'tooltip',
         'ewmh', 'titlebar', 'beautiful', 'uzful',
-        'gears'
+        'gears', 'lain'
     }
 
 mockExceptions = {
@@ -55,6 +55,11 @@ describe 'awesome config', ->
 
         mockAwesome =
             connect_signal: ->
+        rawset _G, 'awesome', mockAwesome
+
+        mockWidget =
+            set_markup: ->
+        rawset _G, 'widget', mockWidget
 
         mockCpuGraph =
             big:
@@ -71,6 +76,7 @@ describe 'awesome config', ->
                 cpugraphs: (parameter) ->
                     return mockCpuGraph
                 infobox: ->
+        package.loaded.uzful = mockUzful
 
         mockAwful =
             util:
@@ -95,6 +101,7 @@ describe 'awesome config', ->
             __call: ->
         setmetatable taglist, taglistMeta
         mockAwful.widget.taglist = taglist
+        package.loaded.awful = mockAwful
 
         mockLayoutHorizontal =
             add: ->
@@ -108,22 +115,21 @@ describe 'awesome config', ->
 
         mockBeautiful =
             init: ->
+        package.loaded.beautiful = mockBeautiful
 
         fileNames = {'.', '..', 'dick', 'butt'}
         iterator = => return table.remove fileNames
         mockFileSystem =
             dir: => return iterator, nil
+        package.loaded.lfs = mockFileSystem
+
         mockScreen =
             count: -> return numberOfScreens
+        rawset _G, 'screen', mockScreen
+
         mockGears =
             wallpaper:
                 maximized: ->
-
-        package.loaded.uzful = mockUzful
-        package.loaded.awful = mockAwful
-        package.loaded.beautiful = mockBeautiful
-        package.loaded.lfs = mockFileSystem
-        package.loaded.wibox = mockWibox
         package.loaded.gears = mockGears
         rawset _G, 'screen', mockScreen
         rawset _G, 'awesome', mockAwesome
