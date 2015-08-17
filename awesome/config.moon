@@ -55,7 +55,7 @@ disableCursorAnimations = ->
     oldspawn(spawnee, false)
 
 setupTheme = ->
-  theme = "/usr/share/awesome/themes/pro/themes/pro-dark/theme.lua"
+  theme = "/home/ulmeyda/.config/awesome/themes/pro-dark/theme.lua"
   beautiful.init theme
 
 isJpgOrPng = (fileName) ->
