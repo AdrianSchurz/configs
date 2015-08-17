@@ -9,7 +9,6 @@ local uzful      = require('uzful')
 local filesystem = require('lfs')
 awful.rules      = require('awful.rules')
 local awmodoro   = require('awmodoro')
-local alttab     = require('awesome_alttab')
 local _          = require('underscore')
 local inspect    = require('inspect')
 require('awful.autofocus')
@@ -66,7 +65,7 @@ function enableGraphAutoCaching()
 end
 
 function setupTheme()
-  local theme = "/usr/share/awesome/themes/pro/themes/pro-dark/theme.lua"
+  local theme = "/home/ulmeyda/.config/awesome/themes/pro-dark/theme.lua"
   beautiful.init(theme)
 end
 
