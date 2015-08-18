@@ -380,11 +380,6 @@ for s = 1, screen.count() do
 
     mypromptbox[s] = awful.widget.prompt()
 
-    mylayoutbox[s] = awful.widget.layoutbox(s)
-    mylayoutbox[s]:buttons(awful.util.table.join(
-                           awful.button({ }, 1, function () awful.layout.inc(layouts, 1) end),
-                           awful.button({ }, 3, function () awful.layout.inc(layouts, -1) end)))
-
     mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, mytaglist.buttons)
 
     mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons)
@@ -416,16 +411,11 @@ for s = 1, screen.count() do
     right_layout:add(widget_display_r)
     right_layout:add(spr5px)
 
-    right_layout:add(spr)
-
-
     if s == 1 then
         right_layout:add(spr5px)
         right_layout:add(wibox.widget.systray())
         right_layout:add(spr5px)
     end
-
-    right_layout:add(mylayoutbox[s])
 
     local layout = wibox.layout.align.horizontal()
     layout:set_left(left_layout)
@@ -446,6 +436,7 @@ root.buttons(awful.util.table.join(
 
 -- key bindings
 globalkeys = awful.util.table.join(
+    awful.key({ modkey,          }, "Tab", function() awful.layout.inc(layouts, 1) end),
     awful.key({ modkey,          }, "F12", function () exec(cmdLock) end),
     awful.key({ modkey,          }, "p", function ()
           pomodoro:toggle()
