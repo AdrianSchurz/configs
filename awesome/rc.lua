@@ -9,7 +9,6 @@ local uzful      = require('uzful')
 local filesystem = require('lfs')
 awful.rules      = require('awful.rules')
 local awmodoro   = require('awmodoro')
-local alttab     = require('awesome_alttab')
 require('awful.autofocus')
 require('logging.file')
 
@@ -166,6 +165,8 @@ function defineSomeMarkupShit()
   vspace2 = '<span font="Terminus 3">  </span>'
 end
 
+awful.util.spawn_with_shell("wmname LG3D")
+
 local oldspawn = awful.util.spawn
 awful.util.spawn = function (s)
     oldspawn(s, false)
@@ -256,10 +257,9 @@ widget_display_l:set_image(beautiful.widget_display_l)
 widget_display_c = wibox.widget.imagebox()
 widget_display_c:set_image(beautiful.widget_display_c)
 
-myFont = "Source Code Pro"
 memoryInUsage = lain.widgets.mem({
     settings = function()
-        widget:set_markup(space3 .. roundToDecimal(mem_now.used/1000, 1) .. "G" .. markup.font(myFont, " "))
+        widget:set_markup(roundToDecimal(mem_now.used/1000, 1) .. "G")
     end
 })
 
@@ -270,8 +270,8 @@ memwidget:set_widget(memoryInUsage)
 memwidget:set_bgimage(beautiful.widget_display)
 
 -- clock/calendar
-mytextclock    = awful.widget.textclock(markup(clockgf, space3 .. "%H:%M" .. markup.font(myFont, " ")))
-mytextcalendar = awful.widget.textclock(markup(clockgf, space3 .. "%a %d %b"))
+mytextclock    = awful.widget.textclock(markup(clockgf,"%H:%M"))
+mytextcalendar = awful.widget.textclock(markup(clockgf,"%m-%d"))
 
 widget_clock = wibox.widget.imagebox()
 widget_clock:set_image(beautiful.widget_clock)
@@ -325,16 +325,10 @@ mytasklist.buttons = awful.util.table.join(
 -- panel
 mywibox           = {}
 mypromptbox       = {}
-mylayoutbox       = {}
 
 for s = 1, screen.count() do
    
     mypromptbox[s] = awful.widget.prompt()
-    
-    mylayoutbox[s] = awful.widget.layoutbox(s)
-    mylayoutbox[s]:buttons(awful.util.table.join(
-                           awful.button({ }, 1, function () awful.layout.inc(layouts, 1) end),
-                           awful.button({ }, 3, function () awful.layout.inc(layouts, -1) end)))
     
     mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, mytaglist.buttons)
 
@@ -376,8 +370,6 @@ for s = 1, screen.count() do
         right_layout:add(spr5px)
     end
 
-    right_layout:add(mylayoutbox[s])
-
     local layout = wibox.layout.align.horizontal()
     layout:set_left(left_layout)
     layout:set_middle(mytasklist[s])
@@ -397,11 +389,16 @@ root.buttons(awful.util.table.join(
 
 -- key bindings
 globalkeys = awful.util.table.join(
+    awful.key({ modkey,           }, "<",
+      function() clockwidget:set_widget(mytextcalendar) end,
+      function() clockwidget:set_widget(mytextclock) end
+      ),
+    awful.key({ modkey,          }, "Tab", function () awful.layout.inc(layouts, 1) end),
     awful.key({ modkey,          }, "p", function ()
           pomodoro:toggle()
-          awful.util.spawn(noiseGenerator)
+          awful.util.spawn(noise)
         end),
-    awful.key({ modkey, "Shift" }, "p", function () pomodoro:finish() end),
+    awful.key({ modkey, "Shift"   }, "p", function () pomodoro:finish() end),
     awful.key({ modkey, "Shift"   }, "r", awesome.restart),
     awful.key({ modkey,           }, "e", function () exec(filemanager) end),
     awful.key({ modkey,           }, "w", function () exec(browser) end),
