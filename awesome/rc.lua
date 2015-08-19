@@ -308,7 +308,8 @@ widget_display_c:set_image(beautiful.widget_display_c)
 
 memoryInUsage = lain.widgets.mem({
     settings = function()
-        widget:set_markup(roundToDecimal(mem_now.used/1000, 1) .. "G")
+      local decimalPlaces = 1
+        widget:set_markup(roundToDecimal(mem_now.used/1000, decimalPlaces) .. "G")
     end
 })
 
@@ -442,7 +443,7 @@ globalkeys = awful.util.table.join(
           pomodoro:toggle()
           awful.util.spawn(noiseGenerator)
         end),
-    awful.key({ modkey, "Shift" }, "p", function () pomodoro:finish() end),
+    awful.key({ modkey, "Shift"   }, "p", function () pomodoro:finish() end),
     awful.key({ modkey, "Shift"   }, "r", awesome.restart),
     awful.key({ modkey,           }, "e", function () exec(filemanager) end),
     awful.key({ modkey,           }, "w", function () exec(browser) end),
@@ -474,9 +475,9 @@ ph = 22
 
 clientkeys = awful.util.table.join(
     awful.key({ modkey,           }, "f",        function (c) c.fullscreen = not c.fullscreen  end),
-    awful.key({ modkey,           }, "c",        function (c)
-      c:kill()
-      awful.mouse.client.focus()
+    awful.key({ modkey,           }, "c",        function ()
+      local hoveredOverClient = mouse.object_under_pointer()
+      hoveredOverClient:kill()
       end),
     awful.key({ modkey,           }, "n",        function (c) c.minimized = true end)
 )
