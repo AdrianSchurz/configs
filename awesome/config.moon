@@ -27,6 +27,7 @@ logPreviousStartupErrors = ->
   if awesome.startup_errors
       logger\error 'error during previous startup:'
       logger\error awesome.startup_errors
+  return
 
 logRuntimeErrors = ->
   doneWithPreviousError = true
@@ -37,6 +38,7 @@ logRuntimeErrors = ->
       doneWithPreviousError = false
       logger\error error
       doneWithPreviousError = true
+  return
 
 handleStartupAndRuntimeErrors = ->
   logPreviousStartupErrors!
@@ -45,18 +47,22 @@ handleStartupAndRuntimeErrors = ->
 
 enableGraphAutoCaching = ->
   uzful.util.patch.vicious!
+  return
 
 fixJavaGUI = ->
   awful.util.spawn_with_shell 'wmname LG3D'
+  return
 
 disableCursorAnimations = ->
   oldspawn = awful.util.spawn
   awful.util.spawn = (spawnee) ->
     oldspawn(spawnee, false)
+  return
 
 setupTheme = ->
   theme = "/usr/share/awesome/themes/pro/themes/pro-dark/theme.lua"
   beautiful.init theme
+  return
 
 isJpgOrPng = (fileName) ->
   if fileName == '.' or fileName == '..' --TODO
@@ -73,7 +79,7 @@ compileListOfWallpapers = (folder) ->
 
 chooseRandomly = (aTable, quantity) ->
   if #aTable == 0 or quantity < 1
-    return nil
+    return
   else
     chosenOnes = {}
     for itemsChosen = 1, quantity
@@ -89,14 +95,16 @@ setWallpapers = (wallpapers, folder) ->
   for screen = 1, screen.count!
     wallpaper = folder .. wallpapers[screen]
     gears.wallpaper.maximized wallpaper, screen, true
+  return
 
 setupWallpapers = ->
   wallpaperFolder = home .. '/media/wallpapers/'
   allWallpapers = compileListOfWallpapers wallpaperFolder
   chosenOnes = selectWallpapers allWallpapers, screen.count!
   setWallpapers chosenOnes, wallpaperFolder
+  return
 
-setupPanel = ->
+setupPanel = (screenIndex) ->
   widgetBox = {}
   widgetBoxOptions =
     position: 'top'
@@ -108,7 +116,8 @@ setupPanel = ->
 
 createWidgetboxes = ->
   for screenIndex = 1, screen.count!
-    table.insert widgetBoxes, setupPanel!
+    table.insert widgetBoxes, setupPanel screenIndex
+  return
 
 createCpuGraph = ->
   cpuGraphOptions =
@@ -136,7 +145,7 @@ createCpuWidget = (graph) ->
     width: graph.big.width
     height: graph.big.height
   cpuWidget = uzful.widget.infobox cpuWidgetOptions
-  return nil
+  return
 
 memoryWidget = {}
 cpuGraph = {}
@@ -155,24 +164,33 @@ addToLayouts = ->
   layout = wibox.layout.align.horizontal!
   layout\set_right rightLayout
   widgetBoxes[1]\set_widget layout
-  return nil
+  return
 
 setupCpuGraph = ->
   enableGraphAutoCaching!
   cpuGraph = createCpuGraph!
   createCpuWidget cpuGraph
+  return
 
 setupMemoyUsage = ->
-  markup = lain.util.markup
+  roundToOneDecimal = (number) ->
+    factor = 10
+    scaledUp = number * factor + 0.5
+    rounded = math.floor scaledUp
+    scaledDownAgain = rounded / factor
+    return scaledDownAgain
   options =
     settings: ->
-    --widget\set_markup space3 .. roundToDecimal(mem_now.used/1000, 1) .. "G" .. markup.font(myFont, " ")
+      memoryScaledToGB = mem_now.used/1000
+      memoryRounded = roundToOneDecimal memoryScaledToGB
+      memoryAsDisplayed = memoryRounded .. "G"
+      widget\set_markup memoryAsDisplayed
+
   memoryUsage = lain.widgets.mem options
-  widgetBox = wibox.widget.imagebox!
-  widgetBox\set_image beautiful.widget_mem
   memoryWidget = wibox.widget.background!
-  memoryWidget\set_widget memoryInUsage
+  memoryWidget\set_widget memoryUsage
   memoryWidget\set_bgimage beautiful.widget_display
+  return
 
 
 setupPanels = ->
@@ -180,6 +198,7 @@ setupPanels = ->
   setupCpuGraph!
   setupMemoyUsage!
   addToLayouts!
+  return
 
 --entry point
 handleStartupAndRuntimeErrors!

@@ -297,17 +297,14 @@ widget_display_l:set_image(beautiful.widget_display_l)
 widget_display_c = wibox.widget.imagebox()
 widget_display_c:set_image(beautiful.widget_display_c)
 
-myFont = "Source Code Pro"
-memoryInUsage = lain.widgets.mem({
+memoryUsage = lain.widgets.mem({
     settings = function()
         widget:set_markup(roundToDecimal(mem_now.used/1000, 1) .. "G")
     end
 })
 
-widget_mem = wibox.widget.imagebox()
-widget_mem:set_image(beautiful.widget_mem)
 memwidget = wibox.widget.background()
-memwidget:set_widget(memoryInUsage)
+memwidget:set_widget(memoryUsage)
 memwidget:set_bgimage(beautiful.widget_display)
 
 -- clock/calendar
