@@ -203,14 +203,6 @@ function roundToDecimal(num, idp)
   return math.floor(num * mult + 0.5) / mult
 end
 
-function defineSomeMarkupShit()
-  markup = lain.util.markup
-  space3 = markup.font("Terminus 3", " ")
-  space2 = markup.font("Terminus 2", " ")
-  vspace1 = '<span font="Terminus 3"> </span>'
-  vspace2 = '<span font="Terminus 3">  </span>'
-end
-
 function fixJavaGUI()
   awful.util.spawn_with_shell("wmname LG3D")
 end
@@ -239,8 +231,6 @@ setupTheme()
 setupWallpapers(wallpaperFolder)
 local layouts = populateLayouts()
 local tags = populateTags(layouts)
-
-defineSomeMarkupShit()
 
 clockgf = beautiful.clockgf
 
@@ -321,6 +311,7 @@ memwidget:set_widget(memoryInUsage)
 memwidget:set_bgimage(beautiful.widget_display)
 
 -- clock/calendar
+markup = lain.util.markup
 mytextclock    = awful.widget.textclock(markup(clockgf, "%H:%M"))
 mytextcalendar = awful.widget.textclock(markup(clockgf, "%m-%d"))
 
