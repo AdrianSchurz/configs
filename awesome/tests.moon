@@ -5,6 +5,20 @@ oldPrint = print
 print = (output) ->
     oldPrint inspect output
 
+setenv = (fn, env) ->
+  index = 1
+
+  while true
+    name = debug.getupvalue fn, index
+    if name == "_ENV"
+      debug.upvaluejoin fn, index, (-> return env), 1
+      break
+    elseif not name then
+      break
+    index += 1
+
+  return fn
+
 modulesToMock = {
         'awesome','awful', 'client', 'completion',
         'layout', 'placement', 'prompt', 'screen',
@@ -12,7 +26,7 @@ modulesToMock = {
         'menu', 'mouse', 'remote', 'key', 'button',
         'wibox', 'startup_notification', 'tooltip',
         'ewmh', 'titlebar', 'beautiful', 'uzful',
-        'gears'
+        'gears', 'lain'
     }
 
 mockExceptions = {
@@ -55,6 +69,11 @@ describe 'awesome config', ->
 
         mockAwesome =
             connect_signal: ->
+        rawset _G, 'awesome', mockAwesome
+
+        mockWidget =
+            set_markup: ->
+        rawset _G, 'widget', mockWidget
 
         mockCpuGraph =
             big:
@@ -71,6 +90,7 @@ describe 'awesome config', ->
                 cpugraphs: (parameter) ->
                     return mockCpuGraph
                 infobox: ->
+        package.loaded.uzful = mockUzful
 
         mockAwful =
             util:
@@ -95,38 +115,59 @@ describe 'awesome config', ->
             __call: ->
         setmetatable taglist, taglistMeta
         mockAwful.widget.taglist = taglist
+        package.loaded.awful = mockAwful
 
         mockLayoutHorizontal =
             add: ->
             set_right: ->
+        mockImagebox =
+            set_image: ->
+        mockBackground =
+            set_widget: ->
+            set_bgimage: ->
+
         mockWibox =
             layout:
                 fixed:
                     horizontal: -> return mockLayoutHorizontal
                 align:
                     horizontal: -> return mockLayoutHorizontal
+            widget:
+                imagebox: -> return mockImagebox
+                background: -> return mockBackground
+        package.loaded.wibox = mockWibox
 
         mockBeautiful =
             init: ->
+        package.loaded.beautiful = mockBeautiful
 
         fileNames = {'.', '..', 'dick', 'butt'}
         iterator = => return table.remove fileNames
         mockFileSystem =
             dir: => return iterator, nil
+        package.loaded.lfs = mockFileSystem
+
         mockScreen =
             count: -> return numberOfScreens
+        rawset _G, 'screen', mockScreen
+
         mockGears =
             wallpaper:
                 maximized: ->
-
-        package.loaded.uzful = mockUzful
-        package.loaded.awful = mockAwful
-        package.loaded.beautiful = mockBeautiful
-        package.loaded.lfs = mockFileSystem
-        package.loaded.wibox = mockWibox
         package.loaded.gears = mockGears
-        rawset _G, 'screen', mockScreen
-        rawset _G, 'awesome', mockAwesome
+
+        mockMem = {}
+        whenCalled =
+                __call: ->
+        setmetatable mockMem, whenCalled
+        mockLain =
+            widgets:
+                mem: mockMem
+            util:
+                markup:
+                    font: ->
+        package.loaded.lain = mockLain
+
 
     after_each ->
         setupOrResetGlobalContext!
@@ -227,3 +268,24 @@ describe 'awesome config', ->
             run!
 
             assert.is_true boxCreated
+    describe 'memory usage widget', ->
+        it 'should be created using lain', ->
+            memWidgetCreated = false
+            mockMemWidget = {}
+            memWidgetMeta =
+                __call: (_, options) ->
+                    memWidgetCreated = true
+                    widget =
+                        set_markup: ->
+                    mem_now =
+                        used: 1
+                    setenv options.settings, {print: print, widget: widget, mem_now: mem_now}
+
+                    options.settings!
+
+            setmetatable mockMemWidget, memWidgetMeta
+            package.loaded.lain.widgets.mem = mockMemWidget
+
+            run!
+
+            assert.is_true memWidgetCreated

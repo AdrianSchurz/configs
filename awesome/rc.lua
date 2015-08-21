@@ -310,7 +310,7 @@ widget_display_c:set_image(beautiful.widget_display_c)
 myFont = "Source Code Pro"
 memoryInUsage = lain.widgets.mem({
     settings = function()
-        widget:set_markup(space3 .. roundToDecimal(mem_now.used/1000, 1) .. "G" .. markup.font(myFont, " "))
+        widget:set_markup(roundToDecimal(mem_now.used/1000, 1) .. "G")
     end
 })
 
@@ -321,8 +321,8 @@ memwidget:set_widget(memoryInUsage)
 memwidget:set_bgimage(beautiful.widget_display)
 
 -- clock/calendar
-mytextclock    = awful.widget.textclock(markup(clockgf, space3 .. "%H:%M" .. markup.font(myFont, " ")))
-mytextcalendar = awful.widget.textclock(markup(clockgf, space3 .. "%a %d %b"))
+mytextclock    = awful.widget.textclock(markup(clockgf, "%H:%M"))
+mytextcalendar = awful.widget.textclock(markup(clockgf, "%m-%d"))
 
 widget_clock = wibox.widget.imagebox()
 widget_clock:set_image(beautiful.widget_clock)
@@ -376,16 +376,10 @@ mytasklist.buttons = awful.util.table.join(
 -- panel
 mywibox           = {}
 mypromptbox       = {}
-mylayoutbox       = {}
 
 for s = 1, screen.count() do
 
     mypromptbox[s] = awful.widget.prompt()
-
-    mylayoutbox[s] = awful.widget.layoutbox(s)
-    mylayoutbox[s]:buttons(awful.util.table.join(
-                           awful.button({ }, 1, function () awful.layout.inc(layouts, 1) end),
-                           awful.button({ }, 3, function () awful.layout.inc(layouts, -1) end)))
 
     mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, mytaglist.buttons)
 
@@ -424,10 +418,7 @@ for s = 1, screen.count() do
     if s == 1 then
         right_layout:add(spr5px)
         right_layout:add(wibox.widget.systray())
-        right_layout:add(spr5px)
     end
-
-    right_layout:add(mylayoutbox[s])
 
     local layout = wibox.layout.align.horizontal()
     layout:set_left(left_layout)
@@ -448,6 +439,7 @@ root.buttons(awful.util.table.join(
 
 -- key bindings
 globalkeys = awful.util.table.join(
+    awful.key({ modkey,          }, "Tab", function () awful.layout.inc(layouts, 1) end),
     awful.key({ modkey,          }, "F12", function () exec(cmdLock) end),
     awful.key({ modkey,          }, "p", function ()
           pomodoro:toggle()
@@ -458,12 +450,12 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "e", function () exec(filemanager) end),
     awful.key({ modkey,           }, "w", function () exec(browser) end),
     awful.key({ modkey,           }, "q", function () exec(sublime) end),
-    awful.key({ modkey,           }, "j",
+    awful.key({ modkey,           }, "Left",
         function ()
             awful.client.focus.byidx( 1)
             if client.focus then client.focus:raise() end
         end),
-    awful.key({ modkey,           }, "k",
+    awful.key({ modkey,           }, "Right",
         function ()
             awful.client.focus.byidx(-1)
             if client.focus then client.focus:raise() end
