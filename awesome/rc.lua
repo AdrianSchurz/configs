@@ -320,14 +320,14 @@ memwidget:set_widget(memoryInUsage)
 memwidget:set_bgimage(beautiful.widget_display)
 
 -- clock/calendar
-mytextclock    = awful.widget.textclock(markup(clockgf, "%H:%M"))
-mytextcalendar = awful.widget.textclock(markup(clockgf, "%m-%d"))
+clock    = awful.widget.textclock(markup(clockgf, "%H:%M"))
+calendar = awful.widget.textclock(markup(clockgf, "%m-%d"))
 
 widget_clock = wibox.widget.imagebox()
 widget_clock:set_image(beautiful.widget_clock)
 
 clockwidget = wibox.widget.background()
-clockwidget:set_widget(mytextclock)
+clockwidget:set_widget(clock)
 clockwidget:set_bgimage(beautiful.widget_display)
 
 -- taglist
@@ -524,7 +524,7 @@ clientbuttons = awful.util.table.join(
     awful.button({ }, 1, function (c) client.focus = c; c:raise() end),
     awful.button({ modkey }, 1, awful.mouse.client.move),
     awful.button({ modkey }, 3, awful.mouse.client.resize),
-    awful.button({ modkey }, 4, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end),
+    awful.button({ modkey }, 4, function(t) awful.tag.viewnext(awful.tag.gehtscreen(t)) end),
     awful.button({ modkey }, 5, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end))
 
 root.keys(globalkeys)
@@ -599,19 +599,27 @@ client.connect_signal("manage", function (c, startup)
     end
 end)
 
-clockwidget:connect_signal("mouse::enter", function() clockwidget:set_widget(mytextcalendar) end)
-clockwidget:connect_signal("mouse::leave", function() clockwidget:set_widget(mytextclock) end)
+local switchTo = function (widget)
+  return function () clockwidget:set_widget(widget) end
+end
+clockwidget:connect_signal("mouse::enter", switchTo(calendar))
+clockwidget:connect_signal("mouse::leave", switchTo(clock))
+
+local showDetailedCpuGraph = function ()
+  infoBox.cpu:update()
+  infoBox.cpu:show()
+end
+
+local setBorderColor = function (client, color)
+  local setColor = function ()
+    client.border_color = color
+    client.border_width = 1
+  end
+  return setColor    
+end
 cpuGraph.small.widget:connect_signal("mouse::leave", infoBox.cpu.hide)
-cpuGraph.small.widget:connect_signal("mouse::enter", function ()
-      if detailed_graphs.visible() then
-        infoBox.cpu:update()
-        infoBox.cpu:show()
-    end
-end)
-client.connect_signal("focus", function(c)
-  c.border_color = "#D0752A"
-  c.border_width = 1
-  end)
+cpuGraph.small.widget:connect_signal("mouse::enter", showDetailedCpuGraph)
+client.connect_signal("focus", setBorderColor(c, "#D0752A"))
 client.connect_signal("unfocus", function(c)
   c.border_color = "#343434"
   c.border_width = 1
