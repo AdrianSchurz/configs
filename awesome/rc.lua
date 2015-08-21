@@ -377,7 +377,6 @@ mytasklist.buttons = awful.util.table.join(
 -- panel
 mywibox           = {}
 mypromptbox       = {}
-mylayoutbox       = {}
 
 for s = 1, screen.count() do
 
@@ -420,10 +419,7 @@ for s = 1, screen.count() do
     if s == 1 then
         right_layout:add(spr5px)
         right_layout:add(wibox.widget.systray())
-        right_layout:add(spr5px)
     end
-
-    right_layout:add(mylayoutbox[s])
 
     local layout = wibox.layout.align.horizontal()
     layout:set_left(left_layout)
