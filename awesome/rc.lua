@@ -310,8 +310,7 @@ widget_display_c:set_image(beautiful.widget_display_c)
 myFont = "Source Code Pro"
 memoryInUsage = lain.widgets.mem({
     settings = function()
-        widget:set_markup(space3 .. roundToDecimal(mem_now.used/1000, 1) .. "G" .. markup.font(myFont, " "))
-        --print(space3 .. roundToDecimal(mem_now.used/1000, 1) .. "G" .. markup.font(myFont, " "))
+        widget:set_markup(roundToDecimal(mem_now.used/1000, 1) .. "G")
     end
 })
 
@@ -322,8 +321,8 @@ memwidget:set_widget(memoryInUsage)
 memwidget:set_bgimage(beautiful.widget_display)
 
 -- clock/calendar
-mytextclock    = awful.widget.textclock(markup(clockgf, space3 .. "%H:%M" .. markup.font(myFont, " ")))
-mytextcalendar = awful.widget.textclock(markup(clockgf, space3 .. "%a %d %b"))
+mytextclock    = awful.widget.textclock(markup(clockgf, "%H:%M"))
+mytextcalendar = awful.widget.textclock(markup(clockgf, "%m-%d"))
 
 widget_clock = wibox.widget.imagebox()
 widget_clock:set_image(beautiful.widget_clock)
