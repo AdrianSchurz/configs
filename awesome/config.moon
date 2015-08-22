@@ -23,6 +23,11 @@ logger = logging.file logPath .. logFileName
 
 widgetBoxes = {}
 
+oldPrint = print
+print = (printee) ->
+  oldPrint inspect printee
+
+
 logPreviousStartupErrors = ->
   if awesome.startup_errors
       logger\error 'error during previous startup:'
@@ -104,6 +109,11 @@ setupWallpapers = ->
   setWallpapers chosenOnes, wallpaperFolder
   return
 
+memoryWidget = {}
+cpuWidget = {}
+dateWidget = {}
+cpuGraph = {}
+
 setupPanel = (screenIndex) ->
   widgetBox = {}
   widgetBoxOptions =
@@ -147,8 +157,6 @@ createCpuWidget = (graph) ->
   cpuWidget = uzful.widget.infobox cpuWidgetOptions
   return
 
-memoryWidget = {}
-cpuGraph = {}
 addToLayouts = ->
   rightLayout = wibox.layout.fixed.horizontal!
   rightLayout\add cpuGraph.small.widget
@@ -157,8 +165,15 @@ addToLayouts = ->
   widget_display_l\set_image beautiful.widget_display_l
   widget_display_r = wibox.widget.imagebox!
   widget_display_r\set_image beautiful.widget_display_r
+  widget_display_c = wibox.widget.imagebox!
+  widget_display_c\set_image beautiful.widget_display_c
+  
   rightLayout\add widget_display_l
   rightLayout\add memoryWidget
+  rightLayout\add widget_display_c
+
+  rightLayout\add dateWidget
+
   rightLayout\add widget_display_r
 
   layout = wibox.layout.align.horizontal!
@@ -166,18 +181,37 @@ addToLayouts = ->
   widgetBoxes[1]\set_widget layout
   return
 
+onLeave = (widget, action) ->
+  mouseLeaveSignal = 'mouse::leave'
+  widget\connect_signal mouseLeaveSignal, action
+
+onEnter = (widget, action) ->
+  mouseEnterSignal = 'mouse::enter'
+  widget\connect_signal mouseEnterSignal, action
+
+setupDetailedGraphOnHover = (graph) ->
+  showDetailedGraph = ->
+    cpuWidget\update!
+    cpuWidget\show!
+    return
+  onEnter graph, showDetailedGraph
+
+  hideDetailedGraph = cpuWidget.hide
+  onLeave graph, hideDetailedGraph
+
 setupCpuGraph = ->
   enableGraphAutoCaching!
   cpuGraph = createCpuGraph!
   createCpuWidget cpuGraph
+  setupDetailedGraphOnHover cpuGraph.small.widget 
   return
 
-setupMemoyUsage = ->
+setupMemoryUsage = ->
   roundToOneDecimal = (number) ->
-    factor = 10
-    scaledUp = number * factor + 0.5
+    oneOrderOfMagnitude = 10
+    scaledUp = number * oneOrderOfMagnitude + 0.5
     rounded = math.floor scaledUp
-    scaledDownAgain = rounded / factor
+    scaledDownAgain = rounded / oneOrderOfMagnitude
     return scaledDownAgain
   options =
     settings: ->
@@ -193,10 +227,34 @@ setupMemoyUsage = ->
   return
 
 
+switchTimeDateOnHover = (clock, calendar) ->
+  showDate = ->
+    dateWidget\set_widget calendar
+    return
+  onEnter dateWidget, showDate
+  showTime = ->
+    dateWidget\set_widget clock
+    return
+  onLeave dateWidget, showTime
+
+
+setUpDate = ->
+  hoursAndMinutes = '%H:%M'
+  clock = awful.widget.textclock hoursAndMinutes
+  monthsAndDays = '%m-%d'
+  calendar = awful.widget.textclock monthsAndDays
+
+  dateWidget = wibox.widget.background!
+  dateWidget\set_widget clock
+  dateWidget\set_bgimage beautiful.widget_display
+  switchTimeDateOnHover clock, calendar
+  return
+
 setupPanels = ->
   createWidgetboxes!
   setupCpuGraph!
-  setupMemoyUsage!
+  setupMemoryUsage!
+  setUpDate!
   addToLayouts!
   return
 
