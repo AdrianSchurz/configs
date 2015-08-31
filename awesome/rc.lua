@@ -431,7 +431,8 @@ ph = 22
 clientkeys = awful.util.table.join(
     awful.key({ modkey,           }, "f",        function (c) c.fullscreen = not c.fullscreen  end),
     awful.key({ modkey,           }, "c",        function (c)
-      c:kill()
+      local hoveredOverClient = mouse.object_under_pointer()
+      hoveredOverClient:kill()
       awful.mouse.client.focus()
       end),
     awful.key({ modkey,           }, "n",        function (c) c.minimized = true end)
