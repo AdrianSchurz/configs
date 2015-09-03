@@ -9,9 +9,7 @@ local uzful      = require('uzful')
 local filesystem = require('lfs')
 awful.rules      = require('awful.rules')
 local awmodoro   = require('awmodoro')
-local alttab     = require('awesome_alttab')
-local _          = require('underscore')
-local inspect    = require('inspect')
+local alttab     = require("awesome_alttab")
 require('awful.autofocus')
 require('logging.file')
 
@@ -43,14 +41,13 @@ logger:info("rc.lua start")
 
 function logPreviousStartupErrors()
   if awesome.startup_errors then
-      logger:error('error during previous startup:')
       logger:error(awesome.startup_errors)
   end
 end
 
 function logRuntimeErrors()
   local doneWithPreviousError = true
-  awesome.connect_signal("debug::error", function(error)
+  awesome.connect_signal("debug:error", function(error)
     if not doneWithPreviousError then
       return
     else
@@ -114,48 +111,6 @@ function compileListOfWallpapers(folder)
     end
   end
   return listOfWallpapers
-end
-
-function tableLength(aTable)
-  if aTable[1] == nil then
-    return 0
-  else
-    function mapToOne (entry)
-      return 1
-    end
-    function sum (first, second)
-      return first + second
-    end
-    local oneForEach = _.map(aTable, mapToOne)
-    local sumTotal = _.reduce(oneForEach, sum)
-    return sumTotal
-  end
-end
-
-function tableEmpty(aTable)
-  return tableLength(aTable) == 0
-end
-
-function tableCopy(aTable)
-  function mapToItself (entry)
-    return entry
-  end
-  return _.map(aTable, mapToItself)
-end
-
-function chooseRandomly(aTable, quantity)
-  if aTable[1] == nil or quantity < 1 then
-    return nil
-  else
-    local chosenOnes = {}
-    for itemsChosen = 1, quantity do
-      local inputLength = tableLength(aTable)
-      local randomIndex = math.random(inputLength)
-      local choice = table.remove(aTable, randomIndex)
-      table.insert(chosenOnes, choice)
-    end
-    return chosenOnes
-  end
 end
 
 function selectWallpapers(wallpapers, quantity)
@@ -440,18 +395,22 @@ end
 
 -- mouse bindings
 root.buttons(awful.util.table.join(
-    awful.button({ modkey }, 4, awful.tag.viewnext),
-    awful.button({ modkey }, 5, awful.tag.viewprev)
+    awful.button({ modkey }, 5, awful.tag.viewnext),
+    awful.button({ modkey }, 4, awful.tag.viewprev)
     )
 )
 
 -- key bindings
 globalkeys = awful.util.table.join(
+    awful.key({ modkey,           }, "<",
+      function() clockwidget:set_widget(mytextcalendar) end,
+      function() clockwidget:set_widget(mytextclock) end
+      ),
     awful.key({ modkey,          }, "Tab", function () awful.layout.inc(layouts, 1) end),
     awful.key({ modkey,          }, "F12", function () exec(cmdLock) end),
     awful.key({ modkey,          }, "p", function ()
           pomodoro:toggle()
-          awful.util.spawn(noiseGenerator)
+          awful.util.spawn(noise)
         end),
     awful.key({ modkey, "Shift"   }, "p", function () pomodoro:finish() end),
     awful.key({ modkey, "Shift"   }, "r", awesome.restart),
@@ -485,9 +444,10 @@ ph = 22
 
 clientkeys = awful.util.table.join(
     awful.key({ modkey,           }, "f",        function (c) c.fullscreen = not c.fullscreen  end),
-    awful.key({ modkey,           }, "c",        function ()
+    awful.key({ modkey,           }, "c",        function (c)
       local hoveredOverClient = mouse.object_under_pointer()
       hoveredOverClient:kill()
+      awful.mouse.client.focus()
       end),
     awful.key({ modkey,           }, "n",        function (c) c.minimized = true end)
 )
@@ -534,10 +494,11 @@ clientbuttons = awful.util.table.join(
     awful.button({ }, 1, function (c) client.focus = c; c:raise() end),
     awful.button({ modkey }, 1, awful.mouse.client.move),
     awful.button({ modkey }, 3, awful.mouse.client.resize),
-    awful.button({ modkey }, 4, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end),
-    awful.button({ modkey }, 5, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end))
+    awful.button({ modkey }, 5, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end),
+    awful.button({ modkey }, 4, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end))
 
 root.keys(globalkeys)
+
 -- rules
 awful.rules.rules = {
     { rule = { },
