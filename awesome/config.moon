@@ -9,6 +9,7 @@ filesystem = require 'lfs'
 _ = require 'underscore'
 wibox = require 'wibox'
 lain = require 'lain'
+paths = require 'paths'
 -- awful.rules = require 'awful.rules'
 -- vicious = require 'vicious'
 -- naughty = require 'naughty'
@@ -16,8 +17,7 @@ lain = require 'lain'
 -- alttab = require 'awesome_alttab'
 -- require 'awful.autofocus'
 
-home = os.getenv "HOME"
-logPath = home .. "/.config/awesome/"
+logPath = paths.log
 logFileName = "rc.lua.log"
 logger = logging.file logPath .. logFileName
 
@@ -65,8 +65,7 @@ disableCursorAnimations = ->
   return
 
 setUpTheme = ->
-  theme = "/home/ulmeyda/.config/awesome/themes/pro-dark/theme.lua"
-  beautiful.init theme
+  beautiful.init paths.theme
   return
 
 isJpgOrPng = (fileName) ->
@@ -103,7 +102,7 @@ setWallpapers = (wallpapers, folder) ->
   return
 
 setUpWallpapers = ->
-  wallpaperFolder = home .. '/media/wallpapers/'
+  wallpaperFolder = paths.wallpapers
   allWallpapers = compileListOfWallpapers wallpaperFolder
   chosenOnes = selectWallpapers allWallpapers, screen.count!
   setWallpapers chosenOnes, wallpaperFolder
