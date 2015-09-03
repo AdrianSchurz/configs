@@ -9,9 +9,9 @@ filesystem = require 'lfs'
 _ = require 'underscore'
 wibox = require 'wibox'
 lain = require 'lain'
+-- awful.rules = require 'awful.rules'
 -- vicious = require 'vicious'
 -- naughty = require 'naughty'
--- awful.rules = require 'awful.rules'
 -- awmodoro = require 'awmodoro'
 -- alttab = require 'awesome_alttab'
 -- require 'awful.autofocus'
@@ -64,8 +64,8 @@ disableCursorAnimations = ->
     oldspawn(spawnee, false)
   return
 
-setupTheme = ->
-  theme = "/usr/share/awesome/themes/pro/themes/pro-dark/theme.lua"
+setUpTheme = ->
+  theme = "/home/ulmeyda/.config/awesome/themes/pro-dark/theme.lua"
   beautiful.init theme
   return
 
@@ -102,7 +102,7 @@ setWallpapers = (wallpapers, folder) ->
     gears.wallpaper.maximized wallpaper, screen, true
   return
 
-setupWallpapers = ->
+setUpWallpapers = ->
   wallpaperFolder = home .. '/media/wallpapers/'
   allWallpapers = compileListOfWallpapers wallpaperFolder
   chosenOnes = selectWallpapers allWallpapers, screen.count!
@@ -113,8 +113,9 @@ memoryWidget = {}
 cpuWidget = {}
 dateWidget = {}
 cpuGraph = {}
+tasklist = {}
 
-setupPanel = (screenIndex) ->
+setUpPanel = (screenIndex) ->
   widgetBox = {}
   widgetBoxOptions =
     position: 'top'
@@ -126,7 +127,7 @@ setupPanel = (screenIndex) ->
 
 createWidgetboxes = ->
   for screenIndex = 1, screen.count!
-    table.insert widgetBoxes, setupPanel screenIndex
+    table.insert widgetBoxes, setUpPanel screenIndex
   return
 
 createCpuGraph = ->
@@ -178,35 +179,36 @@ addToLayouts = ->
 
   layout = wibox.layout.align.horizontal!
   layout\set_right rightLayout
+  layout\set_middle tasklist[1]
   widgetBoxes[1]\set_widget layout
   return
 
-onLeave = (widget, action) ->
+onMouseLeave = (widget, action) ->
   mouseLeaveSignal = 'mouse::leave'
   widget\connect_signal mouseLeaveSignal, action
 
-onEnter = (widget, action) ->
+onMouseEnter = (widget, action) ->
   mouseEnterSignal = 'mouse::enter'
   widget\connect_signal mouseEnterSignal, action
 
-setupDetailedGraphOnHover = (graph) ->
+setUpDetailedGraphOnHover = (graph) ->
   showDetailedGraph = ->
     cpuWidget\update!
     cpuWidget\show!
     return
-  onEnter graph, showDetailedGraph
+  onMouseEnter graph, showDetailedGraph
 
   hideDetailedGraph = cpuWidget.hide
-  onLeave graph, hideDetailedGraph
+  onMouseLeave graph, hideDetailedGraph
 
-setupCpuGraph = ->
+setUpCpuGraph = ->
   enableGraphAutoCaching!
   cpuGraph = createCpuGraph!
   createCpuWidget cpuGraph
-  setupDetailedGraphOnHover cpuGraph.small.widget 
+  setUpDetailedGraphOnHover cpuGraph.small.widget 
   return
 
-setupMemoryUsage = ->
+setUpMemoryUsage = ->
   roundToOneDecimal = (number) ->
     oneOrderOfMagnitude = 10
     scaledUp = number * oneOrderOfMagnitude + 0.5
@@ -231,11 +233,11 @@ switchTimeDateOnHover = (clock, calendar) ->
   showDate = ->
     dateWidget\set_widget calendar
     return
-  onEnter dateWidget, showDate
+  onMouseEnter dateWidget, showDate
   showTime = ->
     dateWidget\set_widget clock
     return
-  onLeave dateWidget, showTime
+  onMouseLeave dateWidget, showTime
 
 
 setUpDate = ->
@@ -250,11 +252,15 @@ setUpDate = ->
   switchTimeDateOnHover clock, calendar
   return
 
-setupPanels = ->
+setUpTasklist = ->
+tasklist[1] = awful.widget.tasklist 1, awful.widget.tasklist.filter.currenttags, {}
+
+setUpPanels = ->
   createWidgetboxes!
-  setupCpuGraph!
-  setupMemoryUsage!
+  setUpCpuGraph!
+  setUpMemoryUsage!
   setUpDate!
+  setUpTasklist!
   addToLayouts!
   return
 
@@ -263,6 +269,22 @@ handleStartupAndRuntimeErrors!
 fixJavaGUI!
 disableCursorAnimations!
 
-setupWallpapers!
-setupTheme!
-setupPanels!
+setUpWallpapers!
+setUpTheme!
+setUpPanels!
+
+modkey = 'Mod4'
+terminal = 'urxvt'
+spawn = awful.util.spawn
+
+mod = {modkey, nil}
+modShift = {modkey, 'Shift'}
+enter = 'Return'
+runTerminal = ->
+  return
+hotkeyTerminal = awful.key mod, enter, runTerminal
+hotkeyRestartAwesome = awful.key modShift, 'r', awesome.restart
+
+globalkeys = awful.util.table.join hotkeyTerminal, hotkeyRestartAwesome
+
+root.keys globalkeys
