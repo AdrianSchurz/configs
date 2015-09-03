@@ -1,8 +1,3 @@
-local inspect = require('inspect')
-require('logging.file')
-local logPath = '/home/ulmeyda/.config/awesome/rc.lua.log'
-local logger =  logging.file(logPath)
-
 local awesomeLibPath = '/usr/share/awesome/lib/'
 local luaLibPath = '/usr/share/lua/5.3/'
 local moonConfigPath = '/home/ulmeyda/repositories/configs/awesome/'
