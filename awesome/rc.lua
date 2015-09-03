@@ -9,6 +9,7 @@ local uzful      = require('uzful')
 local filesystem = require('lfs')
 awful.rules      = require('awful.rules')
 local awmodoro   = require('awmodoro')
+local alttab     = require('awesome_alttab')
 local _          = require('underscore')
 local inspect    = require('inspect')
 require('awful.autofocus')
@@ -202,6 +203,14 @@ function roundToDecimal(num, idp)
   return math.floor(num * mult + 0.5) / mult
 end
 
+function defineSomeMarkupShit()
+  markup = lain.util.markup
+  space3 = markup.font("Terminus 3", " ")
+  space2 = markup.font("Terminus 2", " ")
+  vspace1 = '<span font="Terminus 3"> </span>'
+  vspace2 = '<span font="Terminus 3">  </span>'
+end
+
 function fixJavaGUI()
   awful.util.spawn_with_shell("wmname LG3D")
 end
@@ -230,6 +239,8 @@ setupTheme()
 setupWallpapers(wallpaperFolder)
 local layouts = populateLayouts()
 local tags = populateTags(layouts)
+
+defineSomeMarkupShit()
 
 clockgf = beautiful.clockgf
 
@@ -302,20 +313,21 @@ memoryUsage = lain.widgets.mem({
     end
 })
 
+widget_mem = wibox.widget.imagebox()
+widget_mem:set_image(beautiful.widget_mem)
 memwidget = wibox.widget.background()
 memwidget:set_widget(memoryUsage)
 memwidget:set_bgimage(beautiful.widget_display)
 
 -- clock/calendar
-markup = lain.util.markup
-mytextclock    = awful.widget.textclock(markup(clockgf, "%H:%M"))
-mytextcalendar = awful.widget.textclock(markup(clockgf, "%m-%d"))
+clock    = awful.widget.textclock(markup(clockgf, "%H:%M"))
+calendar = awful.widget.textclock(markup(clockgf, "%m-%d"))
 
 widget_clock = wibox.widget.imagebox()
 widget_clock:set_image(beautiful.widget_clock)
 
 clockwidget = wibox.widget.background()
-clockwidget:set_widget(mytextclock)
+clockwidget:set_widget(clock)
 clockwidget:set_bgimage(beautiful.widget_display)
 
 -- taglist
@@ -363,10 +375,16 @@ mytasklist.buttons = awful.util.table.join(
 -- panel
 mywibox           = {}
 mypromptbox       = {}
+mylayoutbox       = {}
 
 for s = 1, screen.count() do
 
     mypromptbox[s] = awful.widget.prompt()
+
+    mylayoutbox[s] = awful.widget.layoutbox(s)
+    mylayoutbox[s]:buttons(awful.util.table.join(
+                           awful.button({ }, 1, function () awful.layout.inc(layouts, 1) end),
+                           awful.button({ }, 3, function () awful.layout.inc(layouts, -1) end)))
 
     mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, mytaglist.buttons)
 
@@ -405,7 +423,10 @@ for s = 1, screen.count() do
     if s == 1 then
         right_layout:add(spr5px)
         right_layout:add(wibox.widget.systray())
+        right_layout:add(spr5px)
     end
+
+    right_layout:add(mylayoutbox[s])
 
     local layout = wibox.layout.align.horizontal()
     layout:set_left(left_layout)
@@ -432,7 +453,7 @@ globalkeys = awful.util.table.join(
           pomodoro:toggle()
           awful.util.spawn(noiseGenerator)
         end),
-    awful.key({ modkey, "Shift" }, "p", function () pomodoro:finish() end),
+    awful.key({ modkey, "Shift"   }, "p", function () pomodoro:finish() end),
     awful.key({ modkey, "Shift"   }, "r", awesome.restart),
     awful.key({ modkey,           }, "e", function () exec(filemanager) end),
     awful.key({ modkey,           }, "w", function () exec(browser) end),
@@ -464,9 +485,9 @@ ph = 22
 
 clientkeys = awful.util.table.join(
     awful.key({ modkey,           }, "f",        function (c) c.fullscreen = not c.fullscreen  end),
-    awful.key({ modkey,           }, "c",        function (c)
-      c:kill()
-      awful.mouse.client.focus()
+    awful.key({ modkey,           }, "c",        function ()
+      local hoveredOverClient = mouse.object_under_pointer()
+      hoveredOverClient:kill()
       end),
     awful.key({ modkey,           }, "n",        function (c) c.minimized = true end)
 )
@@ -588,19 +609,27 @@ client.connect_signal("manage", function (c, startup)
     end
 end)
 
-clockwidget:connect_signal("mouse::enter", function() clockwidget:set_widget(mytextcalendar) end)
-clockwidget:connect_signal("mouse::leave", function() clockwidget:set_widget(mytextclock) end)
+local switchTo = function (widget)
+  return function () clockwidget:set_widget(widget) end
+end
+clockwidget:connect_signal("mouse::enter", switchTo(calendar))
+clockwidget:connect_signal("mouse::leave", switchTo(clock))
+
+local showDetailedCpuGraph = function ()
+  infoBox.cpu:update()
+  infoBox.cpu:show()
+end
+
+local setBorderColor = function (client, color)
+  local setColor = function ()
+    client.border_color = color
+    client.border_width = 1
+  end
+  return setColor    
+end
 cpuGraph.small.widget:connect_signal("mouse::leave", infoBox.cpu.hide)
-cpuGraph.small.widget:connect_signal("mouse::enter", function ()
-      if detailed_graphs.visible() then
-        infoBox.cpu:update()
-        infoBox.cpu:show()
-    end
-end)
-client.connect_signal("focus", function(c)
-  c.border_color = "#D0752A"
-  c.border_width = 1
-  end)
+cpuGraph.small.widget:connect_signal("mouse::enter", showDetailedCpuGraph)
+client.connect_signal("focus", setBorderColor(c, "#D0752A"))
 client.connect_signal("unfocus", function(c)
   c.border_color = "#343434"
   c.border_width = 1
