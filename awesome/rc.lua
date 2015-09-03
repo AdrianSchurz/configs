@@ -9,7 +9,6 @@ local uzful      = require('uzful')
 local filesystem = require('lfs')
 awful.rules      = require('awful.rules')
 local awmodoro   = require('awmodoro')
-local alttab     = require('awesome_alttab')
 local _          = require('underscore')
 local inspect    = require('inspect')
 require('awful.autofocus')
@@ -203,14 +202,6 @@ function roundToDecimal(num, idp)
   return math.floor(num * mult + 0.5) / mult
 end
 
-function defineSomeMarkupShit()
-  markup = lain.util.markup
-  space3 = markup.font("Terminus 3", " ")
-  space2 = markup.font("Terminus 2", " ")
-  vspace1 = '<span font="Terminus 3"> </span>'
-  vspace2 = '<span font="Terminus 3">  </span>'
-end
-
 function fixJavaGUI()
   awful.util.spawn_with_shell("wmname LG3D")
 end
@@ -239,8 +230,6 @@ setupTheme()
 setupWallpapers(wallpaperFolder)
 local layouts = populateLayouts()
 local tags = populateTags(layouts)
-
-defineSomeMarkupShit()
 
 clockgf = beautiful.clockgf
 
@@ -307,20 +296,18 @@ widget_display_l:set_image(beautiful.widget_display_l)
 widget_display_c = wibox.widget.imagebox()
 widget_display_c:set_image(beautiful.widget_display_c)
 
-myFont = "Source Code Pro"
-memoryInUsage = lain.widgets.mem({
+memoryUsage = lain.widgets.mem({
     settings = function()
         widget:set_markup(roundToDecimal(mem_now.used/1000, 1) .. "G")
     end
 })
 
-widget_mem = wibox.widget.imagebox()
-widget_mem:set_image(beautiful.widget_mem)
 memwidget = wibox.widget.background()
-memwidget:set_widget(memoryInUsage)
+memwidget:set_widget(memoryUsage)
 memwidget:set_bgimage(beautiful.widget_display)
 
 -- clock/calendar
+markup = lain.util.markup
 mytextclock    = awful.widget.textclock(markup(clockgf, "%H:%M"))
 mytextcalendar = awful.widget.textclock(markup(clockgf, "%m-%d"))
 

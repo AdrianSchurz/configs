@@ -9,24 +9,30 @@ filesystem = require 'lfs'
 _ = require 'underscore'
 wibox = require 'wibox'
 lain = require 'lain'
+paths = require 'paths'
+-- awful.rules = require 'awful.rules'
 -- vicious = require 'vicious'
 -- naughty = require 'naughty'
--- awful.rules = require 'awful.rules'
 -- awmodoro = require 'awmodoro'
 -- alttab = require 'awesome_alttab'
 -- require 'awful.autofocus'
 
-home = os.getenv "HOME"
-logPath = home .. "/.config/awesome/"
+logPath = paths.log
 logFileName = "rc.lua.log"
 logger = logging.file logPath .. logFileName
 
 widgetBoxes = {}
 
+oldPrint = print
+print = (printee) ->
+  oldPrint inspect printee
+
+
 logPreviousStartupErrors = ->
   if awesome.startup_errors
       logger\error 'error during previous startup:'
       logger\error awesome.startup_errors
+  return
 
 logRuntimeErrors = ->
   doneWithPreviousError = true
@@ -37,6 +43,7 @@ logRuntimeErrors = ->
       doneWithPreviousError = false
       logger\error error
       doneWithPreviousError = true
+  return
 
 handleStartupAndRuntimeErrors = ->
   logPreviousStartupErrors!
@@ -45,18 +52,21 @@ handleStartupAndRuntimeErrors = ->
 
 enableGraphAutoCaching = ->
   uzful.util.patch.vicious!
+  return
 
 fixJavaGUI = ->
   awful.util.spawn_with_shell 'wmname LG3D'
+  return
 
 disableCursorAnimations = ->
   oldspawn = awful.util.spawn
   awful.util.spawn = (spawnee) ->
     oldspawn(spawnee, false)
+  return
 
-setupTheme = ->
-  theme = "/usr/share/awesome/themes/pro/themes/pro-dark/theme.lua"
-  beautiful.init theme
+setUpTheme = ->
+  beautiful.init paths.theme
+  return
 
 isJpgOrPng = (fileName) ->
   if fileName == '.' or fileName == '..' --TODO
@@ -73,7 +83,7 @@ compileListOfWallpapers = (folder) ->
 
 chooseRandomly = (aTable, quantity) ->
   if #aTable == 0 or quantity < 1
-    return nil
+    return
   else
     chosenOnes = {}
     for itemsChosen = 1, quantity
@@ -89,14 +99,22 @@ setWallpapers = (wallpapers, folder) ->
   for screen = 1, screen.count!
     wallpaper = folder .. wallpapers[screen]
     gears.wallpaper.maximized wallpaper, screen, true
+  return
 
-setupWallpapers = ->
-  wallpaperFolder = home .. '/media/wallpapers/'
+setUpWallpapers = ->
+  wallpaperFolder = paths.wallpapers
   allWallpapers = compileListOfWallpapers wallpaperFolder
   chosenOnes = selectWallpapers allWallpapers, screen.count!
   setWallpapers chosenOnes, wallpaperFolder
+  return
 
-setupPanel = ->
+memoryWidget = {}
+cpuWidget = {}
+dateWidget = {}
+cpuGraph = {}
+tasklist = {}
+
+setUpPanel = (screenIndex) ->
   widgetBox = {}
   widgetBoxOptions =
     position: 'top'
@@ -108,7 +126,8 @@ setupPanel = ->
 
 createWidgetboxes = ->
   for screenIndex = 1, screen.count!
-    table.insert widgetBoxes, setupPanel!
+    table.insert widgetBoxes, setUpPanel screenIndex
+  return
 
 createCpuGraph = ->
   cpuGraphOptions =
@@ -136,10 +155,8 @@ createCpuWidget = (graph) ->
     width: graph.big.width
     height: graph.big.height
   cpuWidget = uzful.widget.infobox cpuWidgetOptions
-  return nil
+  return
 
-memoryWidget = {}
-cpuGraph = {}
 addToLayouts = ->
   rightLayout = wibox.layout.fixed.horizontal!
   rightLayout\add cpuGraph.small.widget
@@ -148,44 +165,125 @@ addToLayouts = ->
   widget_display_l\set_image beautiful.widget_display_l
   widget_display_r = wibox.widget.imagebox!
   widget_display_r\set_image beautiful.widget_display_r
+  widget_display_c = wibox.widget.imagebox!
+  widget_display_c\set_image beautiful.widget_display_c
+  
   rightLayout\add widget_display_l
   rightLayout\add memoryWidget
+  rightLayout\add widget_display_c
+
+  rightLayout\add dateWidget
+
   rightLayout\add widget_display_r
 
   layout = wibox.layout.align.horizontal!
   layout\set_right rightLayout
+  layout\set_middle tasklist[1]
   widgetBoxes[1]\set_widget layout
-  return nil
+  return
 
-setupCpuGraph = ->
+onMouseLeave = (widget, action) ->
+  mouseLeaveSignal = 'mouse::leave'
+  widget\connect_signal mouseLeaveSignal, action
+
+onMouseEnter = (widget, action) ->
+  mouseEnterSignal = 'mouse::enter'
+  widget\connect_signal mouseEnterSignal, action
+
+setUpDetailedGraphOnHover = (graph) ->
+  showDetailedGraph = ->
+    cpuWidget\update!
+    cpuWidget\show!
+    return
+  onMouseEnter graph, showDetailedGraph
+
+  hideDetailedGraph = cpuWidget.hide
+  onMouseLeave graph, hideDetailedGraph
+
+setUpCpuGraph = ->
   enableGraphAutoCaching!
   cpuGraph = createCpuGraph!
   createCpuWidget cpuGraph
+  setUpDetailedGraphOnHover cpuGraph.small.widget 
+  return
 
-setupMemoyUsage = ->
-  markup = lain.util.markup
+setUpMemoryUsage = ->
+  roundToOneDecimal = (number) ->
+    oneOrderOfMagnitude = 10
+    scaledUp = number * oneOrderOfMagnitude + 0.5
+    rounded = math.floor scaledUp
+    scaledDownAgain = rounded / oneOrderOfMagnitude
+    return scaledDownAgain
   options =
     settings: ->
-    --widget\set_markup space3 .. roundToDecimal(mem_now.used/1000, 1) .. "G" .. markup.font(myFont, " ")
+      memoryScaledToGB = mem_now.used/1000
+      memoryRounded = roundToOneDecimal memoryScaledToGB
+      memoryAsDisplayed = memoryRounded .. "G"
+      widget\set_markup memoryAsDisplayed
+
   memoryUsage = lain.widgets.mem options
-  widgetBox = wibox.widget.imagebox!
-  widgetBox\set_image beautiful.widget_mem
   memoryWidget = wibox.widget.background!
-  memoryWidget\set_widget memoryInUsage
+  memoryWidget\set_widget memoryUsage
   memoryWidget\set_bgimage beautiful.widget_display
+  return
 
 
-setupPanels = ->
+switchTimeDateOnHover = (clock, calendar) ->
+  showDate = ->
+    dateWidget\set_widget calendar
+    return
+  onMouseEnter dateWidget, showDate
+  showTime = ->
+    dateWidget\set_widget clock
+    return
+  onMouseLeave dateWidget, showTime
+
+
+setUpDate = ->
+  hoursAndMinutes = '%H:%M'
+  clock = awful.widget.textclock hoursAndMinutes
+  monthsAndDays = '%m-%d'
+  calendar = awful.widget.textclock monthsAndDays
+
+  dateWidget = wibox.widget.background!
+  dateWidget\set_widget clock
+  dateWidget\set_bgimage beautiful.widget_display
+  switchTimeDateOnHover clock, calendar
+  return
+
+setUpTasklist = ->
+tasklist[1] = awful.widget.tasklist 1, awful.widget.tasklist.filter.currenttags, {}
+
+setUpPanels = ->
   createWidgetboxes!
-  setupCpuGraph!
-  setupMemoyUsage!
+  setUpCpuGraph!
+  setUpMemoryUsage!
+  setUpDate!
+  setUpTasklist!
   addToLayouts!
+  return
 
 --entry point
 handleStartupAndRuntimeErrors!
 fixJavaGUI!
 disableCursorAnimations!
 
-setupWallpapers!
-setupTheme!
-setupPanels!
+setUpWallpapers!
+setUpTheme!
+setUpPanels!
+
+modkey = 'Mod4'
+terminal = 'urxvt'
+spawn = awful.util.spawn
+
+mod = {modkey, nil}
+modShift = {modkey, 'Shift'}
+enter = 'Return'
+runTerminal = ->
+  return
+hotkeyTerminal = awful.key mod, enter, runTerminal
+hotkeyRestartAwesome = awful.key modShift, 'r', awesome.restart
+
+globalkeys = awful.util.table.join hotkeyTerminal, hotkeyRestartAwesome
+
+root.keys globalkeys
