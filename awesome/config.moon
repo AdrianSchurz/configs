@@ -13,8 +13,6 @@ paths = require 'paths'
 -- awful.rules = require 'awful.rules'
 -- vicious = require 'vicious'
 -- naughty = require 'naughty'
--- lain = require 'lain'
--- awful.rules = require 'awful.rules'
 -- awmodoro = require 'awmodoro'
 -- alttab = require 'awesome_alttab'
 -- require 'awful.autofocus'
@@ -110,7 +108,13 @@ setUpWallpapers = ->
   setWallpapers chosenOnes, wallpaperFolder
   return
 
-setupPanel = ->
+memoryWidget = {}
+cpuWidget = {}
+dateWidget = {}
+cpuGraph = {}
+tasklist = {}
+
+setUpPanel = (screenIndex) ->
   widgetBox = {}
   widgetBoxOptions =
     position: 'top'
@@ -153,8 +157,6 @@ createCpuWidget = (graph) ->
   cpuWidget = uzful.widget.infobox cpuWidgetOptions
   return
 
-memoryWidget = {}
-cpuGraph = {}
 addToLayouts = ->
   rightLayout = wibox.layout.fixed.horizontal!
   rightLayout\add cpuGraph.small.widget
@@ -176,6 +178,7 @@ addToLayouts = ->
 
   layout = wibox.layout.align.horizontal!
   layout\set_right rightLayout
+  layout\set_middle tasklist[1]
   widgetBoxes[1]\set_widget layout
   return
 
