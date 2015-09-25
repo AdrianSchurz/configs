@@ -9,6 +9,8 @@ local uzful      = require('uzful')
 local filesystem = require('lfs')
 awful.rules      = require('awful.rules')
 local awmodoro   = require('awmodoro')
+local inspect    = require('inspect')
+local paths      = require('paths')
 require('awful.autofocus')
 require('logging.file')
 
@@ -30,11 +32,8 @@ require('logging.file')
 -- mod+shift+p                  end pomodoro session
 ---------------------------------------------------
 
-local home   = os.getenv("HOME")
-local wallpaperFolder = home .. "/media/wallpapers/"
-local logPath = home .. "/.config/awesome/"
 local logFileName = "rc.lua.log"
-local logger = logging.file(logPath .. logFileName)
+local logger = logging.file(paths.log .. logFileName)
 
 logger:info("rc.lua start")
 
@@ -62,8 +61,7 @@ function enableGraphAutoCaching()
 end
 
 function setupTheme()
-  local theme = "/usr/share/awesome/themes/pro/themes/pro-dark/theme.lua"
-  beautiful.init(theme)
+  beautiful.init(paths.theme)
 end
 
 function populateLayouts()
@@ -100,7 +98,7 @@ function notJustAFolder(fileName)
   return not aFolder
 end
 
-function compileListOfWallpapers(folder)
+function compileListOfWallpapersIn(folder)
   local listOfWallpapers = {}
   local index = 1
   for file in filesystem.dir(folder) do --TODO error handling
@@ -110,6 +108,21 @@ function compileListOfWallpapers(folder)
     end
   end
   return listOfWallpapers
+end
+
+function chooseRandomly(aTable, quantity)
+  if aTable[1] == nil or quantity < 1 then
+    return nil
+  else
+    local chosenOnes = {}
+    for itemsChosen = 1, quantity do
+      local inputLength = #aTable
+      local randomIndex = math.random(inputLength)
+      local choice = table.remove(aTable, randomIndex)
+      table.insert(chosenOnes, choice)
+    end
+    return chosenOnes
+  end
 end
 
 function selectWallpapers(wallpapers, quantity)
@@ -123,8 +136,9 @@ function setWallpapers(wallpapers, folder)
   end
 end
 
-function setupWallpapers(folder)
-  local allWallpapers = compileListOfWallpapers(folder)
+function setupWallpapers()
+  local folder = paths.wallpapers
+  local allWallpapers = compileListOfWallpapersIn(folder)
   local chosenOnes = selectWallpapers(allWallpapers, screen.count())
   setWallpapers(chosenOnes, folder)
 end
@@ -190,7 +204,7 @@ logRuntimeErrors()
 enableGraphAutoCaching()
 fixJavaGUI()
 setupTheme()
-setupWallpapers(wallpaperFolder)
+setupWallpapers()
 local layouts = populateLayouts()
 local tags = populateTags(layouts)
 
@@ -589,7 +603,9 @@ local setBorderColor = function (client, color)
 end
 cpuGraph.small.widget:connect_signal("mouse::leave", infoBox.cpu.hide)
 cpuGraph.small.widget:connect_signal("mouse::enter", showDetailedCpuGraph)
-client.connect_signal("focus", setBorderColor(c, "#D0752A"))
+client.connect_signal("focus", function(c)
+  setBorderColor(c, "#D0752A")
+end)
 client.connect_signal("unfocus", function(c)
   c.border_color = "#343434"
   c.border_width = 1
