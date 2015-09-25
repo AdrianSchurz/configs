@@ -27,7 +27,6 @@ oldPrint = print
 print = (printee) ->
   oldPrint inspect printee
 
-
 logPreviousStartupErrors = ->
   if awesome.startup_errors
       logger\error 'error during previous startup:'
@@ -112,6 +111,7 @@ memoryWidget = {}
 cpuWidget = {}
 dateWidget = {}
 cpuGraph = {}
+taglist = {}
 tasklist = {}
 
 setUpPanel = (screenIndex) ->
@@ -158,6 +158,10 @@ createCpuWidget = (graph) ->
   return
 
 addToLayouts = ->
+  leftLayout = wibox.layout.fixed.horizontal!
+  tags = {}
+  tags[1] = awful.tag {"  "}, 1, awful.layout.suit.tile
+  leftLayout\add taglist[1]
   rightLayout = wibox.layout.fixed.horizontal!
   rightLayout\add cpuGraph.small.widget
 
@@ -177,6 +181,7 @@ addToLayouts = ->
   rightLayout\add widget_display_r
 
   layout = wibox.layout.align.horizontal!
+  layout\set_left leftLayout
   layout\set_right rightLayout
   layout\set_middle tasklist[1]
   widgetBoxes[1]\set_widget layout
@@ -251,14 +256,20 @@ setUpDate = ->
   switchTimeDateOnHover clock, calendar
   return
 
+setupTaglist = ->
+  taglist[1]  = awful.widget.taglist 1, awful.widget.taglist.filter.all, {}
+  return
+
 setUpTasklist = ->
-tasklist[1] = awful.widget.tasklist 1, awful.widget.tasklist.filter.currenttags, {}
+  tasklist[1] = awful.widget.tasklist 1, awful.widget.tasklist.filter.currenttags, {}
+  return
 
 setUpPanels = ->
   createWidgetboxes!
   setUpCpuGraph!
   setUpMemoryUsage!
   setUpDate!
+  setupTaglist!
   setUpTasklist!
   addToLayouts!
   return
@@ -272,18 +283,19 @@ setUpWallpapers!
 setUpTheme!
 setUpPanels!
 
-modkey = 'Mod4'
-terminal = 'urxvt'
-spawn = awful.util.spawn
+-- modkey = 'Mod4'
+-- terminal = 'urxvt'
+-- spawn = awful.util.spawn
 
-mod = {modkey, nil}
-modShift = {modkey, 'Shift'}
-enter = 'Return'
-runTerminal = ->
-  return
-hotkeyTerminal = awful.key mod, enter, runTerminal
-hotkeyRestartAwesome = awful.key modShift, 'r', awesome.restart
+-- mod = {modkey, nil}
+-- modShift = {modkey, 'Shift'}
+-- enter = 'Return'
+-- runTerminal = ->
+--   spawn terminal
+--   return
+-- hotkeyTerminal = awful.key mod, enter, runTerminal
+-- hotkeyRestartAwesome = awful.key modShift, 'r', awesome.restart
 
-globalkeys = awful.util.table.join hotkeyTerminal, hotkeyRestartAwesome
+-- globalkeys = awful.util.table.join hotkeyTerminal, hotkeyRestartAwesome
 
-root.keys globalkeys
+-- root.keys globalkeys
