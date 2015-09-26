@@ -10,7 +10,7 @@ _ = require 'underscore'
 wibox = require 'wibox'
 lain = require 'lain'
 paths = require 'paths'
--- awful.rules = require 'awful.rules'
+awful.rules = require 'awful.rules'
 -- vicious = require 'vicious'
 -- naughty = require 'naughty'
 -- awmodoro = require 'awmodoro'
@@ -322,3 +322,21 @@ setUpHotkeys = ->
   return
 
 setUpHotkeys!
+
+defineAwesomeRules = ->
+  awful.rules.rules = {}
+  matchAllWindows = {}
+  applyDefaultPropertiesToAllWindows =
+    rule: matchAllWindows
+    properties:
+      border_width: 1
+      border_color: '#D0752A'
+      focus: awful.client.focus.filter
+      size_hints_honor: false
+      raise: true
+      keys: {}
+      buttons: {}
+  table.insert awful.rules.rules, applyDefaultPropertiesToAllWindows
+  return
+
+defineAwesomeRules!
