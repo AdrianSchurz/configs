@@ -595,11 +595,8 @@ local showDetailedCpuGraph = function ()
 end
 
 local setBorderColor = function (client, color)
-  local setColor = function ()
     client.border_color = color
     client.border_width = 1
-  end
-  return setColor    
 end
 cpuGraph.small.widget:connect_signal("mouse::leave", infoBox.cpu.hide)
 cpuGraph.small.widget:connect_signal("mouse::enter", showDetailedCpuGraph)
@@ -607,8 +604,7 @@ client.connect_signal("focus", function(c)
   setBorderColor(c, "#D0752A")
 end)
 client.connect_signal("unfocus", function(c)
-  c.border_color = "#343434"
-  c.border_width = 1
+  setBorderColor(c, "#343434")
   end)
 
 logger:info("rc.lua end")
