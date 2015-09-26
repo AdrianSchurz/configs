@@ -340,3 +340,11 @@ defineAwesomeRules = ->
   return
 
 defineAwesomeRules!
+
+client.connect_signal "focus", (c) ->
+  c.border_color = '#D0752A'
+  return
+
+client.connect_signal 'unfocus', (c) ->
+  c.border_color = "#343434"
+  return
