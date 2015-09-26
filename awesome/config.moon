@@ -17,7 +17,7 @@ paths = require 'paths'
 -- alttab = require 'awesome_alttab'
 -- require 'awful.autofocus'
 
-mainPanels = {}
+panels = {}
 
 oldPrint = print
 print = (printee) ->
@@ -94,11 +94,8 @@ selectWallpapers = (wallpapers, quantity) ->
   return chooseRandomly wallpapers, quantity
 
 isJpgOrPng = (fileName) ->
-  if fileName == '.' or fileName == '..' --TODO
-    return false
-  else
-    return true
-  
+  return not (fileName == '.' or fileName == '..') -- TODO actually do what it says
+
 compileListOfWallpapers = (folder) ->
   listOfWallpapers = {}
   for fileName in filesystem.dir folder
@@ -128,7 +125,9 @@ createCpuGraph = ->
     bgcolor: beautiful.bg_systray
     load:
       interval: 20
-      text: ' <span size="x-small"><span color="#666666">$1</span>' .. '  <span color="#9A9A9A">$2</span>' .. '  <span color="#DDDDDD">$3</span></span>'
+      text: '  <span size="x-small"><span color="#666666">$1</span>' ..
+            '  <span color="#9A9A9A">$2</span>' ..
+            '  <span color="#DDDDDD">$3</span></span>'
     big:
       width: 400
       height: 100
@@ -151,13 +150,14 @@ createCpuWidget = (graph) ->
   return
 
 layoutWidgets = ->
+  screenIndex = 1
   leftPartialLayout = wibox.layout.fixed.horizontal!
   rightPartialLayout = wibox.layout.fixed.horizontal!
   layout = wibox.layout.align.horizontal!
 
   layout\set_left leftPartialLayout
   layout\set_right rightPartialLayout
-  layout\set_middle taskbar[1]
+  layout\set_middle taskbar[screenIndex]
 
   memoryWidget = wibox.widget.background!
   memoryWidget\set_widget memoryUsage
@@ -170,7 +170,7 @@ layoutWidgets = ->
   widgetBackgroundInBetweenWidgets = wibox.widget.imagebox!
   widgetBackgroundInBetweenWidgets\set_image beautiful.widget_display_c
 
-  leftPartialLayout\add tagPanel[1]
+  leftPartialLayout\add tagPanel[screenIndex]
 
   rightPartialLayout\add cpuGraph.small.widget
   rightPartialLayout\add widgetBackgroundLeftEnd
@@ -179,14 +179,16 @@ layoutWidgets = ->
   rightPartialLayout\add dateWidget
   rightPartialLayout\add widgetBackgroundRightEnd
 
-  mainPanels[1]\set_widget layout
+  panels[screenIndex]\set_widget layout
   return
 
 onMouseLeave = (widget, action) ->
   widget\connect_signal 'mouse::leave', action
+  return
 
 onMouseEnter = (widget, action) ->
   widget\connect_signal 'mouse::enter', action
+  return
 
 setUpDetailedGraphOnHover = (graph) ->
   showDetailedGraph = ->
@@ -267,7 +269,7 @@ setUpCpuGraph = ->
   enableGraphAutoCaching!
   cpuGraph = createCpuGraph!
   createCpuWidget cpuGraph
-  setUpDetailedGraphOnHover cpuGraph.small.widget 
+  setUpDetailedGraphOnHover cpuGraph.small.widget
   return
 
 createWidgets = ->
@@ -287,7 +289,7 @@ setUpPanel = (screenIndex) ->
 
 createPanelForEachScreen = ->
   for screenIndex = 1, screen.count!
-    table.insert mainPanels, setUpPanel screenIndex
+    table.insert panels, setUpPanel screenIndex
   return
 
 setUpPanels = ->
@@ -317,5 +319,6 @@ setUpHotkeys = ->
 
   globalkeys = awful.util.table.join hotkeyTerminal, hotkeyRestartAwesome
   root.keys globalkeys
+  return
 
 setUpHotkeys!
