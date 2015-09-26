@@ -296,19 +296,22 @@ setUpPanels = ->
 
 setUpPanels!
 
--- modkey = 'Mod4'
--- terminal = 'urxvt'
--- spawn = awful.util.spawn
+setUpHotkeys = ->
+  modkey = 'Mod4'
+  terminal = 'urxvt'
+  spawn = awful.util.spawn
 
--- mod = {modkey, nil}
--- modShift = {modkey, 'Shift'}
--- enter = 'Return'
--- runTerminal = ->
---   spawn terminal
---   return
--- hotkeyTerminal = awful.key mod, enter, runTerminal
--- hotkeyRestartAwesome = awful.key modShift, 'r', awesome.restart
+  mod = {modkey, nil}
+  modShift = {modkey, 'Shift'}
+  enter = 'Return'
+  runTerminal = ->
+    spawn terminal
+    return
 
--- globalkeys = awful.util.table.join hotkeyTerminal, hotkeyRestartAwesome
+  hotkeyTerminal = awful.key mod, enter, runTerminal
+  hotkeyRestartAwesome = awful.key modShift, 'r', awesome.restart
 
--- root.keys globalkeys
+  globalkeys = awful.util.table.join hotkeyTerminal, hotkeyRestartAwesome
+  root.keys globalkeys
+
+setUpHotkeys!
