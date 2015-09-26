@@ -219,8 +219,12 @@ createTaskbar = ->
   return
 
 createTags = ->
+  numberOfTags = 4
+  -- this theme seems to enforce two character tag names
   defaultTagName = "  "
-  tagNames = {defaultTagName}
+  tagNames =  {}
+  for tagIndex = 1, numberOfTags
+    tagNames[tagIndex] = defaultTagName
   defaultLayout = awful.layout.suit.tile
   screen = 1
 
