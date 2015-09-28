@@ -351,9 +351,9 @@ defineGlobalHotkeys = ->
   mod = {modkey, nil}
   modShift = {modkey, 'Shift'}
   enter = 'Return'
-  runTerminal = ->
-    spawn terminal
-    return
+  filemanager = 'thunar'
+  browser = 'chromium'
+  guiEditor = 'subl'
 
   hotkeyTerminal = awful.key mod, enter, -> spawn terminal
   hotkeyRestartAwesome = awful.key modShift, 'r', awesome.restart
@@ -361,12 +361,14 @@ defineGlobalHotkeys = ->
   hotkeyKillClient = awful.key mod, "c", ->
       hoveredOverClient = mouse.object_under_pointer!
       hoveredOverClient\kill!
-      return
+  hotkeyFileManager = awful.key mod, 'e', -> spawn filemanager
+  hotkeyBrowser = awful.key mod, 'w', -> spawn browser
+  hotkeyGuiEditor = awful.key mod, 'q', -> spawn guiEditor
 
   globalkeys = awful.util.table.join hotkeyTerminal,
-    hotkeyRestartAwesome,
-    hotkeyCycleLayouts,
-    hotkeyKillClient
+    hotkeyRestartAwesome, hotkeyCycleLayouts, hotkeyKillClient,
+    hotkeyFileManager, hotkeyBrowser, hotkeyGuiEditor
+
 
   root.keys globalkeys
 
