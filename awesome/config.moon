@@ -358,10 +358,15 @@ defineGlobalHotkeys = ->
   hotkeyTerminal = awful.key mod, enter, -> spawn terminal
   hotkeyRestartAwesome = awful.key modShift, 'r', awesome.restart
   hotkeyCycleLayouts = awful.key mod, 'Tab', -> awful.layout.inc clientLayouts, 1
+  hotkeyKillClient = awful.key mod, "c", ->
+      hoveredOverClient = mouse.object_under_pointer!
+      hoveredOverClient\kill!
+      return
 
   globalkeys = awful.util.table.join hotkeyTerminal,
     hotkeyRestartAwesome,
-    hotkeyCycleLayouts
+    hotkeyCycleLayouts,
+    hotkeyKillClient
 
   root.keys globalkeys
 
