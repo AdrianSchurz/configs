@@ -309,6 +309,7 @@ setUpPanels = ->
 
 setUpPanels!
 
+<<<<<<< Updated upstream
 borderColorWhenFocused = '#D0752A'
 borderColorWhenUnfocused = '#343434'
 
@@ -346,14 +347,20 @@ defineClientHotkeys = ->
 defineGlobalHotkeys = ->
   modkey = 'Mod4'
   terminal = 'urxvt'
+=======
+setUpHotkeys = ->
+>>>>>>> Stashed changes
   spawn = awful.util.spawn
-
-  mod = {modkey, nil}
-  modShift = {modkey, 'Shift'}
+  
+  terminal = 'urxvt'
   enter = 'Return'
   filemanager = 'thunar'
   browser = 'chromium'
   guiEditor = 'subl'
+
+  modkey = 'Mod4'
+  mod = {modkey, nil}
+  modShift = {modkey, 'Shift'}
 
   hotkeyTerminal = awful.key mod, enter, -> spawn terminal
   hotkeyRestartAwesome = awful.key modShift, 'r', awesome.restart
@@ -369,7 +376,12 @@ defineGlobalHotkeys = ->
     hotkeyRestartAwesome, hotkeyCycleLayouts, hotkeyKillClient,
     hotkeyFileManager, hotkeyBrowser, hotkeyGuiEditor
 
-
   root.keys globalkeys
+
+  switchToTagOnClick = awful.button {}, 1, awful.tag.viewonly
+  sendClientToTag = awful.button mod, 1, awful.client.movetotag
+
+  tagPanel.buttons = awful.util.table.join switchToTagOnClick, sendClientToTag
+
 
 setUpHotkeys!
