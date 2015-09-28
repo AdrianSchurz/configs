@@ -302,7 +302,41 @@ setUpPanels = ->
 
 setUpPanels!
 
-setUpHotkeys = ->
+borderColorWhenFocused = '#D0752A'
+borderColorWhenUnfocused = '#343434'
+
+clientHotkeys = {}
+defineAwesomeRules = ->
+  awful.rules.rules = {}
+  matchAllWindows = {}
+  applyDefaultPropertiesToAllWindows =
+    rule: matchAllWindows
+    properties:
+      border_width: 1
+      border_color: borderColorWhenFocused
+      focus: awful.client.focus.filter
+      size_hints_honor: false
+      raise: true
+      keys: clientHotkeys
+      buttons: {}
+  table.insert awful.rules.rules, applyDefaultPropertiesToAllWindows
+  return
+
+defineAwesomeRules!
+
+defineClientHotkeys = ->
+  closeClientUnderMouse = (client) ->
+    hoveredOverClient = mouse.object_under_pointer!
+    hoveredOverClient\kill!
+    awful.mouse.client.focus!
+  modkey = 'Mod4'
+  mod = {modkey, nil}
+  hotkeyCloseClient = awful.key mod, 'c', closeClientUnderMouse
+
+  table.insert clientHotkeys, hotkeyCloseClient
+  return
+
+defineGlobalHotkeys = ->
   modkey = 'Mod4'
   terminal = 'urxvt'
   spawn = awful.util.spawn
@@ -321,30 +355,16 @@ setUpHotkeys = ->
   root.keys globalkeys
   return
 
+setUpHotkeys = ->
+  defineGlobalHotkeys!
+  defineClientHotkeys!
+
 setUpHotkeys!
 
-defineAwesomeRules = ->
-  awful.rules.rules = {}
-  matchAllWindows = {}
-  applyDefaultPropertiesToAllWindows =
-    rule: matchAllWindows
-    properties:
-      border_width: 1
-      border_color: '#D0752A'
-      focus: awful.client.focus.filter
-      size_hints_honor: false
-      raise: true
-      keys: {}
-      buttons: {}
-  table.insert awful.rules.rules, applyDefaultPropertiesToAllWindows
-  return
-
-defineAwesomeRules!
-
 client.connect_signal "focus", (c) ->
-  c.border_color = '#D0752A'
+  c.border_color = borderColorWhenFocused
   return
 
 client.connect_signal 'unfocus', (c) ->
-  c.border_color = "#343434"
+  c.border_color = borderColorWhenUnfocused
   return
