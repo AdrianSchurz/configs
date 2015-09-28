@@ -118,6 +118,13 @@ dateWidget = {}
 cpuGraph = {}
 tagPanel = {}
 taskbar = {}
+clientLayouts = {}
+
+defineClientLayouts = ->
+  clientLayouts = {awful.layout.suit.tile, awful.layout.suit.tile.top}
+  return
+
+defineClientLayouts!
 
 createCpuGraph = ->
   cpuGraphOptions =
@@ -227,7 +234,7 @@ createTags = ->
   tagNames =  {}
   for tagIndex = 1, numberOfTags
     tagNames[tagIndex] = defaultTagName
-  defaultLayout = awful.layout.suit.tile
+  defaultLayout = clientLayouts[1]
   screen = 1
 
   tags = {}
@@ -348,23 +355,14 @@ defineGlobalHotkeys = ->
     spawn terminal
     return
 
-  hotkeyTerminal = awful.key mod, enter, runTerminal
+  hotkeyTerminal = awful.key mod, enter, -> spawn terminal
   hotkeyRestartAwesome = awful.key modShift, 'r', awesome.restart
+  hotkeyCycleLayouts = awful.key mod, 'Tab', -> awful.layout.inc clientLayouts, 1
 
-  globalkeys = awful.util.table.join hotkeyTerminal, hotkeyRestartAwesome
+  globalkeys = awful.util.table.join hotkeyTerminal,
+    hotkeyRestartAwesome,
+    hotkeyCycleLayouts
+
   root.keys globalkeys
-  return
-
-setUpHotkeys = ->
-  defineGlobalHotkeys!
-  defineClientHotkeys!
 
 setUpHotkeys!
-
-client.connect_signal "focus", (c) ->
-  c.border_color = borderColorWhenFocused
-  return
-
-client.connect_signal 'unfocus', (c) ->
-  c.border_color = borderColorWhenUnfocused
-  return
