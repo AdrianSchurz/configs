@@ -376,11 +376,9 @@ client.connect_signal 'manage', (aClient, startup) ->
   return
 
 client.connect_signal "focus", (c) ->
-  print 'dickbutt, focus'
   c.border_color = borderColorWhenFocused
   return
 
 client.connect_signal 'unfocus', (c) ->
-  print 'dickbutt, unfocus'
   c.border_color = borderColorWhenUnfocused
   return
