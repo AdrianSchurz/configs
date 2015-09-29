@@ -320,7 +320,7 @@ defineAwesomeRules = ->
     rule: matchAllWindows
     properties:
       border_width: 1
-      border_color: borderColorWhenFocused
+      border_color: borderColorWhenUnFocused
       focus: awful.client.focus.filter
       size_hints_honor: false
       raise: true
@@ -366,5 +366,21 @@ setUpHotkeys = ->
 
   tagPanel.buttons = awful.util.table.join switchToTagOnClick, sendClientToTag
 
-
 setUpHotkeys!
+
+client.connect_signal 'manage', (aClient, startup) ->
+  print 'manage caught'
+  aClient\connect_signal 'mouse::enter', (bClient) ->
+    print 'mouse enter caught'
+    if (awful.layout.get bClient.screen ~= awful.layout.suit.magnifier) and (awful.client.focus.filter bClient)
+      client.focus = bClient
+
+client.connect_signal "focus", (c) ->
+  print 'dickbutt, focus'
+  c.border_color = borderColorWhenFocused
+  return
+
+client.connect_signal 'unfocus', (c) ->
+  print 'dickbutt, unfocus'
+  c.border_color = borderColorWhenUnfocused
+  return
