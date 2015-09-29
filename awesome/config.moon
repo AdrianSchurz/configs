@@ -369,11 +369,11 @@ setUpHotkeys = ->
 setUpHotkeys!
 
 client.connect_signal 'manage', (aClient, startup) ->
-  print 'manage caught'
-  aClient\connect_signal 'mouse::enter', (bClient) ->
-    print 'mouse enter caught'
-    if (awful.layout.get bClient.screen ~= awful.layout.suit.magnifier) and (awful.client.focus.filter bClient)
-      client.focus = bClient
+  aClient\connect_signal 'mouse::enter', (anotherClient) ->
+    if (awful.layout.get anotherClient.screen ~= awful.layout.suit.magnifier) and (awful.client.focus.filter anotherClient)
+      client.focus = anotherClient
+    return
+  return
 
 client.connect_signal "focus", (c) ->
   print 'dickbutt, focus'
