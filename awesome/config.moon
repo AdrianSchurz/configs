@@ -308,11 +308,11 @@ setUpPanels = ->
 
 setUpPanels!
 
-<<<<<<< Updated upstream
 borderColorWhenFocused = '#D0752A'
 borderColorWhenUnfocused = '#343434'
 
 clientHotkeys = {}
+
 defineAwesomeRules = ->
   awful.rules.rules = {}
   matchAllWindows = {}
@@ -331,26 +331,9 @@ defineAwesomeRules = ->
 
 defineAwesomeRules!
 
-defineClientHotkeys = ->
-  closeClientUnderMouse = (client) ->
-    hoveredOverClient = mouse.object_under_pointer!
-    hoveredOverClient\kill!
-    awful.mouse.client.focus!
-  modkey = 'Mod4'
-  mod = {modkey, nil}
-  hotkeyCloseClient = awful.key mod, 'c', closeClientUnderMouse
-
-  table.insert clientHotkeys, hotkeyCloseClient
-  return
-
-defineGlobalHotkeys = ->
-  modkey = 'Mod4'
-  terminal = 'urxvt'
-=======
 setUpHotkeys = ->
->>>>>>> Stashed changes
   spawn = awful.util.spawn
-  
+
   terminal = 'urxvt'
   enter = 'Return'
   filemanager = 'thunar'
