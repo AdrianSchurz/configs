@@ -338,7 +338,7 @@ setUpHotkeys = ->
   enter = 'Return'
   filemanager = 'thunar'
   browser = 'chromium'
-  guiEditor = 'subl'
+  guiEditor = 'atom'
 
   modkey = 'Mod4'
   mod = {modkey, nil}
