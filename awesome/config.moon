@@ -6,14 +6,11 @@ gears = require 'gears'
 uzful = require 'uzful'
 beautiful = require 'beautiful'
 filesystem = require 'lfs'
-_ = require 'underscore'
 wibox = require 'wibox'
 lain = require 'lain'
 paths = require 'paths'
 awful.rules = require 'awful.rules'
--- vicious = require 'vicious'
--- awmodoro = require 'awmodoro'
--- alttab = require 'awesome_alttab'
+awmodoro = require 'awmodoro'
 -- require 'awful.autofocus'
 
 oldPrint = print
@@ -117,6 +114,7 @@ cpuGraph = {}
 tagPanel = {}
 taskbar = {}
 clientLayouts = {}
+pomodoro = {}
 
 defineClientLayouts = ->
   clientLayouts = {awful.layout.suit.tile, awful.layout.suit.tile.top}
@@ -278,10 +276,40 @@ setUpCpuGraph = ->
   setUpDetailedGraphOnHover cpuGraph.small.widget
   return
 
+setUpPomodoro = ->
+  widgetOptions =
+    screen: 1
+    position: 'bottom'
+    height: 4
+  pomodoroWidget = awful.wibox widgetOptions
+  pomodoroWidget.visible = false
+
+  colorGradient =
+    type: 'linear'
+    from: {0,0}
+    to: {pomodoroWidget.width, 0}
+    stops: {{0, "#AECF96"},{0.5, "#88A175"},{1, "#FF5656"}}
+
+  options =
+    minutes: 25
+    do_notify: true
+    active_bg_color: '#313131'
+    paused_bg_color: '#7746D7'
+    fg_color: colorGradient
+    width: pomodoroWidget.width
+    height: pomodoroWidget.height
+    begin_callback: -> pomodoroWidget.visible = true
+    finish_callback: -> pomodoroWidget.visible = false
+
+  pomodoro = awmodoro.new options
+
+  pomodoroWidget\set_widget pomodoro
+
 createWidgets = ->
   setUpCpuGraph!
   setUpMemoryUsage!
   setUpDate!
+setUpPomodoro!
 
 setUpPanel = (screenIndex) ->
   panel = {}
@@ -335,7 +363,6 @@ setUpHotkeys = ->
   spawn = awful.util.spawn
 
   terminal = 'urxvt'
-  enter = 'Return'
   filemanager = 'thunar'
   browser = 'chromium'
   guiEditor = 'atom'
@@ -343,6 +370,8 @@ setUpHotkeys = ->
   modkey = 'Mod4'
   mod = {modkey, nil}
   modShift = {modkey, 'Shift'}
+
+  enter = 'Return'
 
   hotkeyTerminal = awful.key mod, enter, -> spawn terminal
   hotkeyRestartAwesome = awful.key modShift, 'r', awesome.restart
@@ -354,10 +383,13 @@ setUpHotkeys = ->
     hoveredOverClient = mouse.object_under_pointer!
     hoveredOverClient\kill!
     return
+  hotkeyStartPomodoro = awful.key mod, 'p', -> pomodoro\toggle!
+  hotkeyStopPomodoro = awful.key modShift, 'p', -> pomodoro\finish!
 
   globalkeys = awful.util.table.join hotkeyTerminal,
     hotkeyRestartAwesome, hotkeyCycleLayouts, hotkeyKillClient,
-    hotkeyFileManager, hotkeyBrowser, hotkeyGuiEditor
+    hotkeyFileManager, hotkeyBrowser, hotkeyGuiEditor, hotkeyStartPomodoro,
+    hotkeyStopPomodoro
 
   root.keys globalkeys
 
@@ -365,6 +397,7 @@ setUpHotkeys = ->
   sendClientToTag = awful.button mod, 1, awful.client.movetotag
 
   tagPanel.buttons = awful.util.table.join switchToTagOnClick, sendClientToTag
+  return
 
 setUpHotkeys!
 
