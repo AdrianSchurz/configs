@@ -236,8 +236,9 @@ createTags = ->
   screen = 1
 
   tags = {}
+  tagMouseButtons = awful.button {}, 1, awful.tag.viewonly
   tags[screen] = awful.tag tagNames, screen, defaultLayout
-  tagPanel[screen]  = awful.widget.taglist screen, awful.widget.taglist.filter.all, {}
+  tagPanel[screen]  = awful.widget.taglist screen, awful.widget.taglist.filter.all, tagMouseButtons
   return
 
 setUpDate = ->
