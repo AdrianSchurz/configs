@@ -12,7 +12,6 @@ lain = require 'lain'
 paths = require 'paths'
 awful.rules = require 'awful.rules'
 -- vicious = require 'vicious'
--- naughty = require 'naughty'
 -- awmodoro = require 'awmodoro'
 -- alttab = require 'awesome_alttab'
 -- require 'awful.autofocus'
@@ -368,17 +367,20 @@ setUpHotkeys = ->
 
 setUpHotkeys!
 
-client.connect_signal 'manage', (aClient, startup) ->
-  aClient\connect_signal 'mouse::enter', (anotherClient) ->
-    if (awful.layout.get anotherClient.screen ~= awful.layout.suit.magnifier) and (awful.client.focus.filter anotherClient)
-      client.focus = anotherClient
+focusAndHighlightClientUnderMouse = ->
+  client.connect_signal 'manage', (aClient, startup) ->
+    aClient\connect_signal 'mouse::enter', (anotherClient) ->
+      if (awful.layout.get anotherClient.screen ~= awful.layout.suit.magnifier) and (awful.client.focus.filter anotherClient)
+        client.focus = anotherClient
+      return
     return
-  return
 
-client.connect_signal "focus", (c) ->
-  c.border_color = borderColorWhenFocused
-  return
+  client.connect_signal "focus", (c) ->
+    c.border_color = borderColorWhenFocused
+    return
 
-client.connect_signal 'unfocus', (c) ->
-  c.border_color = borderColorWhenUnfocused
-  return
+  client.connect_signal 'unfocus', (c) ->
+    c.border_color = borderColorWhenUnfocused
+    return
+
+focusAndHighlightClientUnderMouse!
