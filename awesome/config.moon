@@ -438,11 +438,9 @@ setUpHotkeys = ->
 
   root.keys globalkeys
 
-  switchToTagOnClick = awful.button {}, 1, awful.tag.viewonly
-  sendClientToTag = awful.button mod, 1, awful.client.movetotag
   switchToTagOnClick = awful.button {}, leftMouseButton, awful.tag.viewonly
 
-  tagPanel.buttons = awful.util.table.join switchToTagOnClick, sendClientToTag
+  tagPanel.buttons = awful.util.table.join switchToTagOnClick
   return
 
 setUpHotkeys!
