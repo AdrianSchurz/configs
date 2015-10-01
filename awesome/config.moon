@@ -221,7 +221,15 @@ switchTimeDateOnHover = (clock, calendar) ->
   return
 
 createTaskbar = ->
-  taskbar[1] = awful.widget.tasklist 1, awful.widget.tasklist.filter.currenttags, {}
+  raiseClientOnClick = awful.button {}, 1, (aClient) ->
+    if aClient == client.focus
+       aClient.minimized = true
+    else
+       aClient.minimized = false
+       client.focus = aClient
+       aClient\raise!
+  taskbarButtons = awful.util.table.join raiseClientOnClick
+  taskbar[1] = awful.widget.tasklist 1, awful.widget.tasklist.filter.currenttags, taskbarButtons
   return
 
 createTags = ->
