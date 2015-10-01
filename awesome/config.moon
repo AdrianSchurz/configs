@@ -342,6 +342,37 @@ borderColorWhenFocused = '#D0752A'
 borderColorWhenUnfocused = '#343434'
 
 clientHotkeys = {}
+clientButtons = {}
+
+defineClientButtons = ->
+  modkey = 'Mod4'
+  mod = {modkey, nil}
+
+  leftMouseButton = 1
+  rightMouseButton = 3
+  mouseWheelUp = 5
+  mouseWheelDown = 4
+
+  moveClient = awful.button mod, leftMouseButton, ->
+    awful.mouse.client.move!
+    return
+  resizeClient = awful.button mod, rightMouseButton, ->
+    awful.mouse.client.resize!
+    return
+  nextTag = awful.button mod, mouseWheelUp, (tag) ->
+    currentScreen = awful.tag.getscreen tag
+    awful.tag.viewnext currentScreen
+    return
+  previousTag = awful.button mod, mouseWheelDown, (tag) ->
+    currentScreen = awful.tag.getscreen tag
+    awful.tag.viewprev currentScreen
+    return
+
+  clientButtons = awful.util.table.join moveClient, resizeClient, nextTag,
+    previousTag
+  return
+
+defineClientButtons!
 
 defineAwesomeRules = ->
   awful.rules.rules = {}
@@ -355,7 +386,7 @@ defineAwesomeRules = ->
       size_hints_honor: false
       raise: true
       keys: clientHotkeys
-      buttons: {}
+      buttons: clientButtons
   table.insert awful.rules.rules, applyDefaultPropertiesToAllWindows
   return
 
