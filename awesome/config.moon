@@ -11,7 +11,6 @@ lain = require 'lain'
 paths = require 'paths'
 awful.rules = require 'awful.rules'
 awmodoro = require 'awmodoro'
--- require 'awful.autofocus'
 
 oldPrint = print
 print = (printee) ->
@@ -202,6 +201,7 @@ setUpDetailedGraphOnHover = (graph) ->
   onMouseEnter graph, showDetailedGraph
   hideDetailedGraph = cpuWidget.hide
   onMouseLeave graph, hideDetailedGraph
+  return
 
 enableGraphAutoCaching = ->
   uzful.util.patch.vicious!
@@ -218,6 +218,7 @@ switchTimeDateOnHover = (clock, calendar) ->
     return
 
   onMouseLeave dateWidget, showTime
+  return
 
 createTaskbar = ->
   taskbar[1] = awful.widget.tasklist 1, awful.widget.tasklist.filter.currenttags, {}
@@ -265,6 +266,7 @@ setUpMemoryUsage = ->
       memoryRounded = roundToOneDecimal memoryScaledToGB
       memoryAsDisplayed = memoryRounded .. "G"
       widget\set_markup memoryAsDisplayed
+      return
 
   memoryUsage = lain.widgets.mem options
   return
@@ -309,7 +311,7 @@ createWidgets = ->
   setUpCpuGraph!
   setUpMemoryUsage!
   setUpDate!
-setUpPomodoro!
+  setUpPomodoro!
 
 setUpPanel = (screenIndex) ->
   panel = {}
@@ -372,6 +374,10 @@ setUpHotkeys = ->
   modShift = {modkey, 'Shift'}
 
   enter = 'Return'
+  leftMouseButton = 1
+  rightMouseButton = 2
+  mouseWheelUp = 5
+  mouseWheelDown = 4
 
   hotkeyTerminal = awful.key mod, enter, -> spawn terminal
   hotkeyRestartAwesome = awful.key modShift, 'r', awesome.restart
@@ -395,6 +401,7 @@ setUpHotkeys = ->
 
   switchToTagOnClick = awful.button {}, 1, awful.tag.viewonly
   sendClientToTag = awful.button mod, 1, awful.client.movetotag
+  switchToTagOnClick = awful.button {}, leftMouseButton, awful.tag.viewonly
 
   tagPanel.buttons = awful.util.table.join switchToTagOnClick, sendClientToTag
   return
