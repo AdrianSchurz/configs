@@ -234,6 +234,7 @@ createTaskbar = ->
   taskbar[1] = awful.widget.tasklist 1, awful.widget.tasklist.filter.currenttags, taskbarButtons
   return
 
+numberOfTags = {}
 createTags = ->
   numberOfTags = 4
   -- this theme seems to enforce two character tag names
@@ -314,7 +315,6 @@ setUpPomodoro = ->
     finish_callback: -> pomodoroWidget.visible = false
 
   pomodoro = awmodoro.new options
-
   pomodoroWidget\set_widget pomodoro
 
 setUpRunCommand = ->
@@ -442,6 +442,19 @@ setUpHotkeys = ->
     hotkeyRestartAwesome, hotkeyCycleLayouts, hotkeyKillClient,
     hotkeyFileManager, hotkeyBrowser, hotkeyGuiEditor, hotkeyStartPomodoro,
     hotkeyStopPomodoro, hotkeyRunCommand
+
+  for tagNumber = 1, numberOfTags
+    -- warning: magic number ahead
+    theOneMagicNumberToRuleThemAll = 9
+    tagIdentifier = '#' .. tagNumber + theOneMagicNumberToRuleThemAll -- magic much?
+    showTag = -> -- 
+      screen = mouse.screen
+      tagOnScreen = awful.tag.gettags screen
+      tag = tagOnScreen[tagNumber]
+      if tag
+        awful.tag.viewonly tag
+    hotkeyShowTag = awful.key mod, tagIdentifier, showTag
+    globalkeys = awful.util.table.join globalkeys, hotkeyShowTag
 
   root.keys globalkeys
 
