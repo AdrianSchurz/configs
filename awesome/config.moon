@@ -106,15 +106,15 @@ setUpWallpapers = ->
 setUpWallpapers!
 
 panels = {}
-memoryUsage = {}
-cpuWidget = {}
-dateWidget = {}
-cpuGraph = {}
 tagPanel = {}
 taskbar = {}
+memoryUsage = {}
+cpuGraph = {}
+cpuWidget = {}
+dateWidget = {}
+promptWidget = {}
 clientLayouts = {}
 pomodoro = {}
-promptWidget = {}
 
 defineClientLayouts = ->
   clientLayouts = {awful.layout.suit.tile, awful.layout.suit.tile.top}
