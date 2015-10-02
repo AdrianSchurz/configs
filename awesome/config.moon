@@ -467,6 +467,12 @@ setUpHotkeys = ->
 
   root.keys globalkeys
 
+  wheelUpPreviousTag = awful.button mod, mouseWheelUp, awful.tag.viewnext
+  wheelDownNextTag = awful.button mod, mouseWheelDown, awful.tag.viewprev
+
+  buttonsWhenHoveringRootWindow = awful.util.table.join wheelUpPreviousTag, wheelDownNextTag
+  root.buttons buttonsWhenHoveringRootWindow
+
   switchToTagOnClick = awful.button {}, leftMouseButton, awful.tag.viewonly
 
   tagPanel.buttons = awful.util.table.join switchToTagOnClick
