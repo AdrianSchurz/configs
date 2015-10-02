@@ -114,6 +114,7 @@ tagPanel = {}
 taskbar = {}
 clientLayouts = {}
 pomodoro = {}
+promptWidget = {}
 
 defineClientLayouts = ->
   clientLayouts = {awful.layout.suit.tile, awful.layout.suit.tile.top}
@@ -174,6 +175,7 @@ layoutWidgets = ->
 
   leftPartialLayout\add tagPanel[screenIndex]
 
+  rightPartialLayout\add promptWidget[1]
   rightPartialLayout\add cpuGraph.small.widget
   rightPartialLayout\add widgetBackgroundLeftEnd
   rightPartialLayout\add memoryWidget
@@ -315,11 +317,15 @@ setUpPomodoro = ->
 
   pomodoroWidget\set_widget pomodoro
 
+setUpRunCommand = ->
+  promptWidget[1] = awful.widget.prompt!
+
 createWidgets = ->
   setUpCpuGraph!
   setUpMemoryUsage!
   setUpDate!
   setUpPomodoro!
+  setUpRunCommand!
 
 setUpPanel = (screenIndex) ->
   panel = {}
@@ -419,6 +425,7 @@ setUpHotkeys = ->
   mouseWheelDown = 4
 
   hotkeyTerminal = awful.key mod, enter, -> spawn terminal
+  hotkeyRunCommand = awful.key mod, 'space',  -> promptWidget[mouse.screen]\run!
   hotkeyRestartAwesome = awful.key modShift, 'r', awesome.restart
   hotkeyCycleLayouts = awful.key mod, 'Tab', -> awful.layout.inc clientLayouts, 1
   hotkeyFileManager = awful.key mod, 'e', -> spawn filemanager
@@ -434,7 +441,7 @@ setUpHotkeys = ->
   globalkeys = awful.util.table.join hotkeyTerminal,
     hotkeyRestartAwesome, hotkeyCycleLayouts, hotkeyKillClient,
     hotkeyFileManager, hotkeyBrowser, hotkeyGuiEditor, hotkeyStartPomodoro,
-    hotkeyStopPomodoro
+    hotkeyStopPomodoro, hotkeyRunCommand
 
   root.keys globalkeys
 
