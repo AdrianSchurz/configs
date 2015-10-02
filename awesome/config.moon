@@ -447,14 +447,23 @@ setUpHotkeys = ->
     -- warning: magic number ahead
     theOneMagicNumberToRuleThemAll = 9
     tagIdentifier = '#' .. tagNumber + theOneMagicNumberToRuleThemAll -- magic much?
-    showTag = -> -- 
+    showTag = ->
       screen = mouse.screen
       tagOnScreen = awful.tag.gettags screen
       tag = tagOnScreen[tagNumber]
       if tag
         awful.tag.viewonly tag
     hotkeyShowTag = awful.key mod, tagIdentifier, showTag
-    globalkeys = awful.util.table.join globalkeys, hotkeyShowTag
+
+    sendClientToTag = ->
+      if client.focus
+        screen = client.focus.screen
+        tags = awful.tag.gettags screen
+        tag = tags[tagNumber]
+        if tag
+          awful.client.movetotag tag
+    hotkeySendClientToTag = awful.key modShift, tagIdentifier, sendClientToTag
+    globalkeys = awful.util.table.join globalkeys, hotkeyShowTag, hotkeySendClientToTag
 
   root.keys globalkeys
 
