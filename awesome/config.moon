@@ -153,37 +153,37 @@ createCpuWidget = (graph) ->
   return
 
 layoutWidgets = ->
-  screenIndex = 1
-  leftPartialLayout = wibox.layout.fixed.horizontal!
-  rightPartialLayout = wibox.layout.fixed.horizontal!
-  layout = wibox.layout.align.horizontal!
+  for screenIndex = 1, screen.count!
+    leftPartialLayout = wibox.layout.fixed.horizontal!
+    rightPartialLayout = wibox.layout.fixed.horizontal!
+    layout = wibox.layout.align.horizontal!
 
-  layout\set_left leftPartialLayout
-  layout\set_right rightPartialLayout
-  layout\set_middle taskbar[screenIndex]
+    layout\set_left leftPartialLayout
+    layout\set_right rightPartialLayout
+    layout\set_middle taskbar[screenIndex]
 
-  memoryWidget = wibox.widget.background!
-  memoryWidget\set_widget memoryUsage
-  memoryWidget\set_bgimage beautiful.widget_display
+    memoryWidget = wibox.widget.background!
+    memoryWidget\set_widget memoryUsage
+    memoryWidget\set_bgimage beautiful.widget_display
 
-  widgetBackgroundLeftEnd = wibox.widget.imagebox!
-  widgetBackgroundLeftEnd\set_image beautiful.widget_display_l
-  widgetBackgroundRightEnd = wibox.widget.imagebox!
-  widgetBackgroundRightEnd\set_image beautiful.widget_display_r
-  widgetBackgroundInBetweenWidgets = wibox.widget.imagebox!
-  widgetBackgroundInBetweenWidgets\set_image beautiful.widget_display_c
+    widgetBackgroundLeftEnd = wibox.widget.imagebox!
+    widgetBackgroundLeftEnd\set_image beautiful.widget_display_l
+    widgetBackgroundRightEnd = wibox.widget.imagebox!
+    widgetBackgroundRightEnd\set_image beautiful.widget_display_r
+    widgetBackgroundInBetweenWidgets = wibox.widget.imagebox!
+    widgetBackgroundInBetweenWidgets\set_image beautiful.widget_display_c
 
-  leftPartialLayout\add tagPanel[screenIndex]
+    leftPartialLayout\add tagPanel[screenIndex]
 
-  rightPartialLayout\add promptWidget[1]
-  rightPartialLayout\add cpuGraph.small.widget
-  rightPartialLayout\add widgetBackgroundLeftEnd
-  rightPartialLayout\add memoryWidget
-  rightPartialLayout\add widgetBackgroundInBetweenWidgets
-  rightPartialLayout\add dateWidget
-  rightPartialLayout\add widgetBackgroundRightEnd
+    rightPartialLayout\add promptWidget[screenIndex]
+    rightPartialLayout\add cpuGraph.small.widget
+    rightPartialLayout\add widgetBackgroundLeftEnd
+    rightPartialLayout\add memoryWidget
+    rightPartialLayout\add widgetBackgroundInBetweenWidgets
+    rightPartialLayout\add dateWidget
+    rightPartialLayout\add widgetBackgroundRightEnd
 
-  panels[screenIndex]\set_widget layout
+    panels[screenIndex]\set_widget layout
   return
 
 onMouseLeave = (widget, action) ->
@@ -223,15 +223,16 @@ switchTimeDateOnHover = (clock, calendar) ->
   return
 
 createTaskbar = ->
-  raiseClientOnClick = awful.button {}, 1, (aClient) ->
-    if aClient == client.focus
-       aClient.minimized = true
-    else
-       aClient.minimized = false
-       client.focus = aClient
-       aClient\raise!
-  taskbarButtons = awful.util.table.join raiseClientOnClick
-  taskbar[1] = awful.widget.tasklist 1, awful.widget.tasklist.filter.currenttags, taskbarButtons
+  for screenIndex = 1, screen.count!
+    raiseClientOnClick = awful.button {}, 1, (aClient) ->
+      if aClient == client.focus
+         aClient.minimized = true
+      else
+         aClient.minimized = false
+         client.focus = aClient
+         aClient\raise!
+    taskbarButtons = awful.util.table.join raiseClientOnClick
+    taskbar[screenIndex] = awful.widget.tasklist screenIndex, awful.widget.tasklist.filter.currenttags, taskbarButtons
   return
 
 numberOfTags = {}
@@ -243,12 +244,11 @@ createTags = ->
   for tagIndex = 1, numberOfTags
     tagNames[tagIndex] = defaultTagName
   defaultLayout = clientLayouts[1]
-  screen = 1
-
-  tags = {}
-  tagMouseButtons = awful.button {}, 1, awful.tag.viewonly
-  tags[screen] = awful.tag tagNames, screen, defaultLayout
-  tagPanel[screen]  = awful.widget.taglist screen, awful.widget.taglist.filter.all, tagMouseButtons
+  for screenIndex = 1, screen.count!
+    tags = {}
+    tagMouseButtons = awful.button {}, 1, awful.tag.viewonly
+    tags[screenIndex] = awful.tag tagNames, screenIndex, defaultLayout
+    tagPanel[screenIndex]  = awful.widget.taglist screenIndex, awful.widget.taglist.filter.all, tagMouseButtons
   return
 
 setUpDate = ->
@@ -318,7 +318,8 @@ setUpPomodoro = ->
   pomodoroWidget\set_widget pomodoro
 
 setUpRunCommand = ->
-  promptWidget[1] = awful.widget.prompt!
+  for screenIndex = 1, screen.count!
+    promptWidget[screenIndex] = awful.widget.prompt!
 
 createWidgets = ->
   setUpCpuGraph!
