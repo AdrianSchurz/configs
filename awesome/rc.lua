@@ -449,12 +449,6 @@ globalkeys = awful.util.table.join(
                                            awful.util.getdir("cache") .. "/history") end)
 )
 
-local wa = screen[mouse.screen].workarea
-ww = wa.width
-wh = wa.height
--- (panel height)
-ph = 22
-
 clientkeys = awful.util.table.join(
     awful.key({ modkey,           }, "f",        function (c) c.fullscreen = not c.fullscreen  end),
     awful.key({ modkey,           }, "c",        function (c)
