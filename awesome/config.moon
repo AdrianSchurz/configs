@@ -426,7 +426,34 @@ setUpHotkeys = ->
   mouseWheelDown = 4
 
   hotkeyTerminal = awful.key mod, enter, -> spawn terminal
-  hotkeyRunCommand = awful.key mod, 'space',  -> promptWidget[mouse.screen]\run!
+  cleanForCompletion = (command, cursorPosition, nComp, shell) ->
+    print 'clean for completion called'
+    term = false
+    if command\sub(1,1) == ':'
+      term = true
+      command = command\sub 2
+      cursorPosition = cursorPosition - 1
+    command, cursorPosition = awful.completion.shell command, cursorPosition,
+      nComp, shell
+    if term == true
+      command = ':' .. command
+      cursorPosition = cursorPosition + 1
+    return command, cursorPosition
+
+  promptOptions =
+    prompt: '>_ '
+
+  checkForTerminal = (command) ->
+    if command\sub(1,1) == ':'
+      command = terminal .. ' -e "' .. command\sub(2) .. '"'
+      print command
+    awful.util.spawn command
+  cache = awful.util.getdir 'cache'
+  historyDirectory = cache .. '/history'
+  runCommand = ->
+    awful.prompt.run promptOptions, promptWidget[mouse.screen].widget,
+      checkForTerminal, cleanForCompletion, historyDirectory
+  hotkeyRunCommand = awful.key mod, 'space', runCommand
   hotkeyRestartAwesome = awful.key modShift, 'r', awesome.restart
   hotkeyCycleLayouts = awful.key mod, 'Tab', -> awful.layout.inc clientLayouts, 1
   hotkeyFileManager = awful.key mod, 'e', -> spawn filemanager
