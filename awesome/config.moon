@@ -116,28 +116,13 @@ dateWidget = {}
 promptWidget = {}
 clientLayouts = {}
 pomodoro = {}
+sysTray =  {}
 
 defineClientLayouts = ->
   clientLayouts = {awful.layout.suit.tile, awful.layout.suit.tile.top}
   return
 
 defineClientLayouts!
-
-numberOfTags = {}
-createTags = ->
-  numberOfTags = 4
-  -- this theme seems to enforce two character tag names
-  defaultTagName = "  "
-  tagNames =  {}
-  for tagIndex = 1, numberOfTags
-    tagNames[tagIndex] = defaultTagName
-  defaultLayout = clientLayouts[1]
-  for screenIndex = 1, screen.count!
-    tags = {}
-    tagMouseButtons = awful.button {}, 1, awful.tag.viewonly
-    tags[screenIndex] = awful.tag tagNames, screenIndex, defaultLayout
-    tagPanel[screenIndex]  = awful.widget.taglist screenIndex, awful.widget.taglist.filter.all, tagMouseButtons
-  return
 
 createCpuGraph = ->
   cpuGraphOptions =
@@ -157,39 +142,16 @@ createCpuGraph = ->
       height: beautiful.menu_height
       interval: 1
   cpuGraph = uzful.widget.cpugraphs cpuGraphOptions
-  return
+  return cpuGraph
 
-createCpuWidget = ->
+createCpuWidget = (graph) ->
   cpuWidgetOptions =
-    widget: cpuGraph.big.layout
+    widget: graph.big.layout
     position: 'top'
     align: 'right'
-    width: cpuGraph.big.width
-    height: cpuGraph.big.height
+    width: graph.big.width
+    height: graph.big.height
   cpuWidget = uzful.widget.infobox cpuWidgetOptions
-  return
-
-onMouseLeave = (widget, action) ->
-  widget\connect_signal 'mouse::leave', action
-  return
-
-onMouseEnter = (widget, action) ->
-  widget\connect_signal 'mouse::enter', action
-  return
-
-setUpDetailedGraphOnHover = (graph) ->
-  showDetailedGraph = ->
-    cpuWidget\update!
-    cpuWidget\show!
-    return
-
-  onMouseEnter graph, showDetailedGraph
-  hideDetailedGraph = cpuWidget.hide
-  onMouseLeave graph, hideDetailedGraph
-  return
-
-enableGraphAutoCaching = ->
-  uzful.util.patch.vicious!
   return
 
 layoutWidgets = ->
@@ -224,9 +186,45 @@ layoutWidgets = ->
     rightPartialLayout\add widgetBackgroundRightEnd
 
     if screenIndex == 1
-      rightPartialLayout\add wibox.widget.systray!
+      rightPartialLayout\add sysTray
 
     panels[screenIndex]\set_widget layout
+  return
+
+onMouseLeave = (widget, action) ->
+  widget\connect_signal 'mouse::leave', action
+  return
+
+onMouseEnter = (widget, action) ->
+  widget\connect_signal 'mouse::enter', action
+  return
+
+setUpDetailedGraphOnHover = (graph) ->
+  showDetailedGraph = ->
+    cpuWidget\update!
+    cpuWidget\show!
+    return
+
+  onMouseEnter graph, showDetailedGraph
+  hideDetailedGraph = cpuWidget.hide
+  onMouseLeave graph, hideDetailedGraph
+  return
+
+enableGraphAutoCaching = ->
+  uzful.util.patch.vicious!
+  return
+
+switchTimeDateOnHover = (clock, calendar) ->
+  showDate = ->
+    dateWidget\set_widget calendar
+    return
+  onMouseEnter dateWidget, showDate
+
+  showTime = ->
+    dateWidget\set_widget clock
+    return
+
+  onMouseLeave dateWidget, showTime
   return
 
 createTaskbar = ->
@@ -242,18 +240,20 @@ createTaskbar = ->
     taskbar[screenIndex] = awful.widget.tasklist screenIndex, awful.widget.tasklist.filter.currenttags, taskbarButtons
   return
 
-
-switchTimeDateOnHover = (clock, calendar) ->
-  showDate = ->
-    dateWidget\set_widget calendar
-    return
-  onMouseEnter dateWidget, showDate
-
-  showTime = ->
-    dateWidget\set_widget clock
-    return
-
-  onMouseLeave dateWidget, showTime
+numberOfTags = {}
+createTags = ->
+  numberOfTags = 4
+  -- this theme seems to enforce two character tag names
+  defaultTagName = "  "
+  tagNames =  {}
+  for tagIndex = 1, numberOfTags
+    tagNames[tagIndex] = defaultTagName
+  defaultLayout = clientLayouts[1]
+  for screenIndex = 1, screen.count!
+    tags = {}
+    tagMouseButtons = awful.button {}, 1, awful.tag.viewonly
+    tags[screenIndex] = awful.tag tagNames, screenIndex, defaultLayout
+    tagPanel[screenIndex]  = awful.widget.taglist screenIndex, awful.widget.taglist.filter.all, tagMouseButtons
   return
 
 setUpDate = ->
@@ -289,8 +289,8 @@ setUpMemoryUsage = ->
 
 setUpCpuGraph = ->
   enableGraphAutoCaching!
-  createCpuGraph!
-  createCpuWidget!
+  cpuGraph = createCpuGraph!
+  createCpuWidget cpuGraph
   setUpDetailedGraphOnHover cpuGraph.small.widget
   return
 
@@ -326,12 +326,16 @@ setUpRunCommand = ->
   for screenIndex = 1, screen.count!
     promptWidget[screenIndex] = awful.widget.prompt!
 
+setUpSystray = ->
+  sysTray = wibox.widget.systray!
+
 createWidgets = ->
   setUpCpuGraph!
   setUpMemoryUsage!
   setUpDate!
   setUpPomodoro!
   setUpRunCommand!
+  setUpSystray!
 
 setUpPanel = (screenIndex) ->
   panel = {}
@@ -419,8 +423,6 @@ setUpHotkeys = ->
   filemanager = 'thunar'
   browser = 'chromium'
   guiEditor = 'atom'
-  gitGui = 'gitg'
-  batteryInfo = 'cbatticon'
 
   modkey = 'Mod4'
   mod = {modkey, nil}
@@ -432,7 +434,9 @@ setUpHotkeys = ->
   mouseWheelUp = 5
   mouseWheelDown = 4
 
+  hotkeyTerminal = awful.key mod, enter, -> spawn terminal
   cleanForCompletion = (command, cursorPosition, nComp, shell) ->
+    print 'clean for completion called'
     term = false
     if command\sub(1,1) == ':'
       term = true
@@ -445,29 +449,25 @@ setUpHotkeys = ->
       cursorPosition = cursorPosition + 1
     return command, cursorPosition
 
-  checkForTerminal = (command) ->
-    if command\sub(1,1) == ':'
-      command = terminal .. ' -e "' .. command\sub(2) .. '"'
-    awful.util.spawn command
-
-  cache = awful.util.getdir 'cache'
-  historyDirectory = cache .. '/history'
   promptOptions =
     prompt: '>_ '
 
+  checkForTerminal = (command) ->
+    if command\sub(1,1) == ':'
+      command = terminal .. ' -e "' .. command\sub(2) .. '"'
+      print command
+    awful.util.spawn command
+  cache = awful.util.getdir 'cache'
+  historyDirectory = cache .. '/history'
   runCommand = ->
     awful.prompt.run promptOptions, promptWidget[mouse.screen].widget,
       checkForTerminal, cleanForCompletion, historyDirectory
   hotkeyRunCommand = awful.key mod, 'space', runCommand
-
-  hotkeyTerminal = awful.key mod, enter, -> spawn terminal
   hotkeyRestartAwesome = awful.key modShift, 'r', awesome.restart
   hotkeyCycleLayouts = awful.key mod, 'Tab', -> awful.layout.inc clientLayouts, 1
   hotkeyFileManager = awful.key mod, 'e', -> spawn filemanager
   hotkeyBrowser = awful.key mod, 'w', -> spawn browser
   hotkeyGuiEditor = awful.key mod, 'q', -> spawn guiEditor
-  hotkeyGitGui = awful.key mod, 'g', -> spawn gitGui
-  hotkeyBatteryInfo = awful.key mod, 'b', -> spawn batteryInfo
   hotkeyKillClient = awful.key mod, 'c', ->
     hoveredOverClient = mouse.object_under_pointer!
     hoveredOverClient\kill!
@@ -478,7 +478,7 @@ setUpHotkeys = ->
   globalkeys = awful.util.table.join hotkeyTerminal,
     hotkeyRestartAwesome, hotkeyCycleLayouts, hotkeyKillClient,
     hotkeyFileManager, hotkeyBrowser, hotkeyGuiEditor, hotkeyStartPomodoro,
-    hotkeyStopPomodoro, hotkeyRunCommand, hotkeyGitGui, hotkeyBatteryInfo
+    hotkeyStopPomodoro, hotkeyRunCommand
 
   for tagNumber = 1, numberOfTags
     -- warning: magic number ahead
