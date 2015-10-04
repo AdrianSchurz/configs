@@ -427,7 +427,6 @@ setUpHotkeys = ->
 
   hotkeyTerminal = awful.key mod, enter, -> spawn terminal
   cleanForCompletion = (command, cursorPosition, nComp, shell) ->
-    print 'clean for completion called'
     term = false
     if command\sub(1,1) == ':'
       term = true
@@ -446,7 +445,6 @@ setUpHotkeys = ->
   checkForTerminal = (command) ->
     if command\sub(1,1) == ':'
       command = terminal .. ' -e "' .. command\sub(2) .. '"'
-      print command
     awful.util.spawn command
   cache = awful.util.getdir 'cache'
   historyDirectory = cache .. '/history'
