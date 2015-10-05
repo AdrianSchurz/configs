@@ -122,6 +122,22 @@ defineClientLayouts = ->
 
 defineClientLayouts!
 
+numberOfTags = {}
+createTags = ->
+  numberOfTags = 4
+  -- this theme seems to enforce two character tag names
+  defaultTagName = "  "
+  tagNames =  {}
+  for tagIndex = 1, numberOfTags
+    tagNames[tagIndex] = defaultTagName
+  defaultLayout = clientLayouts[1]
+  for screenIndex = 1, screen.count!
+    tags = {}
+    tagMouseButtons = awful.button {}, 1, awful.tag.viewonly
+    tags[screenIndex] = awful.tag tagNames, screenIndex, defaultLayout
+    tagPanel[screenIndex]  = awful.widget.taglist screenIndex, awful.widget.taglist.filter.all, tagMouseButtons
+  return
+
 createCpuGraph = ->
   cpuGraphOptions =
     fgcolor: '#D0752A'
@@ -140,16 +156,39 @@ createCpuGraph = ->
       height: beautiful.menu_height
       interval: 1
   cpuGraph = uzful.widget.cpugraphs cpuGraphOptions
-  return cpuGraph
+  return
 
-createCpuWidget = (graph) ->
+createCpuWidget = ->
   cpuWidgetOptions =
-    widget: graph.big.layout
+    widget: cpuGraph.big.layout
     position: 'top'
     align: 'right'
-    width: graph.big.width
-    height: graph.big.height
+    width: cpuGraph.big.width
+    height: cpuGraph.big.height
   cpuWidget = uzful.widget.infobox cpuWidgetOptions
+  return
+
+onMouseLeave = (widget, action) ->
+  widget\connect_signal 'mouse::leave', action
+  return
+
+onMouseEnter = (widget, action) ->
+  widget\connect_signal 'mouse::enter', action
+  return
+
+setUpDetailedGraphOnHover = (graph) ->
+  showDetailedGraph = ->
+    cpuWidget\update!
+    cpuWidget\show!
+    return
+
+  onMouseEnter graph, showDetailedGraph
+  hideDetailedGraph = cpuWidget.hide
+  onMouseLeave graph, hideDetailedGraph
+  return
+
+enableGraphAutoCaching = ->
+  uzful.util.patch.vicious!
   return
 
 layoutWidgets = ->
@@ -183,45 +222,10 @@ layoutWidgets = ->
     rightPartialLayout\add dateWidget
     rightPartialLayout\add widgetBackgroundRightEnd
 
-    panels[screenIndex]\set_widget layout
-  return
-
-onMouseLeave = (widget, action) ->
-  widget\connect_signal 'mouse::leave', action
-  return
     if screenIndex == 1
       rightPartialLayout\add wibox.widget.systray!
 
-onMouseEnter = (widget, action) ->
-  widget\connect_signal 'mouse::enter', action
-  return
-
-setUpDetailedGraphOnHover = (graph) ->
-  showDetailedGraph = ->
-    cpuWidget\update!
-    cpuWidget\show!
-    return
-
-  onMouseEnter graph, showDetailedGraph
-  hideDetailedGraph = cpuWidget.hide
-  onMouseLeave graph, hideDetailedGraph
-  return
-
-enableGraphAutoCaching = ->
-  uzful.util.patch.vicious!
-  return
-
-switchTimeDateOnHover = (clock, calendar) ->
-  showDate = ->
-    dateWidget\set_widget calendar
-    return
-  onMouseEnter dateWidget, showDate
-
-  showTime = ->
-    dateWidget\set_widget clock
-    return
-
-  onMouseLeave dateWidget, showTime
+    panels[screenIndex]\set_widget layout
   return
 
 createTaskbar = ->
@@ -237,20 +241,18 @@ createTaskbar = ->
     taskbar[screenIndex] = awful.widget.tasklist screenIndex, awful.widget.tasklist.filter.currenttags, taskbarButtons
   return
 
-numberOfTags = {}
-createTags = ->
-  numberOfTags = 4
-  -- this theme seems to enforce two character tag names
-  defaultTagName = "  "
-  tagNames =  {}
-  for tagIndex = 1, numberOfTags
-    tagNames[tagIndex] = defaultTagName
-  defaultLayout = clientLayouts[1]
-  for screenIndex = 1, screen.count!
-    tags = {}
-    tagMouseButtons = awful.button {}, 1, awful.tag.viewonly
-    tags[screenIndex] = awful.tag tagNames, screenIndex, defaultLayout
-    tagPanel[screenIndex]  = awful.widget.taglist screenIndex, awful.widget.taglist.filter.all, tagMouseButtons
+
+switchTimeDateOnHover = (clock, calendar) ->
+  showDate = ->
+    dateWidget\set_widget calendar
+    return
+  onMouseEnter dateWidget, showDate
+
+  showTime = ->
+    dateWidget\set_widget clock
+    return
+
+  onMouseLeave dateWidget, showTime
   return
 
 setUpDate = ->
@@ -286,8 +288,8 @@ setUpMemoryUsage = ->
 
 setUpCpuGraph = ->
   enableGraphAutoCaching!
-  cpuGraph = createCpuGraph!
-  createCpuWidget cpuGraph
+  createCpuGraph!
+  createCpuWidget!
   setUpDetailedGraphOnHover cpuGraph.small.widget
   return
 
@@ -427,7 +429,6 @@ setUpHotkeys = ->
   mouseWheelUp = 5
   mouseWheelDown = 4
 
-  hotkeyTerminal = awful.key mod, enter, -> spawn terminal
   cleanForCompletion = (command, cursorPosition, nComp, shell) ->
     term = false
     if command\sub(1,1) == ':'
@@ -441,19 +442,22 @@ setUpHotkeys = ->
       cursorPosition = cursorPosition + 1
     return command, cursorPosition
 
-  promptOptions =
-    prompt: '>_ '
-
   checkForTerminal = (command) ->
     if command\sub(1,1) == ':'
       command = terminal .. ' -e "' .. command\sub(2) .. '"'
     awful.util.spawn command
+
   cache = awful.util.getdir 'cache'
   historyDirectory = cache .. '/history'
+  promptOptions =
+    prompt: '>_ '
+
   runCommand = ->
     awful.prompt.run promptOptions, promptWidget[mouse.screen].widget,
       checkForTerminal, cleanForCompletion, historyDirectory
   hotkeyRunCommand = awful.key mod, 'space', runCommand
+
+  hotkeyTerminal = awful.key mod, enter, -> spawn terminal
   hotkeyRestartAwesome = awful.key modShift, 'r', awesome.restart
   hotkeyCycleLayouts = awful.key mod, 'Tab', -> awful.layout.inc clientLayouts, 1
   hotkeyFileManager = awful.key mod, 'e', -> spawn filemanager
