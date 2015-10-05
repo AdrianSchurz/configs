@@ -189,6 +189,8 @@ layoutWidgets = ->
 onMouseLeave = (widget, action) ->
   widget\connect_signal 'mouse::leave', action
   return
+    if screenIndex == 1
+      rightPartialLayout\add wibox.widget.systray!
 
 onMouseEnter = (widget, action) ->
   widget\connect_signal 'mouse::enter', action
