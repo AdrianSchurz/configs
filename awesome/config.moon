@@ -418,6 +418,7 @@ setUpHotkeys = ->
   filemanager = 'thunar'
   browser = 'chromium'
   guiEditor = 'atom'
+  gitGui = 'gitg'
 
   modkey = 'Mod4'
   mod = {modkey, nil}
@@ -463,6 +464,7 @@ setUpHotkeys = ->
   hotkeyFileManager = awful.key mod, 'e', -> spawn filemanager
   hotkeyBrowser = awful.key mod, 'w', -> spawn browser
   hotkeyGuiEditor = awful.key mod, 'q', -> spawn guiEditor
+  hotkeyGitGui = awful.key mod, 'g', -> spawn gitGui
   hotkeyKillClient = awful.key mod, 'c', ->
     hoveredOverClient = mouse.object_under_pointer!
     hoveredOverClient\kill!
