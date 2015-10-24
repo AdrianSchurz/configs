@@ -11,6 +11,7 @@ lain = require 'lain'
 paths = require 'paths'
 awful.rules = require 'awful.rules'
 awmodoro = require 'awmodoro'
+require 'awful.autofocus'
 
 oldPrint = print
 print = (printee) ->
