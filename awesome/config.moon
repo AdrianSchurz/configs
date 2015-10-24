@@ -420,6 +420,7 @@ setUpHotkeys = ->
   browser = 'chromium'
   guiEditor = 'atom'
   gitGui = 'gitg'
+  batteryInfo = 'cbatticon'
 
   modkey = 'Mod4'
   mod = {modkey, nil}
@@ -466,6 +467,7 @@ setUpHotkeys = ->
   hotkeyBrowser = awful.key mod, 'w', -> spawn browser
   hotkeyGuiEditor = awful.key mod, 'q', -> spawn guiEditor
   hotkeyGitGui = awful.key mod, 'g', -> spawn gitGui
+  hotkeyBatteryInfo = awful.key mod, 'b', -> spawn batteryInfo
   hotkeyKillClient = awful.key mod, 'c', ->
     hoveredOverClient = mouse.object_under_pointer!
     hoveredOverClient\kill!
@@ -476,7 +478,7 @@ setUpHotkeys = ->
   globalkeys = awful.util.table.join hotkeyTerminal,
     hotkeyRestartAwesome, hotkeyCycleLayouts, hotkeyKillClient,
     hotkeyFileManager, hotkeyBrowser, hotkeyGuiEditor, hotkeyStartPomodoro,
-    hotkeyStopPomodoro, hotkeyRunCommand
+    hotkeyStopPomodoro, hotkeyRunCommand, hotkeyGitGui, hotkeyBatteryInfo
 
   for tagNumber = 1, numberOfTags
     -- warning: magic number ahead
