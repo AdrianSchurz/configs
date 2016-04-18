@@ -462,9 +462,10 @@ setUpHotkeys = ->
   runCommand = ->
     awful.prompt.run promptOptions, promptWidget[mouse.screen].widget,
       checkForTerminal, cleanForCompletion, historyDirectory
-  hotkeyRunCommand = awful.key mod, 'space', runCommand
-  hotkeyRestartAwesome = awful.key modShift, 'r', awesome.restart
-  hotkeyCycleLayouts = awful.key mod, 'Tab', -> awful.layout.inc clientLayouts, 1
+  hotkeyRunCommand =      awful.key mod,      'space', runCommand
+  hotkeyRestartAwesome =  awful.key modShift, 'r', awesome.restart
+  hotkeyQuitAwesome =     awful.key modShift, 'q', awesome.quit
+  hotkeyCycleLayouts =    awful.key mod,      'Tab', -> awful.layout.inc clientLayouts, 1
   hotkeyFileManager = awful.key mod, 'e', -> spawn filemanager
   hotkeyBrowser = awful.key mod, 'w', -> spawn browser
   hotkeyGuiEditor = awful.key mod, 'q', -> spawn guiEditor
@@ -478,7 +479,7 @@ setUpHotkeys = ->
   globalkeys = awful.util.table.join hotkeyTerminal,
     hotkeyRestartAwesome, hotkeyCycleLayouts, hotkeyKillClient,
     hotkeyFileManager, hotkeyBrowser, hotkeyGuiEditor, hotkeyStartPomodoro,
-    hotkeyStopPomodoro, hotkeyRunCommand
+    hotkeyStopPomodoro, hotkeyRunCommand, hotkeyQuitAwesome
 
   for tagNumber = 1, numberOfTags
     -- warning: magic number ahead
