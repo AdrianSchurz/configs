@@ -473,8 +473,8 @@ setUpHotkeys = ->
     hoveredOverClient = mouse.object_under_pointer!
     hoveredOverClient\kill!
     return
-  hotkeyStartPomodoro = awful.key mod, 'p', -> pomodoro\toggle!
-  hotkeyStopPomodoro = awful.key modShift, 'p', -> pomodoro\finish!
+  hotkeyStartPomodoro = awful.key mod, 'p', pomodoro\toggle
+  hotkeyStopPomodoro = awful.key modShift, 'p', pomodoro\finish
 
   globalkeys = awful.util.table.join hotkeyTerminal,
     hotkeyRestartAwesome, hotkeyCycleLayouts, hotkeyKillClient,
