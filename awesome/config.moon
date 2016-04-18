@@ -242,7 +242,7 @@ createTaskbar = ->
 
 numberOfTags = {}
 createTags = ->
-  numberOfTags = 4
+  numberOfTags = 5
   -- this theme seems to enforce two character tag names
   defaultTagName = "  "
   tagNames =  {}
