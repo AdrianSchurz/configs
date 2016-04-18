@@ -39,4 +39,6 @@ export LANG=en_US.UTF-8
 
 setxkbmap de
 
+compton --config ~/.config/compton/compton.conf &
+
 exec awesome
