@@ -475,11 +475,12 @@ setUpHotkeys = ->
     return
   hotkeyStartPomodoro = awful.key mod, 'p', pomodoro\toggle
   hotkeyStopPomodoro = awful.key modShift, 'p', pomodoro\finish
+  hotkeyNewWallpaper = awful.key modShift, 'w', setUpWallpapers
 
   globalkeys = awful.util.table.join hotkeyTerminal,
     hotkeyRestartAwesome, hotkeyCycleLayouts, hotkeyKillClient,
     hotkeyFileManager, hotkeyBrowser, hotkeyGuiEditor, hotkeyStartPomodoro,
-    hotkeyStopPomodoro, hotkeyRunCommand, hotkeyQuitAwesome
+    hotkeyStopPomodoro, hotkeyRunCommand, hotkeyQuitAwesome, hotkeyNewWallpaper
 
   for tagNumber = 1, numberOfTags
     -- warning: magic number ahead
