@@ -420,9 +420,11 @@ setUpHotkeys = ->
   spawn = awful.util.spawn
 
   terminal = 'urxvt'
+  terminal_retro = 'cool-retro-term'
   filemanager = 'thunar'
   browser = 'chromium'
   guiEditor = 'atom'
+  gitGUI = 'gitg'
 
   modkey = 'Mod4'
   mod = {modkey, nil}
@@ -435,6 +437,7 @@ setUpHotkeys = ->
   mouseWheelDown = 4
 
   hotkeyTerminal = awful.key mod, enter, -> spawn terminal
+  hotkeyRetroTerminal = awful.key modShift, enter, -> spawn terminal_retro
   cleanForCompletion = (command, cursorPosition, nComp, shell) ->
     print 'clean for completion called'
     term = false
@@ -462,6 +465,7 @@ setUpHotkeys = ->
   runCommand = ->
     awful.prompt.run promptOptions, promptWidget[mouse.screen].widget,
       checkForTerminal, cleanForCompletion, historyDirectory
+
   hotkeyRunCommand =      awful.key mod,      'space', runCommand
   hotkeyRestartAwesome =  awful.key modShift, 'r', awesome.restart
   hotkeyQuitAwesome =     awful.key modShift, 'q', awesome.quit
@@ -469,6 +473,7 @@ setUpHotkeys = ->
   hotkeyFileManager = awful.key mod, 'e', -> spawn filemanager
   hotkeyBrowser = awful.key mod, 'w', -> spawn browser
   hotkeyGuiEditor = awful.key mod, 'q', -> spawn guiEditor
+  hotkeyGitGui = awful.key mod, 'g', -> spawn gitGUI
   hotkeyKillClient = awful.key mod, 'c', ->
     hoveredOverClient = mouse.object_under_pointer!
     hoveredOverClient\kill!
@@ -476,9 +481,10 @@ setUpHotkeys = ->
   hotkeyStartPomodoro = awful.key mod, 'p', pomodoro\toggle
   hotkeyStopPomodoro = awful.key modShift, 'p', pomodoro\finish
   hotkeyNewWallpaper = awful.key modShift, 'w', setUpWallpapers
+  hotkey
 
-  globalkeys = awful.util.table.join hotkeyTerminal,
-    hotkeyRestartAwesome, hotkeyCycleLayouts, hotkeyKillClient,
+  globalkeys = awful.util.table.join hotkeyTerminal, hotkeyRetroTerminal,
+    hotkeyRestartAwesome, hotkeyCycleLayouts, hotkeyKillClient, hotkeyGitGui,
     hotkeyFileManager, hotkeyBrowser, hotkeyGuiEditor, hotkeyStartPomodoro,
     hotkeyStopPomodoro, hotkeyRunCommand, hotkeyQuitAwesome, hotkeyNewWallpaper
 
