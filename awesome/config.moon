@@ -425,6 +425,8 @@ setUpHotkeys = ->
   browser = 'chromium'
   guiEditor = 'atom'
   gitGUI = 'gitg'
+  updateCommand = 'packer -Syyu'
+  shutdownCommand = 'sudo shutdown 0'
 
   modkey = 'Mod4'
   mod = {modkey, nil}
@@ -482,11 +484,15 @@ setUpHotkeys = ->
   hotkeyStopPomodoro = awful.key modShift, 'p', pomodoro\finish
   hotkeyNewWallpaper = awful.key modShift, 'w', setUpWallpapers
   hotkey
+  hotkeyUpdate = awful.key mod, 'u', ->
+    spawn terminal .. ' -e ' .. updateCommand
+  hotkeyShutdown = awful.key modShift, 's', -> spawn shutdownCommand
 
   globalkeys = awful.util.table.join hotkeyTerminal, hotkeyRetroTerminal,
     hotkeyRestartAwesome, hotkeyCycleLayouts, hotkeyKillClient, hotkeyGitGui,
     hotkeyFileManager, hotkeyBrowser, hotkeyGuiEditor, hotkeyStartPomodoro,
-    hotkeyStopPomodoro, hotkeyRunCommand, hotkeyQuitAwesome, hotkeyNewWallpaper
+    hotkeyStopPomodoro, hotkeyRunCommand, hotkeyQuitAwesome, hotkeyNewWallpaper,
+    hotkeyUpdate, hotkeyShutdown
 
   for tagNumber = 1, numberOfTags
     -- warning: magic number ahead
