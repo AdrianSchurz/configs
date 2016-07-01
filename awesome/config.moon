@@ -424,7 +424,7 @@ setUpHotkeys = ->
   filemanager = 'thunar'
   browser = 'chromium'
   guiEditor = 'atom'
-  gitGUI = 'gitg'
+  gitGUILightTheme = 'env GTK_THEME=Adwaita gitg'
   updateCommand = 'packer -Syyu'
   shutdownCommand = 'sudo shutdown 0'
 
@@ -475,7 +475,7 @@ setUpHotkeys = ->
   hotkeyFileManager = awful.key mod, 'e', -> spawn filemanager
   hotkeyBrowser = awful.key mod, 'w', -> spawn browser
   hotkeyGuiEditor = awful.key mod, 'q', -> spawn guiEditor
-  hotkeyGitGui = awful.key mod, 'g', -> spawn gitGUI
+  hotkeyGitGui = awful.key mod, 'g', -> spawn gitGUILightTheme
   hotkeyKillClient = awful.key mod, 'c', ->
     hoveredOverClient = mouse.object_under_pointer!
     hoveredOverClient\kill!
