@@ -17,6 +17,7 @@ oldPrint = print
 print = (printee) ->
   oldPrint inspect printee
 
+hotkeys = require 'hotkeys'
 logPreviousStartupErrors = ->
   if awesome.startup_errors
       logger\error 'error during previous startup:'
@@ -421,7 +422,6 @@ setUpHotkeys = ->
 
   terminal = 'urxvt'
   terminal_retro = 'cool-retro-term'
-  filemanager = 'thunar'
   browser = 'chromium'
   guiEditor = 'atom'
   gitGUILightTheme = 'env GTK_THEME=Adwaita gitg'
@@ -438,7 +438,6 @@ setUpHotkeys = ->
   mouseWheelUp = 5
   mouseWheelDown = 4
 
-  hotkeyTerminal = awful.key mod, enter, -> spawn terminal
   hotkeyRetroTerminal = awful.key modShift, enter, -> spawn terminal_retro
   cleanForCompletion = (command, cursorPosition, nComp, shell) ->
     term = false
@@ -467,28 +466,23 @@ setUpHotkeys = ->
       checkForTerminal, cleanForCompletion, historyDirectory
 
   hotkeyRunCommand =      awful.key mod,      'space', runCommand
-  hotkeyRestartAwesome =  awful.key modShift, 'r', awesome.restart
-  hotkeyQuitAwesome =     awful.key modShift, 'q', awesome.quit
   hotkeyCycleLayouts =    awful.key mod,      'Tab', -> awful.layout.inc clientLayouts, 1
-  hotkeyFileManager = awful.key mod, 'e', -> spawn filemanager
   hotkeyBrowser = awful.key mod, 'w', -> spawn browser
   hotkeyGuiEditor = awful.key mod, 'q', -> spawn guiEditor
   hotkeyGitGui = awful.key mod, 'g', -> spawn gitGUILightTheme
-  hotkeyKillClient = awful.key mod, 'c', ->
-    hoveredOverClient = mouse.object_under_pointer!
-    hoveredOverClient\kill!
-    return
   hotkeyStartPomodoro = awful.key mod, 'p', pomodoro\toggle
   hotkeyStopPomodoro = awful.key modShift, 'p', pomodoro\finish
   hotkeyNewWallpaper = awful.key modShift, 'w', setUpWallpapers
   hotkey
   hotkeyShutdown = awful.key modShift, 's', -> spawn shutdownCommand
 
-  globalkeys = awful.util.table.join hotkeyTerminal, hotkeyRetroTerminal,
-    hotkeyRestartAwesome, hotkeyCycleLayouts, hotkeyKillClient, hotkeyGitGui,
-    hotkeyFileManager, hotkeyBrowser, hotkeyGuiEditor, hotkeyStartPomodoro,
-    hotkeyStopPomodoro, hotkeyRunCommand, hotkeyQuitAwesome, hotkeyNewWallpaper,
-    hotkeyUpdate, hotkeyShutdown
+  globalkeys = awful.util.table.join hotkeyRetroTerminal, hotkeyCycleLayouts, hotkeyGitGui,
+    hotkeyBrowser, hotkeyGuiEditor, hotkeyStartPomodoro,
+    hotkeyStopPomodoro, hotkeyRunCommand, hotkeyNewWallpaper,
+    hotkeyShutdown
+
+  globalkeys = awful.util.table.join globalkeys, hotkeys.global
+
 
   for tagNumber = 1, numberOfTags
     -- warning: magic number ahead
