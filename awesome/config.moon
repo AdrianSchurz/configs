@@ -90,16 +90,16 @@ selectWallpapers = (wallpapers, quantity) ->
 isJpgOrPng = (fileName) ->
   return not (fileName == '.' or fileName == '..') -- TODO actually do what it says
 
-compileListOfWallpapers = (folder) ->
+compileListOfWallpapers = ->
   listOfWallpapers = {}
-  for fileName in filesystem.dir folder
+  for fileName in filesystem.dir paths.wallpapers
     if isJpgOrPng fileName
       table.insert listOfWallpapers, fileName
   return listOfWallpapers
 
 setUpWallpapers = ->
   wallpaperFolder = paths.wallpapers
-  allWallpapers = compileListOfWallpapers wallpaperFolder
+  allWallpapers = compileListOfWallpapers!
   chosenOnes = selectWallpapers allWallpapers, screen.count!
   setWallpapers chosenOnes, wallpaperFolder
   return
