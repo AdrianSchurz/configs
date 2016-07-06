@@ -425,7 +425,7 @@ setUpHotkeys = ->
   browser = 'chromium'
   guiEditor = 'atom'
   gitGUILightTheme = 'env GTK_THEME=Adwaita gitg'
-  updateCommand = 'packer -Syyu'
+  updateCommand = terminal .. ' -hold -e packer -Syyu'
   shutdownCommand = 'sudo shutdown 0'
 
   modkey = 'Mod4'
@@ -482,8 +482,6 @@ setUpHotkeys = ->
   hotkeyStopPomodoro = awful.key modShift, 'p', pomodoro\finish
   hotkeyNewWallpaper = awful.key modShift, 'w', setUpWallpapers
   hotkey
-  hotkeyUpdate = awful.key mod, 'u', ->
-    spawn terminal .. ' -e ' .. updateCommand
   hotkeyShutdown = awful.key modShift, 's', -> spawn shutdownCommand
 
   globalkeys = awful.util.table.join hotkeyTerminal, hotkeyRetroTerminal,
