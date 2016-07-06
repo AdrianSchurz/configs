@@ -473,7 +473,6 @@ setUpHotkeys = ->
   hotkeyStartPomodoro = awful.key mod, 'p', pomodoro\toggle
   hotkeyStopPomodoro = awful.key modShift, 'p', pomodoro\finish
   hotkeyNewWallpaper = awful.key modShift, 'w', setUpWallpapers
-  hotkey
   hotkeyShutdown = awful.key modShift, 's', -> spawn shutdownCommand
 
   globalkeys = awful.util.table.join hotkeyRetroTerminal, hotkeyCycleLayouts, hotkeyGitGui,
