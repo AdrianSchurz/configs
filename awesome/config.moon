@@ -12,12 +12,12 @@ paths = require 'paths'
 awful.rules = require 'awful.rules'
 awmodoro = require 'awmodoro'
 require 'awful.autofocus'
+hotkeys = require 'hotkeys'
 
 oldPrint = print
 print = (printee) ->
   oldPrint inspect printee
 
-hotkeys = require 'hotkeys'
 logPreviousStartupErrors = ->
   if awesome.startup_errors
       logger\error 'error during previous startup:'
@@ -422,11 +422,6 @@ setUpHotkeys = ->
 
   terminal = 'urxvt'
   terminal_retro = 'cool-retro-term'
-  browser = 'chromium'
-  guiEditor = 'atom'
-  gitGUILightTheme = 'env GTK_THEME=Adwaita gitg'
-  updateCommand = terminal .. ' -hold -e packer -Syyu'
-  shutdownCommand = 'sudo shutdown 0'
 
   modkey = 'Mod4'
   mod = {modkey, nil}
@@ -465,23 +460,11 @@ setUpHotkeys = ->
     awful.prompt.run promptOptions, promptWidget[mouse.screen].widget,
       checkForTerminal, cleanForCompletion, historyDirectory
 
-  hotkeyRunCommand =      awful.key mod,      'space', runCommand
-  hotkeyCycleLayouts =    awful.key mod,      'Tab', -> awful.layout.inc clientLayouts, 1
-  hotkeyBrowser = awful.key mod, 'w', -> spawn browser
-  hotkeyGuiEditor = awful.key mod, 'q', -> spawn guiEditor
-  hotkeyGitGui = awful.key mod, 'g', -> spawn gitGUILightTheme
+  hotkeyRunCommand = awful.key mod,      'space', runCommand
   hotkeyStartPomodoro = awful.key mod, 'p', pomodoro\toggle
   hotkeyStopPomodoro = awful.key modShift, 'p', pomodoro\finish
-  hotkeyNewWallpaper = awful.key modShift, 'w', setUpWallpapers
-  hotkeyShutdown = awful.key modShift, 's', -> spawn shutdownCommand
 
-  globalkeys = awful.util.table.join hotkeyRetroTerminal, hotkeyCycleLayouts, hotkeyGitGui,
-    hotkeyBrowser, hotkeyGuiEditor, hotkeyStartPomodoro,
-    hotkeyStopPomodoro, hotkeyRunCommand, hotkeyNewWallpaper,
-    hotkeyShutdown
-
-  globalkeys = awful.util.table.join globalkeys, hotkeys.global
-
+  globalkeys = awful.util.table.join hotkeyRunCommand, hotkeyStartPomodoro, hotkeyStopPomodoro
 
   for tagNumber = 1, numberOfTags
     -- warning: magic number ahead
@@ -505,7 +488,7 @@ setUpHotkeys = ->
     hotkeySendClientToTag = awful.key modShift, tagIdentifier, sendClientToTag
     globalkeys = awful.util.table.join globalkeys, hotkeyShowTag, hotkeySendClientToTag
 
-  root.keys globalkeys
+  root.keys awful.util.table.join globalkeys, hotkeys.global
 
   wheelUpPreviousTag = awful.button mod, mouseWheelUp, awful.tag.viewnext
   wheelDownNextTag = awful.button mod, mouseWheelDown, awful.tag.viewprev
