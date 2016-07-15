@@ -88,13 +88,13 @@ chooseRandomly = (aTable, quantity) ->
 selectWallpapers = (wallpapers, quantity) ->
   return chooseRandomly wallpapers, quantity
 
-isJpgOrPng = (fileName) ->
-  return not (fileName == '.' or fileName == '..') -- TODO actually do what it says
+isNotDirectory = (fileName) ->
+  return not (fileName == '.' or fileName == '..')
 
 compileListOfWallpapers = ->
   listOfWallpapers = {}
   for fileName in filesystem.dir paths.wallpapers
-    if isJpgOrPng fileName
+    if isNotDirectory fileName
       table.insert listOfWallpapers, fileName
   return listOfWallpapers
 
