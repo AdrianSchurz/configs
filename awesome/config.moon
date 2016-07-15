@@ -63,6 +63,12 @@ disableCursorAnimations = ->
 
 disableCursorAnimations!
 
+initializeRNG = ->
+  math.randomseed os.time!
+  return
+
+initializeRNG!
+
 setUpTheme = ->
   beautiful.init paths.theme
   return
