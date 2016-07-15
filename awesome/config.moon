@@ -100,8 +100,10 @@ isNotDirectory = (fileName) ->
 
 compileListOfWallpapers = ->
   listOfWallpapers = {}
-  for fileName in filesystem.dir paths.wallpapers
-    if isNotDirectory fileName
+  path = paths.wallpapers
+  for fileName in filesystem.dir path
+    fileAttributes = filesystem.attributes path .. fileName
+    if fileAttributes.mode == 'file'
       table.insert listOfWallpapers, fileName
   return listOfWallpapers
 
