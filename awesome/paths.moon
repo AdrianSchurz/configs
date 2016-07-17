@@ -1,6 +1,9 @@
-home = os.getenv 'HOME'
 paths = {}
-paths.log = home .. '/.config/awesome/'
+
+home = os.getenv 'HOME'
 paths.wallpapers = home .. '/media/wallpapers/'
-paths.theme = home .. '/.config/awesome/themes/pro-dark/theme.lua'
+config = home .. '/.config/awesome'
+paths.log = config .. '/'
+paths.theme = config .. '/themes/pro-dark/theme.lua'
+
 return paths
