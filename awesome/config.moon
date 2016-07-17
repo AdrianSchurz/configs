@@ -125,10 +125,8 @@ setupMusicplayer = ->
   musicPlayer = mpd\connect!
   musicPlayer\clear!
 
-  ambientSearchTerm = 'nostromo'
-  defaultAmbientSearch = musicPlayer\search 'filename', ambientSearchTerm
-  file = defaultAmbientSearch[1].file
-  musicPlayer\add file
+  defaultAmbientFile = 'tng-bridge.mp4'
+  musicPlayer\add paths.ambientSounds .. defaultAmbientFile
   return
 
 setupMusicplayer!

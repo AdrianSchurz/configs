@@ -6,4 +6,7 @@ config = home .. '/.config/awesome'
 paths.log = config .. '/'
 paths.theme = config .. '/themes/pro-dark/theme.lua'
 
+-- path relative to mpd music folder, see mpd.conf
+paths.ambientSounds = 'ambient/'
+
 return paths
