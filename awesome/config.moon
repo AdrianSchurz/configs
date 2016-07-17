@@ -13,6 +13,7 @@ awful.rules = require 'awful.rules'
 awmodoro = require 'awmodoro'
 require 'awful.autofocus'
 hotkeys = require 'hotkeys'
+mpd = require 'mpd'
 
 oldPrint = print
 print = (printee) ->
@@ -107,6 +108,7 @@ setUpWallpapers = ->
 
 setUpWallpapers!
 
+musicPlayer ={}
 panels = {}
 tagPanel = {}
 taskbar = {}
@@ -119,6 +121,17 @@ clientLayouts = {}
 pomodoro = {}
 sysTray =  {}
 
+setupMusicplayer = ->
+  musicPlayer = mpd\connect!
+  musicPlayer\clear!
+
+  ambientSearchTerm = 'nostromo'
+  defaultAmbientSearch = musicPlayer\search 'filename', ambientSearchTerm
+  file = defaultAmbientSearch[1].file
+  musicPlayer\add file
+  return
+
+setupMusicplayer!
 defineClientLayouts = ->
   clientLayouts = {awful.layout.suit.tile, awful.layout.suit.tile.top}
   return
