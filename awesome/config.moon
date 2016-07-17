@@ -132,6 +132,7 @@ setupMusicplayer = ->
   return
 
 setupMusicplayer!
+
 defineClientLayouts = ->
   clientLayouts = {awful.layout.suit.tile, awful.layout.suit.tile.top}
   return
@@ -474,8 +475,23 @@ setUpHotkeys = ->
       checkForTerminal, cleanForCompletion, historyDirectory
 
   hotkeyRunCommand = awful.key mod,      'space', runCommand
-  hotkeyStartPomodoro = awful.key mod, 'p', pomodoro\toggle
-  hotkeyStopPomodoro = awful.key modShift, 'p', pomodoro\finish
+  
+  matchMpdPlaybackWithPomodoro = ->
+    if pomodoro\isRunning()
+      musicPlayer\play()
+    else
+      musicPlayer\stop()
+    return
+
+  hotkeyStartPomodoro = awful.key mod, 'p', ->
+    pomodoro\toggle!
+    matchMpdPlaybackWithPomodoro!
+    return
+  
+  hotkeyStopPomodoro = awful.key modShift, 'p', ->
+    pomodoro\finish!
+    musicPlayer\stop!
+    return
 
   globalkeys = awful.util.table.join hotkeyRunCommand, hotkeyStartPomodoro, hotkeyStopPomodoro
 
