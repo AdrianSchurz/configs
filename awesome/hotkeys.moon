@@ -16,7 +16,7 @@ guiEditor = 'atom'
 guiEditorAlt = 'subl'
 top = terminal .. ' -e htop'
 shutdown = 'sudo shutdown 0'
-alsaMixer = terminal .. ' -e alsamixer'
+pulseAudioControl = 'env GTK_THEME=Adwaita pavucontrol'
 update = terminal .. ' -hold -e packer -Syyu'
 gitGUILightTheme = 'env GTK_THEME=Adwaita gitg'
 
@@ -35,7 +35,7 @@ globalHotkeys = {
   awful.key mod,      'c',    killClientUnderMouse
   awful.key mod,      't',    -> spawn top
   awful.key mod,      'u',    -> spawn update
-  awful.key mod,      'a',    -> spawn alsaMixer
+  awful.key mod,      'a',    -> spawn pulseAudioControl
   awful.key modShift, 's',    -> spawn shutdown
   awful.key modShift, 'w',    setUpWallpapers
   awful.key mod,      'g',    -> spawn gitGUILightTheme
