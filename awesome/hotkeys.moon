@@ -37,7 +37,6 @@ globalHotkeys = {
   awful.key mod,      'u',    -> spawn update
   awful.key mod,      'a',    -> spawn pulseAudioControl
   awful.key modShift, 's',    -> spawn shutdown
-  awful.key modShift, 'w',    setUpWallpapers
   awful.key mod,      'g',    -> spawn gitGUILightTheme
   awful.key mod,      'w',    -> spawn browser
   awful.key mod,      'q',    -> spawn guiEditor

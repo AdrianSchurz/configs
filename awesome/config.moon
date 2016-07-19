@@ -454,6 +454,7 @@ setUpHotkeys = ->
   mouseWheelDown = 4
 
   hotkeyRetroTerminal = awful.key modShift, enter, -> spawn terminal_retro
+  hotkeyNewRandomWallpaper = awful.key modShift, 'w', setUpWallpapers
   cleanForCompletion = (command, cursorPosition, nComp, shell) ->
     term = false
     if command\sub(1,1) == ':'
@@ -479,9 +480,8 @@ setUpHotkeys = ->
   runCommand = ->
     awful.prompt.run promptOptions, promptWidget[mouse.screen].widget,
       checkForTerminal, cleanForCompletion, historyDirectory
-
   hotkeyRunCommand = awful.key mod,      'space', runCommand
-  
+
   matchMpdPlaybackWithPomodoro = ->
     if pomodoro\isRunning()
       musicPlayer\play()
@@ -493,13 +493,13 @@ setUpHotkeys = ->
     pomodoro\toggle!
     matchMpdPlaybackWithPomodoro!
     return
-  
+
   hotkeyStopPomodoro = awful.key modShift, 'p', ->
     pomodoro\finish!
     musicPlayer\stop!
     return
 
-  globalkeys = awful.util.table.join hotkeyRunCommand, hotkeyStartPomodoro, hotkeyStopPomodoro
+  globalkeys = awful.util.table.join hotkeyRunCommand, hotkeyStartPomodoro, hotkeyStopPomodoro, hotkeyNewRandomWallpaper
 
   for tagNumber = 1, numberOfTags
     -- warning: magic number ahead
