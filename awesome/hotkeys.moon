@@ -19,6 +19,7 @@ shutdown = 'sudo shutdown 0'
 pulseAudioControl = 'env GTK_THEME=Adwaita pavucontrol'
 update = terminal .. ' -hold -e packer -Syyu'
 gitGUILightTheme = 'env GTK_THEME=Adwaita gitg'
+lockWorkstation = 'xscreensaver-command --lock'
 
 killClientUnderMouse = ->
   hoveredOverClient = mouse.object_under_pointer!
@@ -42,6 +43,7 @@ globalHotkeys = {
   awful.key mod,      'q',    -> spawn guiEditor
   awful.key modShift, 'q',    -> spawn guiEditorAlt
   awful.key mod,      'Tab',  cycleLayouts
+  awful.key mod,      'l',    -> spawn lockWorkstation
 }
 
 for k, v in pairs globalHotkeys

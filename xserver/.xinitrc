@@ -38,7 +38,7 @@ export EDITOR="$VISUAL"
 export LANG=en_US.UTF-8
 
 setxkbmap de
-
+xscreensaver -no-splash &
 compton --config ~/.config/compton/compton.conf &
 
 exec awesome
