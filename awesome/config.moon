@@ -337,8 +337,20 @@ setUpPomodoro = ->
     fg_color: colorGradient
     width: pomodoroWidget.width
     height: pomodoroWidget.height
-    begin_callback: -> pomodoroWidget.visible = true
-    finish_callback: -> pomodoroWidget.visible = false
+    begin_callback: ->
+      pomodoroWidget.visible = true
+      musicPlayer\play!
+      return
+    finish_callback: ->
+      pomodoroWidget.visible = false
+      musicPlayer\stop!
+      return
+    pause_callback: ->
+      musicPlayer\pause!
+      return
+    resume_callback: ->
+      musicPlayer\unpause!
+      return
 
   pomodoro = awmodoro.new options
   pomodoroWidget\set_widget pomodoro
@@ -482,22 +494,8 @@ setUpHotkeys = ->
       checkForTerminal, cleanForCompletion, historyDirectory
   hotkeyRunCommand = awful.key mod,      'space', runCommand
 
-  matchMpdPlaybackWithPomodoro = ->
-    if pomodoro\isRunning()
-      musicPlayer\play()
-    else
-      musicPlayer\stop()
-    return
-
-  hotkeyStartPomodoro = awful.key mod, 'p', ->
-    pomodoro\toggle!
-    matchMpdPlaybackWithPomodoro!
-    return
-
-  hotkeyStopPomodoro = awful.key modShift, 'p', ->
-    pomodoro\finish!
-    musicPlayer\stop!
-    return
+  hotkeyStartPomodoro = awful.key mod, 'p', pomodoro\toggle
+  hotkeyStopPomodoro = awful.key modShift, 'p', pomodoro\finish
 
   globalkeys = awful.util.table.join hotkeyRunCommand, hotkeyStartPomodoro, hotkeyStopPomodoro, hotkeyNewRandomWallpaper
 
