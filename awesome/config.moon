@@ -543,7 +543,7 @@ focusAndHighlightClientUnderMouse = ->
       return
     return
 
-  client.connect_signal "focus", (c) ->
+  client.connect_signal 'focus', (c) ->
     c.border_color = borderColorWhenFocused
     return
 
