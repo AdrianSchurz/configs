@@ -14,6 +14,7 @@ awmodoro = require 'awmodoro'
 require 'awful.autofocus'
 hotkeys = require 'hotkeys'
 mpd = require 'mpd'
+radical = require 'radical'
 
 oldPrint = print
 print = (printee) ->
@@ -552,3 +553,36 @@ focusAndHighlightClientUnderMouse = ->
     return
 
 focusAndHighlightClientUnderMouse!
+
+setupHotkeyToChangeWallpaper = (menu) ->
+  menu\add_key_binding {"Mod4"}, ','
+  return
+
+addMenuItemForEachWallpaper = (menu) ->
+  for key, value in pairs compileListOfWallpapers!
+    fullPath = paths.wallpapers .. value
+    wallpaper =
+      icon: fullPath
+      button1: -> gears.wallpaper.maximized fullPath, 1, true
+    menu\add_item wallpaper
+  return
+
+createMenu = ->
+  wallpaperPreviewWidth = 200
+  factorToFitMenuWidth = 1.8
+  menuStyle =
+    style: radical.style.classic
+    item_style: radical.item.style.icon
+    item_height: wallpaperPreviewWidth
+    width: wallpaperPreviewWidth * factorToFitMenuWidth
+    max_items: 5
+  menuSetWallpaper = radical.box menuStyle
+  return menuSetWallpaper
+
+setupMenuToChangeWallpaper = ->
+  menuSetWallpaper = createMenu!
+  addMenuItemForEachWallpaper menuSetWallpaper
+  setupHotkeyToChangeWallpaper menuSetWallpaper
+  return
+
+setupMenuToChangeWallpaper!
