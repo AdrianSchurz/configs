@@ -19,6 +19,7 @@ top = terminal .. ' -e htop'
 shutdown = 'sudo shutdown 0'
 pulseAudioControl = 'env GTK_THEME=Adwaita pavucontrol'
 update = terminal .. ' -hold -e packer -Syyu'
+startCanto = terminal .. ' -hold -e canto-curses'
 gitGUILightTheme = 'env GTK_THEME=Adwaita gitg'
 lockWorkstation = 'xscreensaver-command --lock'
 
@@ -46,6 +47,7 @@ globalHotkeys = {
   awful.key modShift, 'q',    -> spawn guiEditorAlt
   awful.key mod,      'Tab',  cycleLayouts
   awful.key mod,      'l',    -> spawn lockWorkstation
+  awful.key mod,      'v',    -> spawn startCanto
 }
 
 for k, v in pairs globalHotkeys
