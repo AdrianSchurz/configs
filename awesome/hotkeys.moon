@@ -12,6 +12,7 @@ spawn = awful.util.spawn
 terminal = 'urxvt'
 filemanager = 'thunar'
 browser = 'chromium'
+browserAlt = 'midori'
 guiEditor = 'atom'
 guiEditorAlt = 'subl'
 top = terminal .. ' -e htop'
@@ -40,6 +41,7 @@ globalHotkeys = {
   awful.key modShift, 's',    -> spawn shutdown
   awful.key mod,      'g',    -> spawn gitGUILightTheme
   awful.key mod,      'w',    -> spawn browser
+  awful.key modShift, 'w',    -> spawn browserAlt     
   awful.key mod,      'q',    -> spawn guiEditor
   awful.key modShift, 'q',    -> spawn guiEditorAlt
   awful.key mod,      'Tab',  cycleLayouts

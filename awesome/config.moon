@@ -466,7 +466,6 @@ setUpHotkeys = ->
   mouseWheelDown = 4
 
   hotkeyRetroTerminal = awful.key modShift, enter, -> spawn terminal_retro
-  hotkeyNewRandomWallpaper = awful.key modShift, 'w', setUpWallpapers
   cleanForCompletion = (command, cursorPosition, nComp, shell) ->
     term = false
     if command\sub(1,1) == ':'
@@ -497,7 +496,7 @@ setUpHotkeys = ->
   hotkeyStartPomodoro = awful.key mod, 'p', pomodoro\toggle
   hotkeyStopPomodoro = awful.key modShift, 'p', pomodoro\finish
 
-  globalkeys = awful.util.table.join hotkeyRunCommand, hotkeyStartPomodoro, hotkeyStopPomodoro, hotkeyNewRandomWallpaper
+  globalkeys = awful.util.table.join hotkeyRunCommand, hotkeyStartPomodoro, hotkeyStopPomodoro
 
   for tagNumber = 1, numberOfTags
     -- warning: magic number ahead
