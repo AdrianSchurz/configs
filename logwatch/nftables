@@ -1,0 +1,15 @@
+#!/bin/bash
+# This is as nice script that will show you the lines you will
+# be processing and reporting on.  It will first display the
+# standard environment variables and then it takes STDIN and
+# dump it right back out to STDOUT.  
+
+# These are the standard environment variables.  You can define
+# more in your service config file (see above).
+echo "Date Range: $LOGWATCH_DATE_RANGE"
+echo "Detail Level: $LOGWATCH_DETAIL_LEVEL"
+echo "Temp Dir: $LOGWATCH_TEMP_DIR"
+echo "Debug Level: $LOGWATCH_DEBUG"
+
+# Now take STDIN and dump it to STDOUT
+cat
