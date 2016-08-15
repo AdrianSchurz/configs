@@ -82,3 +82,5 @@ source $ZSH/oh-my-zsh.sh
 alias ta="todo.sh add"
 alias tls="todo.sh list"
 alias td="todo.sh do"
+
+alias ssh="ssh-ident"
