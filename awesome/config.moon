@@ -13,7 +13,6 @@ awful.rules = require 'awful.rules'
 awmodoro = require 'awmodoro'
 require 'awful.autofocus'
 hotkeys = require 'hotkeys'
-mpd = require 'mpd'
 radical = require 'radical'
 
 oldPrint = print
@@ -117,7 +116,6 @@ setUpWallpapers = ->
 
 setUpWallpapers!
 
-musicPlayer ={}
 panels = {}
 tagPanel = {}
 taskbar = {}
@@ -129,16 +127,6 @@ promptWidget = {}
 clientLayouts = {}
 pomodoro = {}
 sysTray =  {}
-
-setupMusicplayer = ->
-  musicPlayer = mpd\connect!
-  musicPlayer\clear!
-
-  defaultAmbientFile = 'tng-bridge.mp4'
-  musicPlayer\add paths.ambientSounds .. defaultAmbientFile
-  return
-
-setupMusicplayer!
 
 defineClientLayouts = ->
   clientLayouts = {awful.layout.suit.tile, awful.layout.suit.tile.top}
@@ -340,17 +328,13 @@ setUpPomodoro = ->
     height: pomodoroWidget.height
     begin_callback: ->
       pomodoroWidget.visible = true
-      musicPlayer\play!
       return
     finish_callback: ->
       pomodoroWidget.visible = false
-      musicPlayer\stop!
       return
     pause_callback: ->
-      musicPlayer\pause!
       return
     resume_callback: ->
-      musicPlayer\unpause!
       return
 
   pomodoro = awmodoro.new options
