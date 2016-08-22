@@ -1,0 +1,34 @@
+# run file/tag system early so dependent
+# stuff won't choke on it's own blood
+tagsistant --db=mysql ~/.tagsistant-mnt &
+
+# tone down lower wavelengths from display
+# spectrum at night time to fuck with my
+# biorhythms an estimated 2% less #science?
+xflux -l 50.9 -g 14.0 -r 1
+
+# provide a way to lock the screen in a an
+# at least somewhat sensible way
+xscreensaver -no-splash &
+
+#setxkbmap -layout de
+#setxkbmap -variant deadgraveacute
+
+xset +fp /usr/share/fonts/local
+xset fp rehash
+xrdb ~/.Xresources
+
+export MOZ_PLUGIN_PATH="/usr/lib/mozilla/plugins"
+
+ export SSH_AUTH_SOCK
+ export GPG_AGENT_INFO
+ export GNOME_KEYRING_CONTROL
+ export GNOME_KEYRING_PID
+
+
+# leave a cheap moc instance hanging around
+# for things like playing ambient audio
+padsp mocp --server &
+
+# fire up window manager
+exec awesome
