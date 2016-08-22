@@ -95,15 +95,15 @@ chooseRandomly = (aTable, quantity) ->
 selectWallpapers = (wallpapers, quantity) ->
   return chooseRandomly wallpapers, quantity
 
-isNotDirectory = (fileName) ->
-  return not (fileName == '.' or fileName == '..')
+isFile = (path) ->
+  fileAttributes = filesystem.attributes path
+  return fileAttributes.mode == 'file'
 
 compileListOfWallpapers = ->
   listOfWallpapers = {}
   path = paths.wallpapers
   for fileName in filesystem.dir path
-    fileAttributes = filesystem.attributes path .. fileName
-    if fileAttributes.mode == 'file'
+    if isFile path .. fileName
       table.insert listOfWallpapers, fileName
   return listOfWallpapers
 
