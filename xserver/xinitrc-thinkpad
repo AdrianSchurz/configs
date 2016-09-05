@@ -1,6 +1,6 @@
 # run file/tag system early so dependent
 # stuff won't choke on it's own blood
-tagsistant --db=mysql ~/.tagsistant-mnt &
+tagsistant --db=mysql ~/.tagsistant-mnt
 
 # tone down lower wavelengths from display
 # spectrum at night time to fuck with my
