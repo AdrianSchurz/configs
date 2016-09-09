@@ -1,12 +1,11 @@
 paths = {}
 
 home = os.getenv 'HOME'
-paths.wallpapers = home .. '/media/wallpapers/'
+paths.wallpapers = home .. '/tag/wallpaper/-/not-used/-/not-processed/@@/'
 config = home .. '/.config/awesome'
 paths.log = config .. '/'
 paths.theme = config .. '/themes/pro-dark/theme.lua'
 
--- path relative to mpd music folder, see mpd.conf
-paths.ambientSounds = 'ambient/'
+paths.ambientSounds = home .. '/tag/music/ambient/mp3/@@/'
 
 return paths
