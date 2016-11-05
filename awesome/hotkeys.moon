@@ -10,16 +10,17 @@ enter = 'Return'
 
 spawn = awful.util.spawn
 terminal = 'urxvt'
-filemanager = 'thunar'
-browser = 'firejail chromium'
-browserAlt = 'env GTK_THEME=Adwaita firejail midori'
+fileManager = 'pcmanfm'
+fileManagerAlt = 'thunar'
+browser = 'env GTK2_RC_FILES=/usr/share/themes/Crux/gtk-2.0/gtkrc firejail opera'
+browserAlt = 'firejail chromium'
 guiEditor = 'atom'
 guiEditorAlt = 'subl'
 top = terminal .. ' -e htop'
 shutdown = 'sudo shutdown 0'
 pulseAudioControl = 'env GTK_THEME=Crux pavucontrol'
 update = terminal .. ' -hold -e packer -Syyu'
-startCanto = terminal .. ' -hold -e canto-curses'
+startFeedAggregator = terminal .. ' -hold -e newsbeuter'
 gitGUILightTheme = 'env GTK_THEME=Crux gitg'
 lockWorkstation = 'xscreensaver-command --lock'
 
@@ -34,7 +35,8 @@ globalHotkeys = {
   awful.key modShift, 'r',    awesome.restart
   awful.key mod,      enter,  -> spawn terminal
   awful.key modShift, 'q',    awesome.quit
-  awful.key mod,      'e',    -> spawn filemanager
+  awful.key mod,      'e',    -> spawn fileManager
+  awful.key modShift, 'e',    -> spawn fileManagerAlt
   awful.key mod,      'c',    killClientUnderMouse
   awful.key mod,      't',    -> spawn top
   awful.key mod,      'u',    -> spawn update
@@ -47,7 +49,7 @@ globalHotkeys = {
   awful.key modShift, 'q',    -> spawn guiEditorAlt
   awful.key mod,      'Tab',  cycleLayouts
   awful.key mod,      'l',    -> spawn lockWorkstation
-  awful.key mod,      'v',    -> spawn startCanto
+  awful.key mod,      'v',    -> spawn startFeedAggregator
 }
 
 for k, v in pairs globalHotkeys
