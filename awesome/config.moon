@@ -490,6 +490,7 @@ setUpHotkeys = ->
   hotkeyStartPomodoro = awful.key mod, 'p', pomodoro\toggle
   hotkeyStopPomodoro = awful.key modShift, 'p', pomodoro\finish
   hotkeyRandomWallpaper = awful.key mod, '.', setUpWallpapers
+
   globalkeys = awful.util.table.join hotkeyRunCommand, hotkeyStartPomodoro, hotkeyStopPomodoro, hotkeyRandomWallpaper
 
   for tagNumber = 1, numberOfTags
@@ -579,3 +580,69 @@ setupMenuToChangeWallpaper = ->
   return
 
 setupMenuToChangeWallpaper!
+
+createAmbientMenu = ->
+  menuStyle =
+    style: radical.style.classic
+  menuSetAmbient = radical.box menuStyle
+  return menuSetAmbient
+
+stopPlayback = ->
+  awful.util.spawn 'mocp -s'
+  return
+
+clearPlaylist = ->
+  awful.util.spawn 'mocp -c'
+  return
+
+trackToPlaylist = ->
+  awful.util.spawn 'mocp -a ' .. currentAmbientTrack
+  return
+
+waitForMocToLoad = ->
+  os.execute 'sleep 1'
+  return
+
+loadCurrentAmbientTrack = ->
+  clearPlaylist!
+  trackToPlaylist!
+  waitForMocToLoad!
+  return
+
+mocpIsRunning = ->
+  mocpInfo = awful.util.pread 'mocp -i'
+  PlaybackStateIter = string.gmatch mocpInfo, "State: (%w+)"
+  playbackState = PlaybackStateIter!
+  return playbackState == 'PLAY'
+
+addMenuItemForEachAmbientTrack = (menu) ->
+  path = paths.ambientSounds
+  for fileName in filesystem.dir path
+    if isFile path .. fileName
+      fileTypeToHide = '.mp3'
+      mp3Hidden = string.gsub fileName, fileTypeToHide, ''
+      ambientTrack =
+        text: mp3Hidden
+        button1: ->
+          currentAmbientTrack = path .. fileName
+          wasRunning = false
+          if mocpIsRunning!
+            stopPlayback!
+            wasRunning = true
+          loadCurrentAmbientTrack!
+          if wasRunning
+            awful.util.spawn 'mocp -p'
+          return
+      menu\add_item ambientTrack
+  return
+
+setupMenuToChangeAmbientMusic = ->
+  menuSetAmbient = createAmbientMenu!
+  addMenuItemForEachAmbientTrack menuSetAmbient
+  menuSetAmbient\add_key_binding {"Mod4"}, 'm'
+  return
+
+setupMenuToChangeAmbientMusic!
+
+loadCurrentAmbientTrack!
+
