@@ -479,7 +479,7 @@ setUpHotkeys = ->
   checkForTerminal = (command) ->
     if command\sub(1,1) == ':'
       command = terminal .. ' -e "' .. command\sub(2) .. '"'
-    awful.util.spawn command
+    spawn command
   cache = awful.util.getdir 'cache'
   historyDirectory = cache .. '/history'
   runCommand = ->
