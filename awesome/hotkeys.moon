@@ -17,10 +17,10 @@ guiEditor = 'atom'
 guiEditorAlt = 'subl'
 top = terminal .. ' -e htop'
 shutdown = 'sudo shutdown 0'
-pulseAudioControl = 'env GTK_THEME=Adwaita pavucontrol'
+pulseAudioControl = 'env GTK_THEME=Crux pavucontrol'
 update = terminal .. ' -hold -e packer -Syyu'
 startCanto = terminal .. ' -hold -e canto-curses'
-gitGUILightTheme = 'env GTK_THEME=Adwaita gitg'
+gitGUILightTheme = 'env GTK_THEME=Crux gitg'
 lockWorkstation = 'xscreensaver-command --lock'
 
 killClientUnderMouse = ->
