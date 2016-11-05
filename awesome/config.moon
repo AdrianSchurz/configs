@@ -331,13 +331,17 @@ setUpPomodoro = ->
     height: pomodoroWidget.height
     begin_callback: ->
       pomodoroWidget.visible = true
+      awful.util.spawn 'mocp -p'
       return
     finish_callback: ->
       pomodoroWidget.visible = false
+      awful.util.spawn 'mocp -s'
       return
     pause_callback: ->
+      awful.util.spawn 'mocp -s'
       return
     resume_callback: ->
+      awful.util.spawn 'mocp -p'
       return
 
   pomodoro = awmodoro.new options
