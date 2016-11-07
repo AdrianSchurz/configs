@@ -17,5 +17,6 @@ xrdb ~/.Xresources &
 # for things like playing ambient audio
 padsp mocp --server &
 
-# fire up window manager
+# poll until tagsistant is rdy -.-, then fire up window manager
+while [ ! -d ~/.tagsistant-mnt/store/ ]; do sleep 1; done
 exec awesome
