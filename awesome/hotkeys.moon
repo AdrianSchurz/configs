@@ -20,7 +20,7 @@ top = terminal .. ' -e htop'
 shutdown = 'sudo shutdown 0'
 pulseAudioControl = 'env GTK_THEME=Crux pavucontrol'
 update = terminal .. ' -hold -e packer -Syyu'
-startFeedAggregator = terminal .. ' -hold -e newsbeuter'
+startFeedAggregator = terminal .. ' -e newsbeuter'
 gitGUILightTheme = 'env GTK_THEME=Crux gitg'
 lockWorkstation = 'xscreensaver-command --lock'
 
