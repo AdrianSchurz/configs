@@ -134,7 +134,11 @@ defaultAmbientTrack = '/home/ulmeyda/tag/ambient/@@/rain-dynamic.mp3'
 currentAmbientTrack = defaultAmbientTrack
 
 defineClientLayouts = ->
-  clientLayouts = {awful.layout.suit.tile, awful.layout.suit.tile.top}
+  clientLayouts = {
+    awful.layout.suit.tile,
+    awful.layout.suit.tile.top,
+    awful.layout.suit.fair
+  }
   return
 
 defineClientLayouts!
