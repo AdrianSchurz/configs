@@ -29,8 +29,6 @@ killClientUnderMouse = ->
   hoveredOverClient\kill!
   return
 
-cycleLayouts = -> awful.layout.inc clientLayouts, 1
-
 globalHotkeys = {
   awful.key modShift, 'r',    awesome.restart
   awful.key mod,      enter,  -> spawn terminal
@@ -47,7 +45,6 @@ globalHotkeys = {
   awful.key modShift, 'w',    -> spawn browserAlt     
   awful.key mod,      'q',    -> spawn guiEditor
   awful.key modShift, 'q',    -> spawn guiEditorAlt
-  awful.key mod,      'Tab',  cycleLayouts
   awful.key mod,      'l',    -> spawn lockWorkstation
   awful.key mod,      'v',    -> spawn startFeedAggregator
 }
