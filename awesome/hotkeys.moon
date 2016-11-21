@@ -11,11 +11,10 @@ enter = 'Return'
 spawn = awful.util.spawn
 terminal = 'urxvt'
 fileManager = 'pcmanfm'
-fileManagerAlt = 'thunar'
 browser = 'env GTK2_RC_FILES=/usr/share/themes/Crux/gtk-2.0/gtkrc firejail opera'
 browserAlt = 'firejail chromium'
-guiEditor = 'atom'
-guiEditorAlt = 'subl'
+guiEditor = 'subl3'
+guiEditorAlt = 'atom'
 top = terminal .. ' -e htop'
 shutdown = 'sudo shutdown 0'
 pulseAudioControl = 'env GTK_THEME=Crux pavucontrol'
@@ -34,7 +33,6 @@ globalHotkeys = {
   awful.key mod,      enter,  -> spawn terminal
   awful.key modShift, 'q',    awesome.quit
   awful.key mod,      'e',    -> spawn fileManager
-  awful.key modShift, 'e',    -> spawn fileManagerAlt
   awful.key mod,      'c',    killClientUnderMouse
   awful.key mod,      't',    -> spawn top
   awful.key mod,      'u',    -> spawn update
