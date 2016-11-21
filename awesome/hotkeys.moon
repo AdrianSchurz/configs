@@ -18,7 +18,6 @@ fileManager = 'pcmanfm'
 browser = specifyGTK2Theme .. 'firejail opera'
 browserAlt = 'firejail chromium'
 guiEditor = 'subl3'
-guiEditorAlt = 'atom'
 top = terminal .. ' -e htop'
 shutdown = 'sudo shutdown 0'
 pulseAudioControl = specifyGTK3Theme .. 'pavucontrol'
@@ -46,7 +45,6 @@ globalHotkeys = {
   awful.key mod,      'w',    -> spawn browser
   awful.key modShift, 'w',    -> spawn browserAlt     
   awful.key mod,      'q',    -> spawn guiEditor
-  awful.key modShift, 'q',    -> spawn guiEditorAlt
   awful.key mod,      'l',    -> spawn lockWorkstation
   awful.key mod,      'v',    -> spawn startFeedAggregator
 }
