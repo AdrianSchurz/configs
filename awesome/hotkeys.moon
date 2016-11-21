@@ -7,20 +7,24 @@ modkey = 'Mod4'
 mod = {modkey, nil}
 modShift = {modkey, 'Shift'}
 enter = 'Return'
-
 spawn = awful.util.spawn
+
+gtkTheme = 'Crux'
+specifyGTK2Theme = 'env GTK2_RC_FILES=/usr/share/themes/' .. gtkTheme .. '/gtk-2.0/gtkrc '
+specifyGTK3Theme = 'env GTK_THEME=' .. gtkTheme .. ' '
+
 terminal = 'urxvt'
 fileManager = 'pcmanfm'
-browser = 'env GTK2_RC_FILES=/usr/share/themes/Crux/gtk-2.0/gtkrc firejail opera'
+browser = specifyGTK2Theme .. 'firejail opera'
 browserAlt = 'firejail chromium'
 guiEditor = 'subl3'
 guiEditorAlt = 'atom'
 top = terminal .. ' -e htop'
 shutdown = 'sudo shutdown 0'
-pulseAudioControl = 'env GTK_THEME=Crux pavucontrol'
-update = terminal .. ' -hold -e packer -Syyu'
+pulseAudioControl = specifyGTK3Theme .. 'pavucontrol'
+systemUpdate = terminal .. ' -hold -e packer -Syyu'
 startFeedAggregator = terminal .. ' -e newsbeuter'
-gitGUILightTheme = 'env GTK_THEME=Crux gitg'
+gitGUI = specifyGTK3Theme .. 'gitg'
 lockWorkstation = 'xscreensaver-command --lock'
 
 killClientUnderMouse = ->
@@ -35,10 +39,10 @@ globalHotkeys = {
   awful.key mod,      'e',    -> spawn fileManager
   awful.key mod,      'c',    killClientUnderMouse
   awful.key mod,      't',    -> spawn top
-  awful.key mod,      'u',    -> spawn update
+  awful.key mod,      'u',    -> spawn systemUpdate
   awful.key mod,      'a',    -> spawn pulseAudioControl
   awful.key modShift, 's',    -> spawn shutdown
-  awful.key mod,      'g',    -> spawn gitGUILightTheme
+  awful.key mod,      'g',    -> spawn gitGUI
   awful.key mod,      'w',    -> spawn browser
   awful.key modShift, 'w',    -> spawn browserAlt     
   awful.key mod,      'q',    -> spawn guiEditor
