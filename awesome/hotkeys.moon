@@ -25,6 +25,7 @@ systemUpdate = terminal .. ' -hold -e packer -Syyu'
 startFeedAggregator = terminal .. ' -e newsbeuter'
 gitGUI = specifyGTK3Theme .. 'gitg'
 lockWorkstation = 'xscreensaver-command --lock'
+bookmarksGUI = '~/dev/repos/buku_run/buku_run'
 
 killClientUnderMouse = ->
   hoveredOverClient = mouse.object_under_pointer!
@@ -47,6 +48,7 @@ globalHotkeys = {
   awful.key mod,      'q',    -> spawn guiEditor
   awful.key mod,      'l',    -> spawn lockWorkstation
   awful.key mod,      'v',    -> spawn startFeedAggregator
+  awful.key mod,      'b',    -> spawn bookmarksGUI
 }
 
 for k, v in pairs globalHotkeys
